@@ -1,0 +1,39 @@
+html {
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin-bottom: 60px;
+}
+.customNavbar {
+    background-color: antiquewhite;
+    border-radius: 10px;
+}
+
+.customNavItem {
+    //background-color: #ffda6dfc;
+    border-radius: 10px;
+    margin-left: 5px;
+    font-weight: 500;
+    color: white;
+}
+    .customNavItem:hover {
+        /*box-shadow: 0 0 0 0.1rem #ff0086bd, 0 0 0 0.25rem #258cfb91;*/
+        background-color: gray;
+        color: black !important;
+    }

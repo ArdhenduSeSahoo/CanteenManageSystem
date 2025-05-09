@@ -1,0 +1,131 @@
+﻿@using CanteenManage.Repo.Models
+@using CanteenManage.Models.parcialViewModel
+@model LunchPageDataModel;
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@section HeadSection {
+
+    <link rel="stylesheet" href="~/css/customStyles.css">
+}
+<div class=" container-fluid" style="
+">
+    <div class="d-flex justify-content-between">
+        <div class="row">
+            <div class="col">
+                <h3>Lunch Items</h3>
+            </div>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-1 align-content-center"> <h6>Chose Date:-</h6> </div>
+        <div class="col">
+            <div class="d-inline-flex" style="height:40px">
+                @foreach (var dayes in Model.DayOfWeeks)
+                {
+                    <div class="" style="margin-left:5px">
+                        <form asp-action="SelectDaysOfWeek" method="post">
+                            <input type="hidden" name="selecteddate" value="@(dayes.DateShort)" />
+                            <input type="hidden" name="selecteddatefull" value="@(dayes.DateFull)" />
+                            <button class="btn @(dayes.IsSelected?"btn-primary":"btn-outline-primary") " @(!dayes.IsActiveDay ? "Disabled" : "") style="min-width:55px">
+                                <div>
+                                    <span class="align-middle">@dayes.DateShort</span>
+                                </div>
+                                @dayes.DaysOfWeekName
+                            </button>
+                        </form>
+                    </div>
+                }
+
+            </div>
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <p>Total for @(Model.DayOfWeeks.Where(d => d.IsSelected)?.FirstOrDefault()?.DateShort) is:-<b> @(Model.totalCountForSelectedDay)</b></p>
+        </div>
+    </div>
+    <div class="row row-cols-1 row-cols-md-5 g-2">
+        @foreach (Food food in Model.foods)
+        {
+            <div class="col">
+                @* <div class="card h-100 bg-white cardCustom" style=" border-radius:10px">
+                    <div class="" style="">
+                        <div class="itemImageDiv" style=" border-radius:10px;padding:2px">
+                            <img src="FoodImages/@(food.ImageUrl)" class="card-img-top img-fluid rounded mx-auto d-block" style="height: 200px;width: 300px;" alt="...">
+                        </div>
+                    </div>
+                    <div class="card-body pt-2 pb-2">
+                        <div class="d-flex justify-content-between">
+                            <h5 class="card-title">@food.Name</h5>
+                            <h6>@food.Price </h6>
+                        </div>
+
+                        <div class="d-flex">
+                            @foreach (int index in Enumerable.Range(1, Convert.ToInt32(food.Rating)))
+                            {
+                                <div class="d-flex">
+                                    <img src="~/images/emoji/starRating.png" class=" star_design" alt="rating" style="">
+                                </div>
+                            }
+
+
+                        </div>
+                        <p class="card-subtitle mb-2 text-muted">@(food.Description == "" ? "." : food.Description)</p>
+
+
+
+                    </div>
+                    <div class="card-footer text-muted bg-white rounded-2">
+                        <div class="d-flex justify-content-between">
+                            <div></div>
+                            <div>
+                                <div class="row align-self-end">
+                                    @if (food.FoodOrders?.Count() <= 0)
+                                    {
+                                        <div class="col align-self-end">
+                                            <form asp-action="addOrders" method="post">
+                                                <input type="hidden" name="foodId" value="@food.Id" />
+                                                <button class="btn addBtn" type="submit">Add</button>
+                                            </form>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col align-self-end">
+                                            <div class="btn-group" role="group" aria-label="Basic mixed styles example">
+                                                <form asp-action="removeOrders" method="post">
+                                                    <input type="hidden" name="foodId" value="@food.Id" />
+                                                    <button type="submit" style="border-radius:0px; border-bottom-left-radius:7px;border-top-left-radius:7px;
+        " class="btn btn-outline-info">
+                                                        <i class="fa-solid fa-minus " style="color:red"></i>
+                                                    </button>
+                                                </form>
+                                                <button type="button" class="btn btn-outline-info " style=" border-radius:0px; color:black">@food.FoodOrders?.FirstOrDefault()?.Quantity</button>
+                                                <form asp-action="addOrders" method="post">
+                                                    <input type="hidden" name="foodId" value="@food.Id" />
+                                                    <button type="submit" class="btn btn-outline-info" style="border-radius:0px;border-bottom-right-radius:7px;border-top-right-radius:7px;"><i class="fa-solid fa-plus"></i></button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div> *@
+                @(
+                    await Html.PartialAsync("_FoodItemCardView", new FoodItemCardDataModel()
+            {
+                food = food,
+            })
+                    )
+            </div>
+        }
+
+    </div>
+</div>

@@ -1,0 +1,193 @@
+﻿@model CanteenManage.Models.MyOrderViewDataModel
+
+@{
+    ViewData["Title"] = "My Orders";
+}
+<div class=" container-fluid h-100" style="">
+
+    <div class="d-flex justify-content-between">
+        <div class="row">
+            <div class="col">
+                <h3>My Orders</h3>
+            </div>
+        </div>
+        <a asp-action="Index" asp-controller="OrderHistory" class="btn btn-outline-info">History</a>
+    </div>
+    <br />
+    <div class="row row-cols-1 row-cols-md-3">
+        <div class="col">
+            <div class="card">
+                <div class="card-header bg-info fw-bold">
+                    Breakfast
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover table-responsive-sm">
+                        <thead>
+                            <tr>
+                                <th scope="col">Date</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Quantity</th>
+                                <th scope="col">Price</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in Model.BreakFastFoodOrders)
+                            {
+                                <tr>
+                                    <td >@order.OrderDate.ToString("dd-MM-")@order.OrderDate.DayOfWeek</td>
+                                    <td>@order.Food.Name</td>
+                                    <td >@order.Quantity.ToString()</td>
+                                    <td class="" style="text-align:end">@order.TotalPrice.ToString()</td>
+                                    <td>
+                                        @if(
+                                          (order.OrderDate.Day<=DateTime.Now.Day)
+                                      )
+                                        {
+                                            @if (int.Parse(DateTime.Now.ToString("HH")) < 6)
+                                            {
+                                                <form asp-action="removeOrder" method="post">
+                                                    <input type="hidden" name="orderId" value="@order.Id" />
+                                                    <button type="submit" class="btn btn-danger btn-sm">
+                                                        old
+                                                    </button>
+                                                </form>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <form asp-action="removeOrder" method="post">
+                                                <input type="hidden" name="orderId" value="@order.Id" />
+                                                <button type="submit" class="btn btn-danger btn-sm">
+                                                    <i class="fa fa-trash" aria-hidden="true"></i>
+                                                </button>
+                                            </form>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card">
+                <div class="card-header bg-info fw-bold">
+                    Lunch
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover table-responsive-sm">
+                        <thead>
+                            <tr>
+                                <th scope="col">Date</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Quantity</th>
+                                <th scope="col">Price</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in Model.LunchFoodOrders)
+                            {
+                                <tr>
+                                    <th scope="row" style="font-weight:normal">@order.OrderDate.ToString("dd-MM-")@order.OrderDate.DayOfWeek</th>
+                                    <td>@order.Food.Name</td>
+                                    <th style="font-weight:normal">@order.Quantity.ToString()</th>
+                                    <td class="" style="text-align:end">@order.TotalPrice.ToString()</td>
+                                    <td>
+                                       
+                                        @if (
+                                       (order.OrderDate.Day <= DateTime.Now.Day)
+                                       )
+                                        {
+                                            @if (int.Parse(DateTime.Now.ToString("HH")) < 11)
+                                            {
+                                                <form asp-action="removeOrder" method="post">
+                                                    <input type="hidden" name="orderId" value="@order.Id" />
+                                                    <button type="submit" class="btn btn-danger btn-sm">
+                                                        <i class="fa fa-trash" aria-hidden="true"></i>
+                                                    </button>
+
+                                                </form>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <form asp-action="removeOrder" method="post">
+                                                <input type="hidden" name="orderId" value="@order.Id" />
+                                                <button type="submit" class="btn btn-danger btn-sm">
+                                                    <i class="fa fa-trash" aria-hidden="true"></i>
+                                                </button>
+
+                                            </form>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card">
+                <div class="card-header bg-info fw-bold">
+                    Snacks
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover table-responsive-sm">
+                        <thead>
+                            <tr>
+                                <th scope="col">Date</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Quantity</th>
+                                <th scope="col">Price</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in Model.SnaksFoodOrders)
+                            {
+                                <tr>
+                                    <th scope="row" style="font-weight:normal">@order.OrderDate.ToString("dd-MM-")@order.OrderDate.DayOfWeek</th>
+                                    <td>@order.Food.Name</td>
+                                    <th style="font-weight:normal">@order.Quantity.ToString()</th>
+                                    <td class="" style="text-align:end">@order.TotalPrice.ToString()</td>
+                                    <td>
+                                       
+                                        @if (
+                                       (order.OrderDate.Day <= DateTime.Now.Day)
+                                       )
+                                        {
+                                            @if (int.Parse(DateTime.Now.ToString("HH")) < 15)
+                                            {
+                                                <form asp-action="removeOrder" method="post">
+                                                    <input type="hidden" name="orderId" value="@order.Id" />
+                                                    <button type="submit" class="btn btn-danger btn-sm">
+                                                        <i class="fa fa-trash" aria-hidden="true"></i>
+                                                    </button>
+
+                                                </form>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <form asp-action="removeOrder" method="post">
+                                                <input type="hidden" name="orderId" value="@order.Id" />
+                                                <button type="submit" class="btn btn-danger btn-sm">
+                                                    <i class="fa fa-trash" aria-hidden="true"></i>
+                                                </button>
+                                            </form>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

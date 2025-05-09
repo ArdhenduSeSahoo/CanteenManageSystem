@@ -1,0 +1,197 @@
+﻿@model CanteenManage.Models.OrderHistoryPageDataModel
+
+@{
+    ViewData["Title"] = "My Orders";
+}
+<div class=" container-fluid h-100" style="">
+
+    <div class="d-flex justify-content-between">
+        <div class="row">
+            <div class="col">
+                <h3>Orders History</h3>
+            </div>
+        </div>
+
+    </div>
+    <br />
+
+    <div class="row row-cols-1 row-cols-md-3">
+      
+        <div class="col">
+            <div class="card">
+                <div class="card-header bg-info fw-bold">
+                    Breakfast
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover table-responsive-sm">
+                        <thead>
+                            <tr>
+                                <th scope="col">Date</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Quantity</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in Model.BreakFastFoodOrders)
+                            {
+                                <tr>
+                                    <td scope="row" style="font-weight:normal">@order.OrderDate.ToString("dd-MM-")@order.OrderDate.DayOfWeek</td>
+                                    <td>@order.Food.Name</td>
+                                    <td style="font-weight:normal">@order.Quantity.ToString()</td>
+                                    <td>
+                                            @if(order.Rating==null)
+                                            {
+                                            <button type="submit" class="btn btn-outline-info btn-sm" style="padding:1px" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-orderid="@(order.Id)">
+												<img src="~/images/speech.png" alt="Review" style="width: 30px; height: 30px;" />
+                                            </button>
+                                            }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card">
+                <div class="card-header bg-info fw-bold">
+                    Lunch
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover table-responsive-sm">
+                        <thead>
+                            <tr>
+                                <th scope="col">Date</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Quantity</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in Model.LunchFoodOrders)
+                            {
+                                <tr>
+                                    <td scope="row" style="font-weight:normal">@order.OrderDate.ToString("dd-MM-")@order.OrderDate.DayOfWeek</td>
+                                    <td>@order.Food.Name</td>
+                                    <td style="font-weight:normal">@order.Quantity.ToString()</td>
+                                    <td>
+                                        @if (order.Rating == null)
+                                        {
+                                            <button type="submit" class="btn btn-outline-info btn-sm" style="padding:1px" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-orderid="@(order.Id)">
+                                                <img src="~/images/speech.png" alt="Review" style="width: 30px; height: 30px;" />
+                                            </button>
+                                        }
+
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card">
+                <div class="card-header bg-info fw-bold">
+                    Snacks
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover table-responsive-sm">
+                        <thead>
+                            <tr>
+                                <th scope="col">Date</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Quantity</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in Model.SnaksFoodOrders)
+                            {
+                                <tr>
+                                    <td scope="row" style="font-weight:normal">@order.OrderDate.ToString("dd-MM-")@order.OrderDate.DayOfWeek</td>
+                                    <td>@order.Food.Name</td>
+                                    <td style="font-weight:normal">@order.Quantity.ToString()</td>
+                                    <td>
+                                        @if (order.Rating == null)
+                                        {
+                                            <button type="submit" class="btn btn-outline-info btn-sm" style="padding:1px" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-orderid="@(order.Id)">
+                                                <img src="~/images/speech.png" alt="Review" style="width: 30px; height: 30px;" />
+                                            </button>
+                                        }
+                                        
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade " id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Review</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+                <form asp-action="addReview">
+      <div class="modal-body">
+
+                        <input type="hidden" name="order_id" id="order_id" value="0" />
+                        <div class="form-check form-check-inline" style="margin:1px;padding:5px">
+                            <input type="radio" class="btn-check" name="options" id="option1" value="1" autocomplete="off">
+                            <label class="btn btn-outline-info" for="option1">
+								<img src="~/images/emoji/Emoji1.png" alt="Sad" style="width: 30px; height: 30px;" />
+                            </label>
+                        </div>
+                        <div class="form-check form-check-inline" style="margin:1px;padding:5px">
+                            <input type="radio" class="btn-check" name="options" id="option2" value="2" autocomplete="off">
+                            <label class="btn btn-outline-info" for="option2">
+                                <img src="~/images/emoji/Emoji2.png" alt="Sad" style="width: 30px; height: 30px;" />
+                            </label>
+                        </div>
+                        <div class="form-check form-check-inline" style="margin:1px;padding:5px">
+                            <input type="radio" class="btn-check" name="options" value="3" id="option3" autocomplete="off">
+                            <label class="btn btn-outline-info" for="option3">
+                                <img src="~/images/emoji/Emoji3.png" alt="Sad" style="width: 30px; height: 30px;" />
+                            </label>
+                        </div>
+                        <div class="form-check form-check-inline" style="margin:1px;padding:5px">
+                            <input type="radio" class="btn-check" name="options" value="4" id="option4" autocomplete="off">
+                            <label class="btn btn-outline-info" for="option4">
+                                <img src="~/images/emoji/Emoji4.png" alt="Sad" style="width: 30px; height: 30px;" />
+                            </label>
+                        </div>
+                        <div class="form-check form-check-inline" style="margin:1px;padding:5px">
+                            <input type="radio" class="btn-check" name="options" id="option5" value="5" autocomplete="off">
+                            <label class="btn btn-outline-info" for="option5">
+                                <img src="~/images/emoji/Emoji6.png" alt="Sad" style="width: 30px; height: 30px;" />
+                            </label>
+                        </div>
+          @* <div class="mb-3">
+            <label for="message-text" class="col-form-label">Message:</label>
+            <textarea class="form-control" name="review_text" id="message-text"></textarea>
+          </div> *@
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </div>
+                </form>
+    </div>
+  </div>
+</div>
+
+    </div>
+
+@section Scripts {
+	<script src="~/js/reviewModals.js" ></script>
+
+}
+

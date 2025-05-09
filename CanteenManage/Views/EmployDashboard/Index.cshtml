@@ -1,0 +1,146 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+@{
+	ViewData["Title"] = "Employ Dashboard";
+}
+@section HeadSection {
+    <style>
+        .custom-bullets {
+            list-style-type: disc;
+            padding-left: 20px;
+        }
+        .custom-bullets li {
+            margin-bottom: 8px;
+            color: #333;
+            font-family: Arial, sans-serif;
+        }
+    </style>
+}
+
+<div class="container">
+	<div class="row row-cols-1 row-cols-md-3">
+		<div class="col">
+            <a asp-action="Index" asp-controller="BreakFastItems">
+            <div class="card card-span h-100 text-white rounded-3">
+                <img class="img-fluid rounded-3" style="height:310px" src="~/images/breakfast1.jpg" alt="...">
+                <div class="card-img-overlay ps-0"><span class="badge bg-primary ms-2 me-1 p-2"></span></div>
+                <div class="card-body ps-0">
+                    <span class="badge bg-soft-success p-2"><span class="fw-bold fs-1 text-success">Breakfast</span></span>
+                </div>
+            </div>
+            </a>
+		</div>
+        <div class="col">
+            <a asp-action="Index" asp-controller="LunchItems">
+            <div class="card card-span h-100 text-white rounded-3">
+                <img class="img-fluid rounded-3" src="~/images/lunch.jpg" style="height:310px" alt="...">
+                <div class="card-img-overlay ps-0"><span class="badge bg-primary ms-2 me-1 p-2"></span></div>
+                <div class="card-body ps-0">
+                    <span class="badge bg-soft-success p-2"><span class="fw-bold fs-1 text-success">Lunch</span></span>
+                </div>
+            </div>
+            </a>
+        </div>
+        <div class="col">
+            <a asp-action="Index" asp-controller="SnacksItemList">
+            <div class="card card-span h-100 text-white rounded-3">
+                    <img class="img-fluid rounded-3 " style="height:310px" src="~/images/snacks3.jpg" alt="...">
+                <div class="card-img-overlay ps-0"><span class="badge bg-primary ms-2 me-1 p-2"></span></div>
+                <div class="card-body ps-0">
+                    <span class="badge bg-soft-success p-2"><span class="fw-bold fs-1 text-success">Evening Snacks</span></span>
+                </div>
+            </div>
+            </a>
+        </div>
+
+	</div>
+    <br />
+
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <div class="card-header text-lg-center" >
+                    <span style="font-weight: bold;
+    font-size: 20px;
+    color: #198754;">Today's Menu</span>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-4 mb-3 mb-sm-0">
+                            <div class="card " style="min-height:170px">
+                                <div class="card-body">
+                                    <div class="d-flex">
+
+                                    
+                                        <img src="~/images/breakfast.png" style="height:50px;width:50px" />
+                                        <h5 style="text-align: center;
+    padding: 0;
+    padding-top: 15px;
+    padding-left: 5px;">
+                                            Breakfast
+                                        </h5><span></span>
+                                    </div>
+
+                                    <div class="row mt-2">
+                                        <div class="col">
+                                            <span>Masala Dosa,Bread & Omelette,Veg Sandwich</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="card " style="min-height:170px">
+                                <div class="card-body">
+                                    <div class="d-flex">
+
+
+                                        <img src="~/images/vegetarian.png" style="height:50px;width:50px" />
+                                        <h5 style="text-align: center;
+    padding: 0;
+    padding-top: 10px;
+    padding-left: 5px;">
+                                            Lunch
+                                        </h5><span></span>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col">
+                                            <span>Veg Thali,Fish Curry with Rice,Chicken Biryani,Chole Chawal</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="card " style="min-height:170px">
+                                <div class="card-body">
+                                    <div class="d-flex">
+
+
+                                        <img src="~/images/fast-food.png" style="height:50px;width:50px" />
+                                        <h5 style="text-align: center;
+    padding: 0;
+    padding-top: 20px;
+    padding-left: 5px;">
+                                            Snacks
+                                        </h5><span></span>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col">
+                                            <span>Samosa,Onion Pakoda,Bread Pakora,Pav Bhaji,Non-Veg Roll</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

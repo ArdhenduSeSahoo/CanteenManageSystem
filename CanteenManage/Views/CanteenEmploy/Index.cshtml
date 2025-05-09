@@ -1,0 +1,117 @@
+﻿@using CanteenManage.Repo.Models
+@model CanteenManage.Models.CanteenEmployPageDataModel
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+	Layout = "_Layout_canteenEmploy";
+}
+
+<div class=" container-fluid h-100" style="">
+
+    <div class="d-flex justify-content-between">
+        <div class="row">
+            <div class="col">
+                <h3>All Orders</h3>
+            </div>
+        </div>
+    </div>
+    <div class="row row-cols-1 row-cols-md-3">
+        <div class="col">
+            <div class="card">
+                <div class="card-header bg-info fw-bold">
+                    Breakfast
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover table-responsive-sm">
+                        <thead>
+                            <tr>
+                                <th scope="col">Date</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Quantity</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in Model.BreakFastFoodOrders)
+                            {
+                                <tr>
+                                    <th scope="row" style="font-weight:normal">@order.OrderDate.ToString("dd/MM-")@order.OrderDate.DayOfWeek</th>
+                                    <td>@order.Name</td>
+                                    <th style="font-weight:normal">@order.FoodQuantity.ToString()</th>
+                                    <td></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card">
+                <div class="card-header bg-info fw-bold">
+                    Lunch
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover table-responsive-sm">
+                        <thead>
+                            <tr>
+                                <th scope="col">Date</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Quantity</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in Model.LunchFoodOrders)
+                            {
+                                <tr>
+                                    <th scope="row" style="font-weight:normal">@order.OrderDate.ToString("dd/MM-")@order.OrderDate.DayOfWeek</th>
+                                    <td>@order.Name</td>
+                                    <th style="font-weight:normal">@order.FoodQuantity.ToString()</th>
+                                    <td>
+                                        
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card">
+                <div class="card-header bg-info fw-bold">
+                    Snacks
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover table-responsive-sm">
+                        <thead>
+                            <tr>
+                                <th scope="col">Date</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Quantity</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in Model.SnaksFoodOrders)
+                            {
+                                <tr>
+                                    <th scope="row" style="font-weight:normal">@order.OrderDate.ToString("dd/MM-")@order.OrderDate.DayOfWeek</th>
+                                    <td>@order.Name</td>
+                                    <th style="font-weight:normal">@order.FoodQuantity.ToString()</th>
+                                    <td>
+                                        
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
