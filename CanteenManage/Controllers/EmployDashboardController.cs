@@ -1,4 +1,4 @@
-﻿using CanteenManage.Repo.Contexts;
+﻿using CanteenManage.CanteenRepository.Contexts;
 using CanteenManage.Utility;
 using Microsoft.AspNetCore.Mvc;
 

@@ -1,4 +1,4 @@
-﻿using CanteenManage.Repo.Contexts;
+﻿using CanteenManage.CanteenRepository.Contexts;
 using CanteenManage.Utility;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,7 +23,6 @@ namespace CanteenManage.Controllers
         {
             //HttpContext.Session.SetString("UserName", Request.Form["username"]);
             string userId = "", password = "";
-            //string userId = "SD1265", password = "sadf";
             try
             {
                 userId = formcollect["userId"].ToString();
@@ -35,14 +34,15 @@ namespace CanteenManage.Controllers
             }
             try
             {
+                //userId = "EMP003";password = "sadf";
                 if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(password))
                 {
-                    return View();
+                    return this.RedirectToAction(actionName: "Index", controllerName: "Login");
                 }
                 var userFound = canteenManageContext.Employes.Where(e => e.EmployID == userId).FirstOrDefault();
                 if (userFound == null)
                 {
-                    return View();
+                    return this.RedirectToAction(actionName: "Index", controllerName: "Login");
                 }
                 if (userFound.EmployTypeId == 3)
                 {
@@ -55,6 +55,12 @@ namespace CanteenManage.Controllers
                     HttpContext.Session.SetString(SessionConstants.UserId, userFound.Id.ToString());
                     HttpContext.Session.SetString(SessionConstants.UserName, userFound.Name.ToString());
                     return this.RedirectToAction(actionName: "Index", controllerName: "CanteenEmploy");
+                }
+                if (userFound.EmployTypeId == 4)
+                {
+                    HttpContext.Session.SetString(SessionConstants.UserId, userFound.Id.ToString());
+                    HttpContext.Session.SetString(SessionConstants.UserName, userFound.Name.ToString());
+                    return this.RedirectToAction(actionName: "CMDashboard", controllerName: "CommitteeMember");
                 }
             }
             catch (Exception ex)

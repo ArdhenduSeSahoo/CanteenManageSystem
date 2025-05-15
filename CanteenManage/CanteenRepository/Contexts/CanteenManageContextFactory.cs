@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace CanteenManage.Repo.Contexts
+namespace CanteenManage.CanteenRepository.Contexts
 {
     public class CanteenManageContextFactory : IDbContextFactory<CanteenManageDBContext>
     {

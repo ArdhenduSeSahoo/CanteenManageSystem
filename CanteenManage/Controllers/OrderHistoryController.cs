@@ -1,6 +1,6 @@
 ﻿using CanteenManage.Models;
-using CanteenManage.Repo.Contexts;
-using CanteenManage.Repo.Models;
+using CanteenManage.CanteenRepository.Contexts;
+using CanteenManage.CanteenRepository.Models;
 using CanteenManage.Utility;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -100,7 +100,7 @@ namespace CanteenManage.Controllers
                     .Include(f => f.Food)
                     .Where(
                     fo => fo.Food.FoodTypeId == foodTypeId
-                    && fo.EmployeId == employeId
+                    && fo.EmployeeId == employeId
                     && fo.OrderDate.Date > DateTime.Now.AddDays(-30).Date && fo.OrderDate.Date < DateTime.Now.Date
                     //&& daysOfWeek_for_snaks.Select(s => s.DateTime.Date).Contains(fo.OrderDate.Date)
                     )

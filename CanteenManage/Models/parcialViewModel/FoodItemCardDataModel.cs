@@ -1,4 +1,4 @@
-﻿using CanteenManage.Repo.Models;
+﻿using CanteenManage.CanteenRepository.Models;
 
 namespace CanteenManage.Models.parcialViewModel
 {

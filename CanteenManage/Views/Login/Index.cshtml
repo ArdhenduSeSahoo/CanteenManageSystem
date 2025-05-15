@@ -17,19 +17,20 @@
 					</div>
 				</div>
 				<div class="card-body">
+				<p>EMP005 SD1265 EMP002 EMP003</p>
 				<form asp-controller="Login" asp-action="LoginUser" method="post">
 						<div class="input-group form-group">
 							<div class="input-group-prepend">
 								<span class="input-group-text h-100"><i class="fas fa-user"></i></span>
 							</div>
-							<input type="text" class="form-control" name="userId" placeholder="username">
+						<input type="text" class="form-control" name="userId" value="EMP005" placeholder="username">
 
 						</div>
 						<div class="input-group form-group mt-2">
 							<div class="input-group-prepend">
 								<span class="input-group-text h-100"><i class="fas fa-key"></i></span>
 							</div>
-							<input type="password" class="form-control" name="userPassword" placeholder="password">
+							<input type="password" class="form-control" name="userPassword" value="1234" placeholder="password">
 						</div>
 						@* <div class="row align-items-center remember">
 							<input type="checkbox">Remember Me

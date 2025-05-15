@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using CanteenManage.Models;
-using CanteenManage.Repo.Contexts;
-using CanteenManage.Repo.Models;
+using CanteenManage.CanteenRepository.Contexts;
+using CanteenManage.CanteenRepository.Models;
 using CanteenManage.Services;
 using CanteenManage.Utility;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +18,7 @@ namespace CanteenManage.Controllers
             this.canteenManageContext = canteenManageContext;
             this.orderingService = orderingService;
         }
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
 
             if (SessionDataHelper.getSessionUserId(HttpContext.Session) is null)
@@ -28,14 +28,17 @@ namespace CanteenManage.Controllers
             int snaksFoodID = 3;
             List<DaysOfWeekModel> daysOfWeek = DateCalculationService.GetDaysOfWeek(hourBeforeDisable: 15);
             string? Session_selectedDay = HttpContext.Session.GetString(SessionConstants.UserSelectedDay);
+            int Session_selectedDay_On_SamePage = Convert.ToInt32(HttpContext.Session.GetString(SessionConstants.UserSelectedDayOnSamePage));
 
-            if (Session_selectedDay != null)
+            if (Session_selectedDay != null && Session_selectedDay_On_SamePage == 1)
             {
                 var selectedDate = daysOfWeek.Where(d => d.DateShort == Session_selectedDay).FirstOrDefault();
                 if (selectedDate != null)
                 {
                     selectedDate.IsSelected = true;
                 }
+
+                HttpContext.Session.SetString(SessionConstants.UserSelectedDayOnSamePage, "0");
             }
             else
             {
@@ -54,11 +57,14 @@ namespace CanteenManage.Controllers
             var foodOrderByUser = await orderingService.GetFoodOrdersByUserId(
                                                                 SessionDataHelper.getSessionUserId(HttpContext.Session) ?? 0,
                                                                 snaksFoodID,
-                                                                userSelected_DateTime
+                                                                userSelected_DateTime,
+                                                                cancellationToken
                                                                 );
             var foodSnaksAll = await orderingService.GetFoodOrdersByUserId(
                                                                 snaksFoodID,
-                                                                foodOrderByUser
+                                                                foodOrderByUser,
+                                                                cancellationToken,
+                                                                (int)userSelected_DateTime.DayOfWeek
                                                                 );
 
 
@@ -75,6 +81,7 @@ namespace CanteenManage.Controllers
             try
             {
                 HttpContext.Session.SetString(SessionConstants.UserSelectedDay, formcollect["selecteddate"].ToString());
+                HttpContext.Session.SetString(SessionConstants.UserSelectedDayOnSamePage, "1");
                 HttpContext.Session.SetString(SessionConstants.UserSelectedDayFull, formcollect["selecteddatefull"].ToString());
             }
             catch (Exception ex)
@@ -105,7 +112,7 @@ namespace CanteenManage.Controllers
                 var existingFoodOrder = canteenManageContext.FoodOrders
                     .Include(fo => fo.Food)
                     .Where(fo => fo.FoodId == int.Parse(selectedFoodId))
-                    .Where(fo => fo.EmployeId == SessionDataHelper.getSessionUserId(HttpContext.Session))
+                    .Where(fo => fo.EmployeeId == SessionDataHelper.getSessionUserId(HttpContext.Session))
                     .Where(fo => fo.OrderDate.Date == userSelected_DateTime.Date)
                     .FirstOrDefault();
                 //if (existingFoodOrder != null && existingFoodOrder?.Quantity < 5)
@@ -125,7 +132,7 @@ namespace CanteenManage.Controllers
                         TimeSpan ts = new TimeSpan(15, 05, 0);
                         FoodOrder foodOrder = new FoodOrder();
                         foodOrder.FoodId = int.Parse(selectedFoodId);
-                        foodOrder.EmployeId = SessionDataHelper.getSessionUserId(HttpContext.Session) ?? 0;
+                        foodOrder.EmployeeId = SessionDataHelper.getSessionUserId(HttpContext.Session) ?? 0;
                         foodOrder.OrderDate = userSelected_DateTime.Date + ts;
                         foodOrder.OrderUpdateDate = DateTime.Now;
                         foodOrder.Quantity = 1;
@@ -163,7 +170,7 @@ namespace CanteenManage.Controllers
             {
                 var existingFoodOrder = canteenManageContext.FoodOrders
                     .Where(fo => fo.FoodId == int.Parse(selectedFoodId))
-                    .Where(fo => fo.EmployeId == SessionDataHelper.getSessionUserId(HttpContext.Session))
+                    .Where(fo => fo.EmployeeId == SessionDataHelper.getSessionUserId(HttpContext.Session))
                     .Where(fo => fo.OrderDate.Date == userSelected_DateTime.Date)
                     .FirstOrDefault();
                 if (existingFoodOrder != null)

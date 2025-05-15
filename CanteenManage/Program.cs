@@ -1,7 +1,9 @@
-using CanteenManage.Repo.Contexts;
+using CanteenManage.CanteenRepository.Contexts;
 using CanteenManage.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
+using static NuGet.Packaging.PackagingConstants;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +27,19 @@ builder.Services.AddScoped<CanteenManageContextFactory>();
 builder.Services.AddScoped(sp => sp.GetRequiredService<CanteenManageContextFactory>().CreateDbContext());
 builder.Services.AddScoped<OrderingService>();
 
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+                      policy =>
+                      {
+                          policy.AllowAnyOrigin();
+                          policy.AllowAnyHeader();
+                          policy.AllowAnyMethod();
+
+                      });
+});
+
 
 var app = builder.Build();
 
@@ -36,7 +51,22 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.UseCors(MyAllowSpecificOrigins);
 app.UseHttpsRedirection();
+app.UseStaticFiles(
+    new StaticFileOptions
+    {
+        FileProvider = new PhysicalFileProvider(
+           Path.Combine(Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\CanteenManagementSystem", "FoodImages")),
+        RequestPath = "/FoodImage"
+    });
+app.UseStaticFiles(
+    new StaticFileOptions
+    {
+        FileProvider = new PhysicalFileProvider(
+           Path.Combine(Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\CanteenManagementSystem", "images")),
+        RequestPath = "/images"
+    });
 app.UseStaticFiles();
 
 app.UseRouting();
@@ -52,6 +82,8 @@ app.UseSession();
 //    }
 //    await next();
 //});
+app.MapControllers();
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Login}/{action=Index}/{id?}");

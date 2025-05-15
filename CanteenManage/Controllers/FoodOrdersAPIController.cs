@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using CanteenManage.Repo.Contexts;
-using CanteenManage.Repo.Models;
+using CanteenManage.CanteenRepository.Contexts;
+using CanteenManage.CanteenRepository.Models;
 
 namespace CanteenManage.Controllers
 {

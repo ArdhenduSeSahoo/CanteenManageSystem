@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using CanteenManage.Models;
-using CanteenManage.Repo.Contexts;
+using CanteenManage.CanteenRepository.Contexts;
 using CanteenManage.Services;
 using CanteenManage.Utility;
 using Microsoft.AspNetCore.Mvc;
@@ -17,17 +17,17 @@ namespace CanteenManage.Controllers
             this.canteenManageContext = canteenManageContext;
             this.orderingService = orderingService;
         }
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
             if (SessionDataHelper.getSessionUserId(HttpContext.Session) is null)
             {
                 return RedirectToAction("Login", "Index");
             }
 
-            var snackesFoodlist = await orderingService.getFoodOrderGroupList(3);
+            var snackesFoodlist = await orderingService.getFoodOrderGroupList(3, cancellationToken);
 
-            var lunchFoodlist = await orderingService.getFoodOrderGroupList(2);
-            var breakfastFoodlist = await orderingService.getFoodOrderGroupList(1);
+            var lunchFoodlist = await orderingService.getFoodOrderGroupList(2, cancellationToken);
+            var breakfastFoodlist = await orderingService.getFoodOrderGroupList(1, cancellationToken);
 
             CanteenEmployPageDataModel canteenEmployPageDataModel = new CanteenEmployPageDataModel();
             canteenEmployPageDataModel.SnaksFoodOrders = snackesFoodlist;

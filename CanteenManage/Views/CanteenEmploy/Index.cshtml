@@ -1,4 +1,4 @@
-﻿@using CanteenManage.Repo.Models
+﻿@using CanteenManage.CanteenRepository.Models
 @model CanteenManage.Models.CanteenEmployPageDataModel
 @*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -23,11 +23,14 @@
                     Breakfast
                 </div>
                 <div class="card-body">
-                    <table class="table table-hover table-responsive-sm">
+                    <label for="myInput">Filter</label>
+                    <input class="form-control" id="breakfastInput" type="text" placeholder="Search..">
+                    <table id="breakfastTables" class="table table-hover table-responsive-sm">
                         <thead>
                             <tr>
                                 <th scope="col">Date</th>
-                                <th scope="col">Name</th>
+                                <th scope="col">Employ Name</th>
+                                <th scope="col">Food</th>
                                 <th scope="col">Quantity</th>
                                 <th scope="col"></th>
                             </tr>
@@ -36,9 +39,10 @@
                             @foreach (var order in Model.BreakFastFoodOrders)
                             {
                                 <tr>
-                                    <th scope="row" style="font-weight:normal">@order.OrderDate.ToString("dd/MM-")@order.OrderDate.DayOfWeek</th>
+                                    <td>@order.OrderDate.ToString("dd/MM-")@order.OrderDate.DayOfWeek</td>
+                                    <td>@order.EmployName</td>
                                     <td>@order.Name</td>
-                                    <th style="font-weight:normal">@order.FoodQuantity.ToString()</th>
+                                    <td>@order.FoodQuantity.ToString()</td>
                                     <td></td>
                                 </tr>
                             }
@@ -47,7 +51,7 @@
                 </div>
             </div>
         </div>
-        <div class="col">
+        <div class="col mt-2">
             <div class="card">
                 <div class="card-header bg-info fw-bold">
                     Lunch
@@ -79,7 +83,7 @@
                 </div>
             </div>
         </div>
-        <div class="col">
+        <div class="col mt-2">
             <div class="card">
                 <div class="card-header bg-info fw-bold">
                     Snacks
@@ -114,4 +118,21 @@
     </div>
 </div>
 
+@section Scripts{
+
+    <script>
+        $(document).ready(function(){
+          $("#breakfastInput").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("#breakfastTables tr").filter(function() {
+                var ojj=$(this).children[1];
+                var objj=$(this).children[1].firstChild.nodeValue.toLowerCase();
+                console.log($(this).children[1].firstChild.nodeValue.toLowerCase());
+              $(this).toggle($(this).children[1].firstChild.nodeValue.toLowerCase().indexOf(value) > -1)
+            });
+          });
+        });
+    </script>
+
+}
 

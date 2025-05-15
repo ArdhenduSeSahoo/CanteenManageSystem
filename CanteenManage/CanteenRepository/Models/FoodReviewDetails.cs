@@ -1,4 +1,4 @@
-﻿namespace CanteenManage.Repo.Models
+﻿namespace CanteenManage.CanteenRepository.Models
 {
     public class FoodReviewDetails
     {

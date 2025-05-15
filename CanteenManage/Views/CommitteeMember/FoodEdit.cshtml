@@ -1,0 +1,137 @@
+﻿@model CanteenManage.Models.FoodFormDataModel
+
+@{
+    ViewData["Title"] = "FoodEdit";
+}
+<div>
+    
+</div>
+
+<div class="d-flex align-items-center justify-content-center">
+     <div class="card">
+            <div class="card-header bg-info">
+                Food Edit
+            </div>
+            <div class="card-body">
+            
+                <form method="post" asp-controller="CommitteeMember" asp-action="FoodEdit" enctype="multipart/form-data">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input type="hidden" asp-for="Id" />
+                    <div class="form-group">
+                        <label asp-for="Name" class="control-label"></label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Description" class="control-label"></label>
+                        <input asp-for="Description" class="form-control" />
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="EmployeePrice" class="control-label"></label>
+                    <input asp-for="EmployeePrice" class="form-control" type="number" />
+                        <span asp-validation-for="EmployeePrice" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="SubsidyPrice" class="control-label"></label>
+                    <input asp-for="SubsidyPrice" class="form-control" type="number" />
+                        <span asp-validation-for="SubsidyPrice" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="FoodTypeId" class="control-label"></label>
+                        <label asp-for="FoodTypeId" class="control-label">(1-Breakfast,2-Lunch,3-Snacks,4-Quick food)</label>
+                    <input asp-for="FoodTypeId" type="number" max="4" min="1" class="form-control" />
+                        <span asp-validation-for="FoodTypeId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group form-check mt-2 mb-2">
+                        <label class="form-check-label">
+                            <input class="form-check-input" asp-for="IsAvailable" /> @Html.DisplayNameFor(model => model.IsAvailable)
+                        </label>
+                    </div>
+                <label class="control-label">Select day of week</label>
+                    <div class="form-group">
+                    <div class="form-check form-check-inline">
+                        <label class="form-check-label">
+                            <input class="form-check-input" asp-for="MonDay" /> MonDay
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <label class="form-check-label">
+                            <input class="form-check-input" asp-for="TuesDay" /> TuesDay
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <label class="form-check-label">
+                            <input class="form-check-input" asp-for="WedgesDay" /> WednesDay
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <label class="form-check-label">
+                            <input class="form-check-input" asp-for="ThusDay" /> ThusDay
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <label class="form-check-label">
+                            <input class="form-check-input" asp-for="FryDay" /> FryDay
+                        </label>
+                    </div>
+                    </div>
+                <label class="control-label mt-2">Select week of month</label>
+                <div class="form-group mt-2">
+                    
+                    <div class="form-check form-check-inline">
+                        <label class="form-check-label">
+                            <input class="form-check-input" asp-for="WeekOneAndFive" /> Week One & Five
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <label class="form-check-label">
+                            <input class="form-check-input" asp-for="WeekTwo" /> WeekTwo
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <label class="form-check-label">
+                            <input class="form-check-input" asp-for="WeekThree" /> WeekThree
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <label class="form-check-label">
+                            <input class="form-check-input" asp-for="WeekFour" /> WeekFour
+                        </label>
+                    </div>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Rating" class="control-label"></label>
+                    <input asp-for="Rating" class="form-control" type="number" min="0" max="5" />
+                        <span asp-validation-for="Rating" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="AvailableOnDay" class="control-label"></label>
+                        <input asp-for="AvailableOnDay" type="number" class="form-control" min="0" max="5" />
+                        <span asp-validation-for="AvailableOnDay" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="ImageUrl" class="control-label">Image Name (image type should equal to uploaded image)</label>
+                        <input asp-for="ImageUrl" class="form-control" />
+                        <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                    <label asp-for="FoodImage" class="control-label"></label>
+                        <input asp-for="FoodImage" class="form-control" />
+                    <span asp-validation-for="FoodImage" class="text-danger"></span>
+                    </div>
+                    <br />
+                    <div class="form-group">
+                        <input type="submit" value="Save" class="btn btn-primary" />
+                    </div>
+                </form>
+                <br />
+            <a asp-action="FoodList" class="btn btn-primary btn-sm"> Back to List</a>
+            </div>
+        </div>
+</div>
+
+
+
+

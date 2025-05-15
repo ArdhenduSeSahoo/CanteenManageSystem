@@ -95,6 +95,13 @@ namespace CanteenManage.Utility
             return daysOfWeek;
         }
 
+        public static DaysOfWeekModel? getFirstActiveDate(List<DaysOfWeekModel> daysOfWeekModels)
+        {
+
+            var firstActiveDay = daysOfWeekModels.Where(d => d.IsActiveDay).OrderBy(d => d.DateShort).FirstOrDefault();
+            return firstActiveDay;
+        }
+
         public static string DateTimeToString(DateTime dateTime)
         {
             return dateTime.ToString(FMT);

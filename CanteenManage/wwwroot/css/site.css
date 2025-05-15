@@ -20,6 +20,7 @@ html {
 body {
     margin-bottom: 60px;
 }
+
 .customNavbar {
     background-color: antiquewhite;
     border-radius: 10px;
@@ -32,8 +33,27 @@ body {
     font-weight: 500;
     color: white;
 }
+
     .customNavItem:hover {
         /*box-shadow: 0 0 0 0.1rem #ff0086bd, 0 0 0 0.25rem #258cfb91;*/
         background-color: gray;
         color: black !important;
     }
+
+.btn_addItem {
+}
+
+.btn_removeItem {
+}
+
+.btn_food_quantity {
+}
+
+.food_total_quantity {
+}
+
+.food_add_btn_div {
+}
+
+.food_add_remove_btn_div {
+}

@@ -1,0 +1,77 @@
+﻿@model CanteenManage.Models.FoodFormDataModel
+
+@{
+    ViewData["Title"] = "CreateFood";
+}
+
+<div class="d-flex align-items-center justify-content-center">
+    <div class="card">
+        <div class="card-header bg-info">
+            CreateFood
+        </div>
+        <div class="card-body">
+
+            <form asp-action="CreateFood" method="post" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="Name" class="control-label"></label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Description" class="control-label"></label>
+                    <input asp-for="Description" class="form-control"  />
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="EmployeePrice" class="control-label"></label>
+                    <input asp-for="EmployeePrice" class="form-control" type="number" />
+                    <span asp-validation-for="EmployeePrice" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="SubsidyPrice" class="control-label"></label>
+                    <input asp-for="SubsidyPrice" class="form-control" type="number" />
+                    <span asp-validation-for="SubsidyPrice" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="FoodTypeId" class="control-label">FoodTypeId (1-Breakfast,2-Lunch,3-Snacks,4-Quick food)</label>
+                    <input asp-for="FoodTypeId" class="form-control" max="4" />
+                </div>
+                <div class="form-group form-check">
+                    <label class="form-check-label">
+                        <input class="form-check-input" asp-for="IsAvailable" /> @Html.DisplayNameFor(model => model.IsAvailable)
+                    </label>
+                </div>
+                
+                <div class="form-group">
+                    <label asp-for="Rating" class="control-label"></label>
+                    <input type="number" asp-for="Rating" class="form-control" min="0" max="5"/>
+                    <span asp-validation-for="Rating" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="AvailableOnDay" class="control-label"></label>
+                    <input type="number" min="0" max="5" asp-for="AvailableOnDay" class="form-control" />
+                    <span asp-validation-for="AvailableOnDay" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ImageUrl" class="control-label"></label>
+                    <input asp-for="ImageUrl" class="form-control" />
+                    <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="FoodImage" class="control-label"></label>
+                    <input asp-for="FoodImage" class="form-control" />
+                    <span asp-validation-for="FoodImage" class="text-danger"></span>
+                </div>
+                <br />
+                <div class="form-group">
+                    <input type="submit" value="Create" class="btn btn-primary" />
+                </div>
+            </form>
+            <br />
+            <a asp-action="FoodList" class="btn btn-primary btn-sm"> Back to List</a>
+        </div>
+    </div>
+</div>
+
+

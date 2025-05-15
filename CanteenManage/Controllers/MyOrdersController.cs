@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using CanteenManage.Models;
-using CanteenManage.Repo.Contexts;
+using CanteenManage.CanteenRepository.Contexts;
 using CanteenManage.Utility;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -35,7 +35,7 @@ namespace CanteenManage.Controllers
                     .Include(f => f.Food)
                     .Where(
                     fo => fo.Food.FoodTypeId == 3
-                    && fo.EmployeId == SessionDataHelper.getSessionUserId(HttpContext.Session)
+                    && fo.EmployeeId == SessionDataHelper.getSessionUserId(HttpContext.Session)
                     && daysOfWeek_for_snaks.Select(s => s.DateTime.Date).Contains(fo.OrderDate.Date)
                     )
                     .ToListAsync();
@@ -53,7 +53,7 @@ namespace CanteenManage.Controllers
                     .Include(f => f.Food)
                     .Where(
                     fo => fo.Food.FoodTypeId == 2
-                    && fo.EmployeId == SessionDataHelper.getSessionUserId(HttpContext.Session)
+                    && fo.EmployeeId == SessionDataHelper.getSessionUserId(HttpContext.Session)
                     && daysOfWeek_for_lunch.Select(s => s.DateTime.Date).Contains(fo.OrderDate.Date)
                     )
                     .ToListAsync();
@@ -70,7 +70,7 @@ namespace CanteenManage.Controllers
                     .Include(f => f.Food)
                     .Where(
                     fo => fo.Food.FoodTypeId == 1
-                    && fo.EmployeId == SessionDataHelper.getSessionUserId(HttpContext.Session)
+                    && fo.EmployeeId == SessionDataHelper.getSessionUserId(HttpContext.Session)
                     && daysOfWeek_for_breakfast.Select(s => s.DateTime.Date).Contains(fo.OrderDate.Date)
                     )
                     .ToListAsync();
