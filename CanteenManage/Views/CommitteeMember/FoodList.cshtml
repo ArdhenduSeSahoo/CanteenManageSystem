@@ -2,6 +2,8 @@
 
 @{
     ViewData["Title"] = "FoodList";
+    List<int> dayesOfWeek = new List<int>();
+    List<int> WeeksOfMonth = new List<int>();
 }
 
 
@@ -29,7 +31,7 @@
                         <th scope="col">Subsidy Price</th>
                         <th scope="col">Rating</th>
                         <th scope="col">Image URL</th>
-						<th scope="col">IsActive</th>
+                        <th scope="col">IsActive</th>
                         <th scope="col">AvailableOnDay</th>
                         <th scope="col">Action</th>
                     </tr>
@@ -47,8 +49,20 @@
                             <td>@food.SubsidyPrice</td>
                             <td>@food.Rating</td>
                             <td>@food.ImageUrl</td>
-							<td>@food.IsAvailable</td>
-                            <td>@food.AvailableOnDay</td>
+                            <td>@food.IsAvailable</td>
+                            <td>
+                                @if (food.FoodAvailabilityDays.Count() > 0)
+                                {
+
+                                    {
+                                        dayesOfWeek = food.FoodAvailabilityDays.Select(fo => fo.DayOfWeek).ToList();
+                                        WeeksOfMonth = food.FoodAvailabilityDays.Select(fo => fo.WeekOfMonth).ToList();
+                                    }
+
+                                    <div>Day--@(dayesOfWeek.Contains(1) ? "Mon," : "")@(dayesOfWeek.Contains(2) ? "Tue," : "")@(dayesOfWeek.Contains(3) ? "Wed," : "")@(dayesOfWeek.Contains(4) ? "Tue," : "")@(dayesOfWeek.Contains(5) ? "Fry," : "")</div>
+                                    <div>Weeks--@(WeeksOfMonth.Contains(1) ? "1,5," : "")@(WeeksOfMonth.Contains(2) ? "2," : "")@(WeeksOfMonth.Contains(3) ? "3," : "")@(WeeksOfMonth.Contains(4) ? "4," : "")</div>
+                                }
+                            </td>
 							<td>
                                 <div class="d-inline-flex gap-2">
                                     <div>

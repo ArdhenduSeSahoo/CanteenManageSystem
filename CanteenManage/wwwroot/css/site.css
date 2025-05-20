@@ -21,6 +21,11 @@ body {
     margin-bottom: 60px;
 }
 
+.bg-info {
+    --bs-bg-opacity: 1;
+    background-color: rgb(11 191 73) !important;
+}
+
 .customNavbar {
     background-color: antiquewhite;
     border-radius: 10px;
@@ -46,6 +51,11 @@ body {
 .btn_removeItem {
 }
 
+    .btn_removeItem:hover {
+        color: black;
+        background-color: red;
+    }
+
 .btn_food_quantity {
 }
 
@@ -56,4 +66,10 @@ body {
 }
 
 .food_add_remove_btn_div {
+}
+
+.cartDiv {
+}
+
+.cartValue {
 }

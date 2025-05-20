@@ -14,11 +14,13 @@ namespace CanteenManage.Controllers.Apis
     {
         private readonly CanteenManageDBContext context;
         private readonly OrderingService orderingService;
+        private readonly CartService cartService;
 
-        public FoodOrdersController(CanteenManageDBContext _context, OrderingService orderingService)
+        public FoodOrdersController(CanteenManageDBContext _context, OrderingService orderingService, CartService cartService)
         {
             this.context = _context;
             this.orderingService = orderingService;
+            this.cartService = cartService;
         }
 
         [HttpPost("breakfastFoodOrderAdd")]
@@ -27,9 +29,17 @@ namespace CanteenManage.Controllers.Apis
 
             try
             {
-                var orderResult = await orderingService.AddFoodOrder(
+                SessionDataModel sessionDataModel = SessionDataHelper.GetSessionDataModel(HttpContext.Session);
+
+                //var orderResult = await orderingService.AddFoodOrder(
+                //      foodTypeEnum: FoodTypeEnum.Breakfast,
+                //      sessionData: sessionDataModel,
+                //        foodOrdersFormBodyModel: foodOrdersFormBodyModel,
+                //        cancellationToken: cancellationToken
+                //      );
+                var orderResult = await cartService.AddToCart(
                       foodTypeEnum: FoodTypeEnum.Breakfast,
-                      session: HttpContext.Session,
+                      sessionData: sessionDataModel,
                         foodOrdersFormBodyModel: foodOrdersFormBodyModel,
                         cancellationToken: cancellationToken
                       );
@@ -49,33 +59,6 @@ namespace CanteenManage.Controllers.Apis
             });
         }
 
-        [HttpPost("breakfastFoodOrderRemove")]
-        public async Task<IResult> breakfastFoodOrderRemove([FromBody] FoodOrdersFormBodyModel foodOrdersFormBodyModel, CancellationToken cancellationToken)
-        {
-            try
-            {
-
-                var order_remove_result = await orderingService.RemoveFoodOrder(
-                      foodTypeEnum: FoodTypeEnum.Breakfast,
-                      session: HttpContext.Session,
-                        foodOrdersFormBodyModel: foodOrdersFormBodyModel,
-                        cancellationToken: cancellationToken
-                      );
-                return order_remove_result;
-
-            }
-            catch (Exception ex)
-            {
-                return Results.Ok(new FoodOrderApiReturnMessage()
-                {
-                    error = "Some error happening. please try after sometimes.",
-                });
-            }
-            return Results.Ok(new FoodOrderApiReturnMessage()
-            {
-                error = "Some error happening.",
-            });
-        }
 
 
         [HttpPost("LunchFoodOrderAdd")]
@@ -84,9 +67,16 @@ namespace CanteenManage.Controllers.Apis
 
             try
             {
-                var orderResult = await orderingService.AddFoodOrder(
+                SessionDataModel sessionDataModel = SessionDataHelper.GetSessionDataModel(HttpContext.Session);
+                //var orderResult = await orderingService.AddFoodOrder(
+                //      foodTypeEnum: FoodTypeEnum.Lunch,
+                //      sessionData: sessionDataModel,
+                //        foodOrdersFormBodyModel: foodOrdersFormBodyModel,
+                //        cancellationToken: cancellationToken
+                //      );
+                var orderResult = await cartService.AddToCart(
                       foodTypeEnum: FoodTypeEnum.Lunch,
-                      session: HttpContext.Session,
+                      sessionData: sessionDataModel,
                         foodOrdersFormBodyModel: foodOrdersFormBodyModel,
                         cancellationToken: cancellationToken
                       );
@@ -105,35 +95,6 @@ namespace CanteenManage.Controllers.Apis
                 error = "Some error happening.",
             });
         }
-
-        [HttpPost("LunchFoodOrderRemove")]
-        public async Task<IResult> LunchFoodOrderRemove([FromBody] FoodOrdersFormBodyModel foodOrdersFormBodyModel, CancellationToken cancellationToken)
-        {
-            try
-            {
-
-                var order_remove_result = await orderingService.RemoveFoodOrder(
-                      foodTypeEnum: FoodTypeEnum.Lunch,
-                      session: HttpContext.Session,
-                        foodOrdersFormBodyModel: foodOrdersFormBodyModel,
-                        cancellationToken: cancellationToken
-                      );
-                return order_remove_result;
-
-            }
-            catch (Exception ex)
-            {
-                return Results.Ok(new FoodOrderApiReturnMessage()
-                {
-                    error = "Some error happening. please try after sometimes.",
-                });
-            }
-            return Results.Ok(new FoodOrderApiReturnMessage()
-            {
-                error = "Some error happening.",
-            });
-        }
-
 
         [HttpPost("SnacksFoodOrderAdd")]
         public async Task<IResult> SnacksFoodOrderAdd([FromBody] FoodOrdersFormBodyModel foodOrdersFormBodyModel, CancellationToken cancellationToken)
@@ -141,9 +102,16 @@ namespace CanteenManage.Controllers.Apis
 
             try
             {
-                var orderResult = await orderingService.AddFoodOrder(
+                SessionDataModel sessionDataModel = SessionDataHelper.GetSessionDataModel(HttpContext.Session);
+                //var orderResult = await orderingService.AddFoodOrder(
+                //      foodTypeEnum: FoodTypeEnum.Snacks,
+                //      sessionData: sessionDataModel,
+                //        foodOrdersFormBodyModel: foodOrdersFormBodyModel,
+                //        cancellationToken: cancellationToken
+                //      );
+                var orderResult = await cartService.AddToCart(
                       foodTypeEnum: FoodTypeEnum.Snacks,
-                      session: HttpContext.Session,
+                      sessionData: sessionDataModel,
                         foodOrdersFormBodyModel: foodOrdersFormBodyModel,
                         cancellationToken: cancellationToken
                       );
@@ -163,15 +131,16 @@ namespace CanteenManage.Controllers.Apis
             });
         }
 
-        [HttpPost("SnacksFoodOrderRemove")]
-        public async Task<IResult> SnacksFoodOrderRemove([FromBody] FoodOrdersFormBodyModel foodOrdersFormBodyModel, CancellationToken cancellationToken)
+
+        [HttpPost("OrderRemove")]
+        public async Task<IResult> OrderRemove([FromBody] FoodOrdersFormBodyModel foodOrdersFormBodyModel, CancellationToken cancellationToken)
         {
             try
             {
+                SessionDataModel sessionDataModel = SessionDataHelper.GetSessionDataModel(HttpContext.Session);
+                var order_remove_result = await cartService.RemoveFromCart(
 
-                var order_remove_result = await orderingService.RemoveFoodOrder(
-                      foodTypeEnum: FoodTypeEnum.Snacks,
-                      session: HttpContext.Session,
+                      sessionData: sessionDataModel,
                         foodOrdersFormBodyModel: foodOrdersFormBodyModel,
                         cancellationToken: cancellationToken
                       );

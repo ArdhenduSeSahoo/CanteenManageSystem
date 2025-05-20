@@ -42,17 +42,65 @@
                         <input class="form-check-input" asp-for="IsAvailable" /> @Html.DisplayNameFor(model => model.IsAvailable)
                     </label>
                 </div>
-                
+
+                <label class="control-label">Select day of week</label>
+                <div class="form-group">
+                    <div class="form-check form-check-inline">
+                        <label class="form-check-label">
+                            <input class="form-check-input" asp-for="MonDay" /> MonDay
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <label class="form-check-label">
+                            <input class="form-check-input" asp-for="TuesDay" /> TuesDay
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <label class="form-check-label">
+                            <input class="form-check-input" asp-for="WednesDay" /> WednesDay
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <label class="form-check-label">
+                            <input class="form-check-input" asp-for="ThusDay" /> ThusDay
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <label class="form-check-label">
+                            <input class="form-check-input" asp-for="FryDay" /> FryDay
+                        </label>
+                    </div>
+                </div>
+                <label class="control-label mt-2">Select week of month</label>
+                <div class="form-group mt-2">
+
+                    <div class="form-check form-check-inline">
+                        <label class="form-check-label">
+                            <input class="form-check-input" asp-for="WeekOneAndFive" /> Week One & Five
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <label class="form-check-label">
+                            <input class="form-check-input" asp-for="WeekTwo" /> WeekTwo
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <label class="form-check-label">
+                            <input class="form-check-input" asp-for="WeekThree" /> WeekThree
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <label class="form-check-label">
+                            <input class="form-check-input" asp-for="WeekFour" /> WeekFour
+                        </label>
+                    </div>
+                </div>
                 <div class="form-group">
                     <label asp-for="Rating" class="control-label"></label>
                     <input type="number" asp-for="Rating" class="form-control" min="0" max="5"/>
                     <span asp-validation-for="Rating" class="text-danger"></span>
                 </div>
-                <div class="form-group">
-                    <label asp-for="AvailableOnDay" class="control-label"></label>
-                    <input type="number" min="0" max="5" asp-for="AvailableOnDay" class="form-control" />
-                    <span asp-validation-for="AvailableOnDay" class="text-danger"></span>
-                </div>
+                
                 <div class="form-group">
                     <label asp-for="ImageUrl" class="control-label"></label>
                     <input asp-for="ImageUrl" class="form-control" />

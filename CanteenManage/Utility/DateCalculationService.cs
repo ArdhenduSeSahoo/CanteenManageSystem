@@ -13,6 +13,8 @@ namespace CanteenManage.Utility
             var daysOfWeek = new List<DaysOfWeekModel>();
 
             List<DateTime> dates = new List<DateTime>();
+            DateTime myDate = DateTime.ParseExact("2025-05-18 05:40:52,531", "yyyy-MM-dd HH:mm:ss,fff",
+                                       System.Globalization.CultureInfo.InvariantCulture);
             DateTime currentDatetime = DateTime.Now;
             if (((int)DateTime.Now.DayOfWeek) == 6)
             {
@@ -65,32 +67,35 @@ namespace CanteenManage.Utility
             {
                 firstActiveDay.IsSelected = true;
             }
-            foreach (var item in daysOfWeek)
+            //var testing = false;
+            //if (!testing)
             {
-                item.IsSelected = false;
-                var hourss = int.Parse(DateTime.Now.ToString("HH"));
-                if (((int)item.DateTime.DayOfWeek) < ((int)DateTime.Now.DayOfWeek))
+                foreach (var item in daysOfWeek)
                 {
-                    item.IsActiveDay = false;
-                }
-                else if (((int)item.DateTime.DayOfWeek) == ((int)DateTime.Now.DayOfWeek))
-                {
-                    if (hourBeforeDisable != null && int.Parse(DateTime.Now.ToString("HH")) < hourBeforeDisable)
-                    {
-                        item.IsActiveDay = true;
-                    }
-                    else
+                    item.IsSelected = false;
+                    var hourss = int.Parse(DateTime.Now.ToString("HH"));
+                    if (((int)item.DateTime.DayOfWeek) < ((int)DateTime.Now.DayOfWeek))
                     {
                         item.IsActiveDay = false;
                     }
+                    else if (((int)item.DateTime.DayOfWeek) == ((int)DateTime.Now.DayOfWeek))
+                    {
+                        if (hourBeforeDisable != null && int.Parse(DateTime.Now.ToString("HH")) < hourBeforeDisable)
+                        {
+                            item.IsActiveDay = true;
+                        }
+                        else
+                        {
+                            item.IsActiveDay = false;
+                        }
+                    }
+                    else if (((int)item.DateTime.DayOfWeek) > ((int)DateTime.Now.DayOfWeek))
+                    {
+                        item.IsActiveDay = true;
+                    }
                 }
-                else if (((int)item.DateTime.DayOfWeek) > ((int)DateTime.Now.DayOfWeek))
-                {
-                    item.IsActiveDay = true;
-                }
+
             }
-
-
 
             return daysOfWeek;
         }

@@ -1,227 +1,271 @@
-﻿<!DOCTYPE html>
+﻿@model CanteenManage.Models.LayoutViewDataModel
+@{
+	var page_model = Model;
+	if (page_model == null)
+	{
+		page_model = new LayoutViewDataModelDefault();
+	}
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - ESSPL Canteen Connect</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/lib/fontawesome-free-6.7.2-web/css/all.min.css" />
-    
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/CanteenManage.styles.css" asp-append-version="true" />
-    <style>
-        .nav_link{
-            color:white !important;
-        }
-    </style>
-    @await RenderSectionAsync("HeadSection", required: false)
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>@ViewData["Title"] - ESSPL Canteen Connect</title>
+	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="~/lib/fontawesome-free-6.7.2-web/css/all.min.css" />
+
+	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/CanteenManage.styles.css" asp-append-version="true" />
+	<style>
+		.nav_link {
+			color: white !important;
+		}
+	</style>
+	@await RenderSectionAsync("HeadSection", required: false)
 </head>
 <body style="
 background-color:#f7f7f7
-" >
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-info border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <div class="bg-white rounded-3">
-                <a class="navbar-brand" style="margin:0px"  asp-area="" asp-controller="EmployDashboard" asp-action="Index">
-                        <img src="~/images/logoImg2.png" alt="logo" class="img-fluid" style="height:40px;width:115px" />
-                </a>
-                </div>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1" style="">
-                        <li class="nav-item customNavItem">
-                            <a class="nav-link nav_link text-center" asp-area="" asp-controller="EmployDashboard" asp-action="Index">Dashboard</a>
-                        </li>
-                        <li class="nav-item customNavItem">
-                            <a class="nav-link nav_link text-center" asp-area="" asp-controller="BreakFastItems" asp-action="Index">BreakFast</a>
-                        </li>
-                        <li class="nav-item customNavItem ">
-                            <a class="nav-link text-center nav_link" asp-area="" asp-controller="LunchItems" asp-action="Index">Lunch</a>
-                        </li>
-                        <li class="nav-item customNavItem">
-                            <a class="nav-link text-center nav_link" asp-area="" asp-controller="SnacksItemList" asp-action="Index">Evening Snacks</a>
-                        </li>
-                        <li class="nav-item customNavItem">
-                            <a class="nav-link text-center nav_link " asp-area="" asp-controller="MyOrders" asp-action="Index">My Orders</a>
-                        </li>
-                       
-                    </ul>
-                    <ul class="navbar-nav" style="">
-                        <li class="nav-item customNavItem" style="background-color: #a3e3f0;
+">
+	<header>
+		<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-info border-bottom box-shadow mb-3">
+			<div class="container-fluid">
+				<div class="bg-white rounded-3">
+					<a class="navbar-brand" style="margin:0px" asp-area="" asp-controller="EmployDashboard" asp-action="Index">
+						<img src="~/images/logoImg2.png" alt="logo" class="img-fluid" style="height:40px;width:115px" />
+					</a>
+				</div>
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+						aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+					<ul class="navbar-nav flex-grow-1" style="">
+						<li class="nav-item customNavItem">
+							<a class="nav-link nav_link text-center" asp-area="" asp-controller="EmployDashboard" asp-action="Index">Dashboard</a>
+						</li>
+						<li class="nav-item customNavItem">
+							<a class="nav-link nav_link text-center" asp-area="" asp-controller="BreakFastItems" asp-action="Index">BreakFast</a>
+						</li>
+						<li class="nav-item customNavItem ">
+							<a class="nav-link text-center nav_link" asp-area="" asp-controller="LunchItems" asp-action="Index">Lunch</a>
+						</li>
+						<li class="nav-item customNavItem">
+							<a class="nav-link text-center nav_link" asp-area="" asp-controller="SnacksItemList" asp-action="Index">Evening Snacks</a>
+						</li>
+						<li class="nav-item customNavItem">
+							<a class="nav-link text-center nav_link " asp-area="" asp-controller="MyOrders" asp-action="Index">My Orders</a>
+						</li>
+
+					</ul>
+					<ul class="navbar-nav" style="">
+
+						<li class="nav-item customNavItem cartDiv @(page_model.CartItemCount<=0?"d-none":"")">
+							<a class="nav-link text-center nav_link p-0" asp-action="CartIndex" asp-controller="Cart">
+
+								<div class="btn btn-primary position-relative m-1">
+									<i class="fa fa-cart-shopping " aria-hidden="true" style="font-size:25px;z-index:100;"></i>
+									<span class="cartValue position-absolute translate-middle badge rounded-pill bg-danger" style="top: 25%;left: 80%;">
+										@page_model.CartItemCount?.ToString()
+										<span class="visually-hidden">unread messages</span>
+									</span>
+								</div>
+							</a>
+
+						</li>
+
+						<li class="nav-item customNavItem" style="background-color: #a3e3f0;
     color: red !important;
     font-size: 17px;
     font-weight: 500;
     border-radius: 10px;">
-                            <a class="nav-link text-center " asp-area="" asp-controller="Login" asp-action="Signout" style="color:red;">
-                                <img src="~/images/logout.png" alt="sdf" class="fa-navicon" style="height:22px" />
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
-    <div class="">
-        <main role="main" class="">
-            @RenderBody()
-        </main>
-    </div>
+							<a class="nav-link text-center " asp-area="" asp-controller="Login" asp-action="Signout" style="color:red;">
+								<img src="~/images/logout.png" alt="sdf" class="fa-navicon" style="height:22px" />
+							</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+	</header>
+	<div class="">
+		<main role="main" class="">
+			@RenderBody()
+		</main>
+	</div>
 
-    <!-- Modal -->
-    <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header border-0">
-                    <h1 class="modal-title fs-5" style="color:red;" id="exampleModalLabel">Error</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p id="emsg"></p>
-                </div>
-                <div class="modal-footer border-0">
-                    <button type="button" class="btn btn-danger btn-sm" data-bs-dismiss="modal">Close</button>
-                    
-                </div>
-            </div>
-        </div>
-    </div>
+	<!-- Modal -->
+	<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content">
+				<div class="modal-header border-0">
+					<h1 class="modal-title fs-5" style="color:red;" id="exampleModalLabel">Error</h1>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<p id="emsg"></p>
+				</div>
+				<div class="modal-footer border-0">
+					<button type="button" class="btn btn-danger btn-sm" data-bs-dismiss="modal">Close</button>
 
-    <div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header border-0">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Info</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p id="imsg"></p>
-                </div>
-                <div class="modal-footer border-0">
-                    <button type="button" class="btn btn-info btn-sm" data-bs-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
 
-                </div>
-            </div>
-        </div>
-    </div>
+	<div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content">
+				<div class="modal-header border-0">
+					<h1 class="modal-title fs-5" id="exampleModalLabel">Info</h1>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<p id="imsg"></p>
+				</div>
+				<div class="modal-footer border-0">
+					<button type="button" class="btn btn-info btn-sm" data-bs-dismiss="modal">Close</button>
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+				</div>
+			</div>
+		</div>
+	</div>
 
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/lib/fontawesome-free-6.7.2-web/js/all.min.js"></script>
-    <script>
-        function showErrorMessage(messages)
-        {
-            $("#errorModal #emsg").text(messages);
-             $("#errorModal").modal('show');
-        }
-         function showInfoMessage(messages)
-        {
-            $("#infoModal #imsg").text(messages);
-             $("#infoModal").modal('show');
-        }
+	<script src="~/lib/jquery/dist/jquery.min.js"></script>
 
-             function addFoodItem(e,api_Url)
-        {
-            //debugger;
-            var foodid=$(e.currentTarget).data("foodid");
-                //console.log("Add Item button clicked---"+foodid);
-               try{
-        const foodOrderdata = {
-          foodOrderId: foodid.toString()
-        };
-                            // Send the POST request using fetch
-        fetch(api_Url, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(foodOrderdata)
-        })
-          .then((response) => response.json())
-          .then((data) => {
-              //debugger;
-              console.log("Success:", data);
-              if (data.error != null && data.error!=""){
-                    // your code here.
-                    showErrorMessage(data.error);
-                }
-                else{
-                    $('.btn_food_quantity[data-foodid="'+foodid+'"]').html(data.food_quantity);
-                    $('.food_total_quantity').html(data.total_quantity);
+	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="~/lib/fontawesome-free-6.7.2-web/js/all.min.js"></script>
+	<script>
+		function showErrorMessage(messages)
+		{
+			$("#errorModal #emsg").text(messages);
+			 $("#errorModal").modal('show');
+		}
+		 function showInfoMessage(messages)
+		{
+			$("#infoModal #imsg").text(messages);
+			 $("#infoModal").modal('show');
+		}
 
-                    if(data.food_quantity>0)
-                    {
-                        $('.food_add_remove_btn_div[data-foodid="'+foodid+'"]').removeClass("d-none");
-                        $('.food_add_btn_div[data-foodid="'+foodid+'"]').addClass("d-none");
-                    }
-                    if (data.message != null&& data.message!=""){
-                        showInfoMessage(data.message);
-                    }
-                }
+			 function addFoodItem(e,api_Url)
+		{
+			//debugger;
+			var foodid=$(e.currentTarget).data("foodid");
+				//console.log("Add Item button clicked---"+foodid);
+			   try{
+		const foodOrderdata = {
+		  foodOrderId: foodid.toString()
+		};
+							// Send the POST request using fetch
+		fetch(api_Url, {
+		  method: "POST",
+		  headers: {
+			"Content-Type": "application/json"
+		  },
+		  body: JSON.stringify(foodOrderdata)
+		})
+		  .then((response) => response.json())
+		  .then((data) => {
+			  //debugger;
+			  console.log("Success:", data);
+			  if (data.error != null && data.error!=""){
+					// your code here.
+					showErrorMessage(data.error);
+				}
+				else{
+					$('.btn_food_quantity[data-foodid="'+foodid+'"]').html(data.food_quantity);
+					$('.food_total_quantity').html(data.total_quantity);
 
-          })
-          .catch((error) => console.error("Error:", error));
+					if(data.food_quantity>0)
+					{
+						$('.food_add_remove_btn_div[data-foodid="'+foodid+'"]').removeClass("d-none");
+						$('.food_add_btn_div[data-foodid="'+foodid+'"]').addClass("d-none");
+					}
+					debugger;
+					if(data.total_quantity_cart>0)
+					{
+						$('.cartDiv').removeClass("d-none");
+						$('.cartValue').html(data.total_quantity_cart);
+					}
+					else
+					{
+						$('.cartDiv').addClass("d-none");
+						$('.cartValue').html("0");
+					}
+					if (data.message != null&& data.message!=""){
+						showInfoMessage(data.message);
+					}
+				}
 
-        }
-               catch(error)
-               {
-                   console.log(error);
-               }
-        }
+		  })
+		  .catch((error) => console.error("Error:", error));
 
-        function removeFoodItem(e,api_Url)
-        {
-            //debugger;
-            var foodid=$(e.currentTarget).data("foodid");
-                //console.log("Add Item button clicked---"+foodid);
-               try{
-        const foodOrderdata = {
-          foodOrderId: foodid.toString()
-        };
-                            // Send the POST request using fetch
-        fetch(api_Url, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(foodOrderdata)
-        })
-          .then((response) => response.json())
-          .then((data) => {
+		}
+			   catch(error)
+			   {
+				   console.log(error);
+			   }
+		}
 
-              //console.log("Success:", data);
-              if (data.error != null&& data.error!=""){
-                    // your code here.
-                    showErrorMessage(data.error);
-                }
-                else{
-                    $('.btn_food_quantity[data-foodid="'+foodid+'"]').html(data.food_quantity);
-                    $('.food_total_quantity').html(data.total_quantity);
-                    //showInfoMessage("Ardhendu");
-                    if(data.food_quantity<=0)
-                    {
-                        $('.food_add_remove_btn_div[data-foodid="'+foodid+'"]').addClass("d-none");
-                        $('.food_add_btn_div[data-foodid="'+foodid+'"]').removeClass("d-none");
-                    }
-                }
+		function removeFoodItem(e,api_Url)
+		{
+			//debugger;
+			var foodid=$(e.currentTarget).data("foodid");
+				//console.log("Add Item button clicked---"+foodid);
+			   try{
+		const foodOrderdata = {
+		  foodOrderId: foodid.toString()
+		};
+							// Send the POST request using fetch
+		fetch(api_Url, {
+		  method: "POST",
+		  headers: {
+			"Content-Type": "application/json"
+		  },
+		  body: JSON.stringify(foodOrderdata)
+		})
+		  .then((response) => response.json())
+		  .then((data) => {
 
-          })
-          .catch((error) => console.error("Error:", error));
+			  //console.log("Success:", data);
+			  if (data.error != null&& data.error!=""){
+					// your code here.
+					showErrorMessage(data.error);
+				}
+				else{
+					$('.btn_food_quantity[data-foodid="'+foodid+'"]').html(data.food_quantity);
+					$('.food_total_quantity').html(data.total_quantity);
+					//showInfoMessage("Ardhendu");
+					if(data.food_quantity<=0)
+					{
+						$('.food_add_remove_btn_div[data-foodid="'+foodid+'"]').addClass("d-none");
+						$('.food_add_btn_div[data-foodid="'+foodid+'"]').removeClass("d-none");
+					}
+					if(data.total_quantity_cart>0)
+					{
+						$('.cartDiv').removeClass("d-none");
+						$('.cartValue').html(data.total_quantity_cart);
+					}
+					else
+					{
+						$('.cartDiv').addClass("d-none");
+						$('.cartValue').html("0");
+					}
+				}
 
-        }
-               catch(error)
-               {
-                   console.log(error);
-               }
-        }
+		  })
+		  .catch((error) => console.error("Error:", error));
+
+		}
+			   catch(error)
+			   {
+				   console.log(error);
+			   }
+		}
 
 
-     </script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+	</script>
+	<script src="~/js/site.js" asp-append-version="true"></script>
+	@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

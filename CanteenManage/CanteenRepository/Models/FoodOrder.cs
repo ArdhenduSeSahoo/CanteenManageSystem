@@ -9,8 +9,9 @@ namespace CanteenManage.CanteenRepository.Models
         public Employee Employee { get; set; }
         public DateTime OrderDate { get; set; }
         public DateTime OrderUpdateDate { get; set; }
-        public Food Food { get; set; }
-        public int FoodId { get; set; }
+        public virtual Food? Food { get; set; }
+        public int? FoodId { get; set; }
+        public string? FoodName { get; set; }
         public int Quantity { get; set; }
         public decimal TotalPrice { get; set; }
         public decimal TotalEmployeePrice { get; set; }

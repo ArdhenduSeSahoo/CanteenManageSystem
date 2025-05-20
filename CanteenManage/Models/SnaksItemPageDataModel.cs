@@ -2,7 +2,7 @@
 
 namespace CanteenManage.Models
 {
-    public class SnaksItemPageDataModel
+    public class SnaksItemPageDataModel : LayoutViewDataModel
     {
         public List<DaysOfWeekModel> DayOfWeeks { get; set; }
         public FoodOrder foodOrder { get; set; }

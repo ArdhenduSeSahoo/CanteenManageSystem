@@ -1,32 +1,54 @@
-﻿using System.Threading.Tasks;
-using CanteenManage.Models;
-using CanteenManage.CanteenRepository.Contexts;
-using CanteenManage.CanteenRepository.Models;
-using CanteenManage.Services;
-using CanteenManage.Utility;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-
-namespace CanteenManage.Controllers
+﻿namespace CanteenManage.Controllers
 {
+    using System.Threading.Tasks;
+    using CanteenManage.CanteenRepository.Contexts;
+    using CanteenManage.Models;
+    using CanteenManage.Services;
+    using CanteenManage.Utility;
+    using Microsoft.AspNetCore.Mvc;
+
+    /// <summary>
+    /// Defines the <see cref="BreakFastItemsController" />
+    /// </summary>
     public class BreakFastItemsController : Controller
     {
-        private readonly CanteenManageDBContext canteenManageContext;
-        private readonly OrderingService orderingService;
-        public BreakFastItemsController(CanteenManageDBContext canteenManageContext, OrderingService orderingService)
+
+        private readonly FoodListingService foodListingService;
+
+        /// <summary>
+        /// Defines the cartService
+        /// </summary>
+        private readonly CartService cartService;
+
+        /// <summary>
+        /// Defines the utilityServices
+        /// </summary>
+        private readonly UtilityServices utilityServices;
+
+        public BreakFastItemsController(FoodListingService foodListingService, CartService cartService, UtilityServices utilityServices)
         {
-            this.canteenManageContext = canteenManageContext;
-            this.orderingService = orderingService;
+            //this.canteenManageContext = canteenManageContext;
+            //this.orderingService = orderingService;
+            this.foodListingService = foodListingService;
+            this.cartService = cartService;
+            this.utilityServices = utilityServices;
         }
+
+        /// <summary>
+        /// The Index
+        /// </summary>
+        /// <param name="cancellationToken">The cancellationToken<see cref="CancellationToken"/></param>
+        /// <returns>The <see cref="Task{IActionResult}"/></returns>
         public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
-            int FoodID = 1;
+            int FoodType = (int)FoodTypeEnum.Breakfast;
             List<DaysOfWeekModel> daysOfWeek = DateCalculationService.GetDaysOfWeek(hourBeforeDisable: 6);
-            string? Session_selectedDay = HttpContext.Session.GetString(SessionConstants.UserSelectedDay);
+            //string? Session_selectedDay = HttpContext.Session.GetString(SessionConstants.UserSelectedDay);
+            SessionDataModel sessionDataModel = SessionDataHelper.GetSessionDataModel(HttpContext.Session);
             int Session_selectedDay_On_SamePage = Convert.ToInt32(HttpContext.Session.GetString(SessionConstants.UserSelectedDayOnSamePage));
-            if (Session_selectedDay != null)
+            if (sessionDataModel.UserSelectedDay != null)
             {
-                var selectedDate = daysOfWeek.Where(d => d.DateShort == Session_selectedDay).FirstOrDefault();
+                var selectedDate = daysOfWeek.Where(d => d.DateShort == sessionDataModel.UserSelectedDay).FirstOrDefault();
                 if (selectedDate != null)
                 {
                     selectedDate.IsSelected = true;
@@ -43,37 +65,48 @@ namespace CanteenManage.Controllers
                     HttpContext.Session.SetString(SessionConstants.UserSelectedDayFull, firstActiveDay.DateFull);
                 }
             }
-            DateTime? userSelected_DateTime_null = SessionDataHelper.getDateTimeFromSession(HttpContext.Session);
-            DateTime userSelected_DateTime = userSelected_DateTime_null ?? DateTime.Now;
-
-            var foodOrderByUser = await orderingService.GetFoodOrdersByUserId(
-                                                                SessionDataHelper.getSessionUserId(HttpContext.Session) ?? 0,
-                                                                FoodID,
-
-                                                                userSelected_DateTime,
+            await cartService.CheckOutOfOrderInCart(
+                                                                foodTypeEnum: FoodTypeEnum.Breakfast,
+                                                                sessionData: sessionDataModel,
+                                                                cancellationToken: cancellationToken
+                                                                );
+            var foodOrderByUser = await foodListingService.GetCartFoodOrdersByUser(
+                                                                sessionDataModel.UserIdOrZero,
+                                                                FoodType,
+                                                                sessionDataModel.UserSelectedDateOrNow,
                                                                 cancellationToken
                                                                 );
-            var foodSnaksAll = await orderingService.GetFoodOrdersByUserId(
-                                                                FoodID,
+            var foodSnaksAll = await foodListingService.GetAllFoodList(
+                                                                FoodType,
                                                                 foodOrderByUser,
                                                                 cancellationToken,
-                                                                (int)userSelected_DateTime.DayOfWeek
+                                                                sessionDataModel.UserSelectedDateOrNow
                                                                 );
             BreakFastPageDataModel breakFastPageDataModel = new BreakFastPageDataModel();
             breakFastPageDataModel.DayOfWeeks = daysOfWeek;
             breakFastPageDataModel.totalCountForSelectedDay = foodOrderByUser.Sum(fo => fo.Quantity);
             breakFastPageDataModel.foods = foodSnaksAll;
+            breakFastPageDataModel.CartItemCount = await foodListingService.GetCartItemCount(
+                                                                sessionDataModel.UserId ?? 0,
+                                                                cancellationToken
+                                                                );
             return View(breakFastPageDataModel);
         }
+
+        /// <summary>
+        /// The SelectDaysOfWeek
+        /// </summary>
+        /// <param name="formcollect">The formcollect<see cref="IFormCollection"/></param>
+        /// <returns>The <see cref="IActionResult"/></returns>
         [HttpPost]
         public IActionResult SelectDaysOfWeek(IFormCollection formcollect)
         {
             //Console.WriteLine(formcollect["selecteddate"]);
             try
             {
-                HttpContext.Session.SetString(SessionConstants.UserSelectedDay, formcollect["selecteddate"].ToString());
-                HttpContext.Session.SetString(SessionConstants.UserSelectedDayOnSamePage, "1");
-                HttpContext.Session.SetString(SessionConstants.UserSelectedDayFull, formcollect["selecteddatefull"].ToString());
+                utilityServices.SetDateTimeToSession(HttpContext.Session,
+                    formcollect["selecteddate"].ToString(),
+                    formcollect["selecteddatefull"].ToString());
             }
             catch (Exception ex)
             {
@@ -82,6 +115,5 @@ namespace CanteenManage.Controllers
 
             return RedirectToAction("Index");
         }
-
     }
 }

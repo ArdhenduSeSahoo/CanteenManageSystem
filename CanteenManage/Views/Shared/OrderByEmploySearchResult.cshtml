@@ -1,0 +1,65 @@
+﻿@model IEnumerable<CanteenManage.Models.EmployFoodOrdersTableDataModel>
+
+@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+@foreach (var item in Model)
+{
+	<div class="card">
+		<div class="card-body">
+			<div class="row row-cols-1 row-cols-md-2">
+				<div class="col col-md-4">
+					<div class="row row-cols-3">
+
+						<div class="col-auto">
+							<span class="badge customBage bg-secondary">Name</span>
+							<p class="p-0 m-0 " style="font-weight:600">@item.EmployeeName</p>
+						</div>
+						<div class="col-3">
+							<span class="badge customBage bg-secondary">Status</span>
+							@if (item.OrderCompleteStatus == 0)
+							{
+								<span>Pending</span>
+							}
+							else
+							{
+								<span>Completed</span>
+							}
+
+						</div>
+					</div>
+				</div>
+				<div class="col col-md-8">
+					<div class="row row-cols-4 row-cols-md-5">
+
+						<div class="col-4">
+							<span class="badge customBage bg-secondary">Item</span>
+							<p class="m-0" style="font-weight:600">@item.FoodName</p>
+						</div>
+						<div class="col-2">
+							<span class="badge customBage bg-secondary">Qnt</span>
+							<span>@item.Quantity</span>
+						</div>
+						<div class="col-3">
+							<span class="badge customBage bg-secondary">Price</span>
+							<span>@item.TotalPrice</span>
+						</div>
+						<div class="col-3 text-end">
+							@if (item.OrderCompleteStatus == 0)
+							{
+								<form method="post" asp-action="CompleteFoodOrder" asp-controller="OrdersByEmploy">
+									<input type="hidden" value="@item.FoodOrderId" name="foodId" />
+									<input type="hidden" value="@item.FoodType" name="foodtype" />
+									<button type="submit" class="btn btn-primary btn-sm">Complete</button>
+								</form>
+							}
+						</div>
+
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+}

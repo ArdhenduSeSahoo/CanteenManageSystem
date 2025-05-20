@@ -9,77 +9,31 @@ namespace CanteenManage.Services
     public class OrderingService
     {
         private readonly CanteenManageDBContext canteenManageContext;
-        public OrderingService(CanteenManageDBContext canteenManageContext)
+        private readonly FoodListingService foodListingService;
+        private readonly UtilityServices utilityServices;
+        public OrderingService(CanteenManageDBContext canteenManageContext, FoodListingService foodListingService, UtilityServices utilityServices)
         {
             this.canteenManageContext = canteenManageContext;
+            this.foodListingService = foodListingService;
+            this.utilityServices = utilityServices;
         }
 
-        public async Task<List<FoodOrder>> GetFoodOrdersByUserId(int userId, int foodType, DateTime orderDateTime, CancellationToken cancellationToken)
-        {
-            var foodOrderByUser = await canteenManageContext.FoodOrders
-               .Include(f => f.Food)
-               .Where(fo => fo.EmployeeId == userId
-               &&
-               fo.OrderDate.Date == orderDateTime.Date
-               )
-               .Where(fo =>
-               fo.Food.FoodTypeId == foodType
-               )
-               .ToListAsync(cancellationToken);
-            return foodOrderByUser;
-        }
-
-
-        public async Task<List<Food>> GetFoodOrdersByUserId(int foodType, List<FoodOrder> foodOrdersByUser, CancellationToken cancellationToken, int foodAvailableDay = 0)
-        {
-
-            var allFoodWithUserOrderDetails = await canteenManageContext.Foods
-               .Include(f => f.FoodOrders.Where(fo => foodOrdersByUser.Select(fo => fo.Id).Contains(fo.Id)))
-               .Where(f => f.FoodTypeId == foodType)
-               .Where(f => f.AvailableOnDay == foodAvailableDay || f.AvailableOnDay == 0)
-               .ToListAsync(cancellationToken);
-            return allFoodWithUserOrderDetails;
-        }
-
-        public async Task<List<CanteenFoodDetailsDTOModel>> getFoodOrderGroupList(int foodType, CancellationToken cancellationToken)
-        {
-            var FoodlistGrouping = await canteenManageContext.FoodOrders
-                    .Include(f => f.Food)
-                    .Where(f =>
-                    f.Food.FoodTypeId == foodType
-                    && f.OrderDate.Date >= DateTime.Now.Date
-                    )
-                    .GroupBy(f => new { f.FoodId, f.OrderDate.Date })
-                    .Select(f => new CanteenFoodDetailsDTOModel()
-                    {
-                        Id = f.Max(fo => fo.Id),
-                        Name = f.Max(fm => fm.Food.Name) ?? "",
-                        OrderDate = f.Key.Date,
-                        FoodTypeId = f.Max(fm => fm.Food.FoodTypeId),
-                        Price = 0,
-                        FoodQuantity = f.Sum(fo => fo.Quantity),
-                        EmployId = f.Max(fo => fo.EmployeeId),
-                        EmployName = f.Max(fo => fo.Employee.Name) ?? "",
-                    })
-                    .ToListAsync(cancellationToken);
-            return FoodlistGrouping;
-        }
 
         public async Task<IResult> AddFoodOrder(FoodTypeEnum foodTypeEnum,
             FoodOrdersFormBodyModel foodOrdersFormBodyModel,
-            ISession session,
+            SessionDataModel sessionData,
             CancellationToken cancellationToken)
         {
 
             var selectedFoodId = foodOrdersFormBodyModel.FoodOrderId;
-            DateTime? userSelected_DateTime_null = SessionDataHelper.getDateTimeFromSession(session);
+            DateTime? userSelected_DateTime_null = sessionData.UserSelectedDate;
             DateTime userSelected_DateTime = userSelected_DateTime_null ?? DateTime.Now;
             if (userSelected_DateTime_null == null || string.IsNullOrEmpty(selectedFoodId))
             {
                 return Results.Ok(new { });
             }
 
-            int? userid = SessionDataHelper.getSessionUserId(session);
+            int? userid = sessionData.UserId;
             if (userid != null)
             {
                 var foodid = int.Parse(selectedFoodId);
@@ -106,24 +60,8 @@ namespace CanteenManage.Services
                 }
                 else if (existingFoodOrder == null)
                 {
-                    TimeSpan ts = new TimeSpan();
-                    if (foodTypeEnum == FoodTypeEnum.Breakfast)
-                    {
-                        ts = new TimeSpan(06, 05, 0);
-                    }
-                    else if (foodTypeEnum == FoodTypeEnum.Lunch)
-                    {
-                        ts = new TimeSpan(11, 05, 0);
-                    }
-                    else if (foodTypeEnum == FoodTypeEnum.Snacks)
-                    {
-                        ts = new TimeSpan(15, 05, 0);
-                    }
-                    else if (foodTypeEnum == FoodTypeEnum.QuickFood)
-                    {
-                        ts = new TimeSpan();
-                    }
 
+                    TimeSpan ts = utilityServices.GetSpecificTimeSpan(foodTypeEnum);
 
                     FoodOrder foodOrder = new FoodOrder();
                     foodOrder.FoodId = foodid;
@@ -142,7 +80,7 @@ namespace CanteenManage.Services
                 }
                 canteenManageContext.SaveChanges();
 
-                var totalFoodOrderByuser = await GetFoodOrdersByUserId(userid ?? 0, (int)foodTypeEnum, userSelected_DateTime, cancellationToken);
+                var totalFoodOrderByuser = await foodListingService.GetFoodOrdersByUserId(userid ?? 0, (int)foodTypeEnum, userSelected_DateTime, cancellationToken);
                 var totalFoodOrderQuantity = totalFoodOrderByuser.Sum(fo => fo.Quantity);
                 if (food_quantity >= 5)
                 {
@@ -177,19 +115,19 @@ namespace CanteenManage.Services
         public async Task<IResult> RemoveFoodOrder(
             FoodTypeEnum foodTypeEnum,
             FoodOrdersFormBodyModel foodOrdersFormBodyModel,
-            ISession session,
+            SessionDataModel sessionData,
             CancellationToken cancellationToken
             )
         {
             var selectedFoodId = foodOrdersFormBodyModel.FoodOrderId;
-            DateTime? userSelected_DateTime_null = SessionDataHelper.getDateTimeFromSession(session);
+            DateTime? userSelected_DateTime_null = sessionData.UserSelectedDate;
             DateTime userSelected_DateTime = userSelected_DateTime_null ?? DateTime.Now;
             if (userSelected_DateTime_null == null || string.IsNullOrEmpty(selectedFoodId))
             {
                 return Results.Ok(new { });
             }
 
-            int? userid = SessionDataHelper.getSessionUserId(session);
+            int? userid = sessionData.UserId;
             if (userid != null)
             {
                 var existingFoodOrder = await canteenManageContext.FoodOrders
@@ -216,7 +154,7 @@ namespace CanteenManage.Services
                     canteenManageContext.SaveChanges();
                 }
 
-                var totalFoodOrderByuser = await GetFoodOrdersByUserId(userid ?? 0, (int)foodTypeEnum, userSelected_DateTime, cancellationToken);
+                var totalFoodOrderByuser = await foodListingService.GetFoodOrdersByUserId(userid ?? 0, (int)foodTypeEnum, userSelected_DateTime, cancellationToken);
                 var totalfoodOrderQuantity = totalFoodOrderByuser.Sum(fo => fo.Quantity);
                 return Results.Ok(new FoodOrderApiReturnMessage()
                 {
@@ -234,5 +172,19 @@ namespace CanteenManage.Services
             }
         }
 
+        public async Task<List<FoodOrder>> getOrderList(int foodTypeId, int? employeId)
+        {
+            var orderList = await canteenManageContext.FoodOrders
+                    .Include(f => f.Food)
+                    .AsNoTracking()
+                    .Where(
+                    fo => fo.Food.FoodTypeId == foodTypeId
+                    && fo.EmployeeId == employeId
+                    && fo.OrderDate.Date > DateTime.Now.AddDays(-30).Date && fo.OrderDate.Date < DateTime.Now.Date
+                    //&& daysOfWeek_for_snaks.Select(s => s.DateTime.Date).Contains(fo.OrderDate.Date)
+                    )
+                    .ToListAsync();
+            return orderList;
+        }
     }
 }

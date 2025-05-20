@@ -10,12 +10,10 @@ namespace CanteenManage.Controllers
 {
     public class CanteenEmployController : Controller
     {
-        private readonly CanteenManageDBContext canteenManageContext;
-        private readonly OrderingService orderingService;
-        public CanteenEmployController(CanteenManageDBContext canteenManageContext, OrderingService orderingService)
+        private readonly FoodListingService foodListingService;
+        public CanteenEmployController(FoodListingService foodListingService)
         {
-            this.canteenManageContext = canteenManageContext;
-            this.orderingService = orderingService;
+            this.foodListingService = foodListingService;
         }
         public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
@@ -24,10 +22,10 @@ namespace CanteenManage.Controllers
                 return RedirectToAction("Login", "Index");
             }
 
-            var snackesFoodlist = await orderingService.getFoodOrderGroupList(3, cancellationToken);
+            var snackesFoodlist = await foodListingService.getFoodOrderGroupList(3, cancellationToken);
 
-            var lunchFoodlist = await orderingService.getFoodOrderGroupList(2, cancellationToken);
-            var breakfastFoodlist = await orderingService.getFoodOrderGroupList(1, cancellationToken);
+            var lunchFoodlist = await foodListingService.getFoodOrderGroupList(2, cancellationToken);
+            var breakfastFoodlist = await foodListingService.getFoodOrderGroupList(1, cancellationToken);
 
             CanteenEmployPageDataModel canteenEmployPageDataModel = new CanteenEmployPageDataModel();
             canteenEmployPageDataModel.SnaksFoodOrders = snackesFoodlist;

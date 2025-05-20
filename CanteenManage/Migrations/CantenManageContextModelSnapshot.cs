@@ -22,6 +22,39 @@ namespace CanteenManage.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("CanteenManage.CanteenRepository.Models.EmployFeedback", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("SubmittedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.ToTable("EmployFeedbacks");
+                });
+
             modelBuilder.Entity("CanteenManage.CanteenRepository.Models.EmployType", b =>
                 {
                     b.Property<int>("Id")
@@ -167,6 +200,41 @@ namespace CanteenManage.Migrations
                             Password = "",
                             PhoneNumber = ""
                         });
+                });
+
+            modelBuilder.Entity("CanteenManage.CanteenRepository.Models.EmployeeCart", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FoodId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("OrderDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("OutDateStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("FoodId");
+
+                    b.ToTable("EmployeeCarts");
                 });
 
             modelBuilder.Entity("CanteenManage.CanteenRepository.Models.Food", b =>
@@ -661,7 +729,7 @@ namespace CanteenManage.Migrations
 
                     b.HasIndex("FoodId");
 
-                    b.ToTable("FoodAvailabilityDay");
+                    b.ToTable("FoodAvailabilityDays");
                 });
 
             modelBuilder.Entity("CanteenManage.CanteenRepository.Models.FoodOrder", b =>
@@ -675,8 +743,11 @@ namespace CanteenManage.Migrations
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
 
-                    b.Property<int>("FoodId")
+                    b.Property<int?>("FoodId")
                         .HasColumnType("int");
+
+                    b.Property<string>("FoodName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("OrderCompleteStatus")
                         .HasColumnType("int");
@@ -727,7 +798,7 @@ namespace CanteenManage.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("FoodId")
+                    b.Property<int?>("FoodId")
                         .HasColumnType("int");
 
                     b.Property<int>("TotalRating")
@@ -782,6 +853,17 @@ namespace CanteenManage.Migrations
                         });
                 });
 
+            modelBuilder.Entity("CanteenManage.CanteenRepository.Models.EmployFeedback", b =>
+                {
+                    b.HasOne("CanteenManage.CanteenRepository.Models.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+                });
+
             modelBuilder.Entity("CanteenManage.CanteenRepository.Models.Employee", b =>
                 {
                     b.HasOne("CanteenManage.CanteenRepository.Models.EmployType", "EmployType")
@@ -791,6 +873,25 @@ namespace CanteenManage.Migrations
                         .IsRequired();
 
                     b.Navigation("EmployType");
+                });
+
+            modelBuilder.Entity("CanteenManage.CanteenRepository.Models.EmployeeCart", b =>
+                {
+                    b.HasOne("CanteenManage.CanteenRepository.Models.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CanteenManage.CanteenRepository.Models.Food", "Food")
+                        .WithMany("EmployeeCarts")
+                        .HasForeignKey("FoodId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("Food");
                 });
 
             modelBuilder.Entity("CanteenManage.CanteenRepository.Models.Food", b =>
@@ -825,9 +926,7 @@ namespace CanteenManage.Migrations
 
                     b.HasOne("CanteenManage.CanteenRepository.Models.Food", "Food")
                         .WithMany("FoodOrders")
-                        .HasForeignKey("FoodId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("FoodId");
 
                     b.Navigation("Employee");
 
@@ -838,9 +937,7 @@ namespace CanteenManage.Migrations
                 {
                     b.HasOne("CanteenManage.CanteenRepository.Models.Food", "Food")
                         .WithMany()
-                        .HasForeignKey("FoodId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("FoodId");
 
                     b.Navigation("Food");
                 });
@@ -852,6 +949,8 @@ namespace CanteenManage.Migrations
 
             modelBuilder.Entity("CanteenManage.CanteenRepository.Models.Food", b =>
                 {
+                    b.Navigation("EmployeeCarts");
+
                     b.Navigation("FoodAvailabilityDays");
 
                     b.Navigation("FoodOrders");

@@ -1,4 +1,5 @@
 using CanteenManage.CanteenRepository.Contexts;
+using CanteenManage.Models;
 using CanteenManage.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
@@ -7,6 +8,34 @@ using static NuGet.Packaging.PackagingConstants;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//
+var projectFolder = Path.Combine(Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments), "CanteenManagementSystem");
+
+if (!Directory.Exists(projectFolder))
+{
+    Directory.CreateDirectory(projectFolder);
+}
+AppConfigs appConfigs = new AppConfigs();
+if (File.Exists(Path.Combine(projectFolder, "AppConfigs.json")))
+{
+    try
+    {
+        var appConfigJson = File.ReadAllText(Path.Combine(projectFolder, "AppConfigs.json"));
+        appConfigs = System.Text.Json.JsonSerializer.Deserialize<AppConfigs>(appConfigJson) ?? new AppConfigs();
+    }
+    catch (Exception ex)
+    {
+
+    }
+
+}
+//else
+//{
+//    File.WriteAllText(Path.Combine(projectFolder, "AppConfigs.json"), System.Text.Json.JsonSerializer.Serialize(appConfigs));
+//}
+
+
+//
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddDistributedMemoryCache();
@@ -19,13 +48,17 @@ builder.Services.AddSession(options =>
 
 builder.Services.AddPooledDbContextFactory<CanteenManageDBContext>(option =>
 {
-    option.UseSqlServer(builder.Configuration.GetConnectionString("CantenSystemDBConnection"));
+    //option.UseSqlServer(builder.Configuration.GetConnectionString("CantenSystemDBConnection"));
+    option.UseSqlServer(appConfigs.ConnectionString);
 });
-//builder.Services.AddDbContext<CanteenManageDBContext>(options =>
-//    options.UseSqlServer(builder.Configuration.GetConnectionString("CantenSystemDBConnection")));
+
 builder.Services.AddScoped<CanteenManageContextFactory>();
 builder.Services.AddScoped(sp => sp.GetRequiredService<CanteenManageContextFactory>().CreateDbContext());
+builder.Services.AddScoped<UtilityServices>();
+builder.Services.AddScoped<FoodListingService>();
 builder.Services.AddScoped<OrderingService>();
+builder.Services.AddScoped<CartService>();
+
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 builder.Services.AddCors(options =>

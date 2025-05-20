@@ -24,5 +24,6 @@ namespace CanteenManage.CanteenRepository.Models
         [DeleteBehavior(DeleteBehavior.Cascade)]
         public ICollection<FoodAvailabilityDay> FoodAvailabilityDays { get; set; } = new List<FoodAvailabilityDay>();
         public ICollection<FoodOrder> FoodOrders { get; set; } = new List<FoodOrder>();
+        public ICollection<EmployeeCart> EmployeeCarts { get; set; } = new List<EmployeeCart>();
     }
 }

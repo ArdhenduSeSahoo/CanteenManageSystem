@@ -12,4 +12,15 @@
         QuickFood = 4,
 
     }
+
+    public enum CartFoodOutDateEnum
+    {
+        InOrder = 0,
+        OutOfOrder = 1,
+    }
+    public enum OrderCompleteStatusEnum
+    {
+        Pending = 0,
+        Complete = 1
+    }
 }
