@@ -11,13 +11,15 @@ namespace CanteenManage.Controllers
     public class CanteenEmployController : Controller
     {
         private readonly FoodListingService foodListingService;
-        public CanteenEmployController(FoodListingService foodListingService)
+        private readonly UtilityServices utilityServices;
+        public CanteenEmployController(FoodListingService foodListingService, UtilityServices utilityServices)
         {
             this.foodListingService = foodListingService;
+            this.utilityServices = utilityServices;
         }
         public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
-            if (SessionDataHelper.getSessionUserId(HttpContext.Session) is null)
+            if (utilityServices.getSessionUserId(HttpContext.Session) is null)
             {
                 return RedirectToAction("Login", "Index");
             }

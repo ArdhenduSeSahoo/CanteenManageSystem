@@ -4,7 +4,7 @@ using CanteenManage.Services;
 using CanteenManage.Utility;
 using Microsoft.AspNetCore.Mvc;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+
 
 namespace CanteenManage.Controllers.Apis
 {
@@ -12,15 +12,15 @@ namespace CanteenManage.Controllers.Apis
     [ApiController]
     public class FoodOrdersController : ControllerBase
     {
-        private readonly CanteenManageDBContext context;
-        private readonly OrderingService orderingService;
-        private readonly CartService cartService;
 
-        public FoodOrdersController(CanteenManageDBContext _context, OrderingService orderingService, CartService cartService)
+        private readonly CartService cartService;
+        private readonly UtilityServices utilityServices;
+
+        public FoodOrdersController(CartService cartService, UtilityServices utilityServices)
         {
-            this.context = _context;
-            this.orderingService = orderingService;
+
             this.cartService = cartService;
+            this.utilityServices = utilityServices;
         }
 
         [HttpPost("breakfastFoodOrderAdd")]
@@ -29,7 +29,7 @@ namespace CanteenManage.Controllers.Apis
 
             try
             {
-                SessionDataModel sessionDataModel = SessionDataHelper.GetSessionDataModel(HttpContext.Session);
+                SessionDataModel sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
 
                 //var orderResult = await orderingService.AddFoodOrder(
                 //      foodTypeEnum: FoodTypeEnum.Breakfast,
@@ -67,7 +67,7 @@ namespace CanteenManage.Controllers.Apis
 
             try
             {
-                SessionDataModel sessionDataModel = SessionDataHelper.GetSessionDataModel(HttpContext.Session);
+                SessionDataModel sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
                 //var orderResult = await orderingService.AddFoodOrder(
                 //      foodTypeEnum: FoodTypeEnum.Lunch,
                 //      sessionData: sessionDataModel,
@@ -102,7 +102,7 @@ namespace CanteenManage.Controllers.Apis
 
             try
             {
-                SessionDataModel sessionDataModel = SessionDataHelper.GetSessionDataModel(HttpContext.Session);
+                SessionDataModel sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
                 //var orderResult = await orderingService.AddFoodOrder(
                 //      foodTypeEnum: FoodTypeEnum.Snacks,
                 //      sessionData: sessionDataModel,
@@ -137,7 +137,7 @@ namespace CanteenManage.Controllers.Apis
         {
             try
             {
-                SessionDataModel sessionDataModel = SessionDataHelper.GetSessionDataModel(HttpContext.Session);
+                SessionDataModel sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
                 var order_remove_result = await cartService.RemoveFromCart(
 
                       sessionData: sessionDataModel,

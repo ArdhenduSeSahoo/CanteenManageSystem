@@ -12,14 +12,16 @@ namespace CanteenManage.Controllers
     {
         private readonly CanteenManageDBContext canteenManageContext;
         private readonly OrderingService orderingService;
-        public OrderHistoryController(CanteenManageDBContext canteenManageContext, OrderingService ordering)
+        private readonly UtilityServices utilityServices;
+        public OrderHistoryController(CanteenManageDBContext canteenManageContext, OrderingService ordering, UtilityServices utilityServices)
         {
             this.canteenManageContext = canteenManageContext;
             this.orderingService = ordering;
+            this.utilityServices = utilityServices;
         }
         public async Task<IActionResult> Index()
         {
-            if (SessionDataHelper.getSessionUserId(HttpContext.Session) is null)
+            if (utilityServices.getSessionUserId(HttpContext.Session) is null)
             {
                 return RedirectToAction("Login", "Index");
             }
@@ -28,17 +30,17 @@ namespace CanteenManage.Controllers
             {
 
                 myOrderViewDataModel.SnaksFoodOrders = await orderingService.getOrderList(3,
-                    SessionDataHelper.getSessionUserId(HttpContext.Session)
+                    utilityServices.getSessionUserId(HttpContext.Session)
                     );
                 ////////////////////////////////////////////////////////////
 
                 myOrderViewDataModel.LunchFoodOrders = await orderingService.getOrderList(2,
-                    SessionDataHelper.getSessionUserId(HttpContext.Session)
+                    utilityServices.getSessionUserId(HttpContext.Session)
                     );
                 ////////////////////////////////////////////////////////////
 
                 myOrderViewDataModel.BreakFastFoodOrders = await orderingService.getOrderList(1,
-                    SessionDataHelper.getSessionUserId(HttpContext.Session)
+                    utilityServices.getSessionUserId(HttpContext.Session)
                     );
             }
             catch (Exception ex)

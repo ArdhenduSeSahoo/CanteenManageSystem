@@ -26,14 +26,14 @@ namespace CanteenManage.Controllers
         }
         public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
-            if (SessionDataHelper.getSessionUserId(HttpContext.Session) is null)
+            if (utilityServices.getSessionUserId(HttpContext.Session) is null)
             {
                 return RedirectToAction("Login", "Index");
             }
             int FoodID = (int)FoodTypeEnum.Lunch;
-            List<DaysOfWeekModel> daysOfWeek = DateCalculationService.GetDaysOfWeek(hourBeforeDisable: 10);
+            List<DaysOfWeekModel> daysOfWeek = utilityServices.GetDaysOfWeek(hourBeforeDisable: 10);
             //string? Session_selectedDay = HttpContext.Session.GetString(SessionConstants.UserSelectedDay);
-            SessionDataModel sessionDataModel = SessionDataHelper.GetSessionDataModel(HttpContext.Session);
+            SessionDataModel sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
             int Session_selectedDay_On_SamePage = Convert.ToInt32(HttpContext.Session.GetString(SessionConstants.UserSelectedDayOnSamePage));
             if (sessionDataModel.UserSelectedDay != null)
             {
@@ -46,7 +46,7 @@ namespace CanteenManage.Controllers
             }
             else
             {
-                var firstActiveDay = DateCalculationService.getFirstActiveDate(daysOfWeek);
+                var firstActiveDay = utilityServices.getFirstActiveDate(daysOfWeek);
                 if (firstActiveDay != null)
                 {
                     firstActiveDay.IsSelected = true;
@@ -77,7 +77,7 @@ namespace CanteenManage.Controllers
             lunchPageDataModel.totalCountForSelectedDay = foodOrderByUser.Sum(fo => fo.Quantity);
             lunchPageDataModel.foods = foodSnaksAll;
             lunchPageDataModel.CartItemCount = await foodListingService.GetCartItemCount(
-                                                           SessionDataHelper.getSessionUserId(HttpContext.Session) ?? 0,
+                                                           utilityServices.getSessionUserId(HttpContext.Session) ?? 0,
                                                            cancellationToken
                                                            );
 

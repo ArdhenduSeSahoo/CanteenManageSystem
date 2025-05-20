@@ -42,9 +42,9 @@
         public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
             int FoodType = (int)FoodTypeEnum.Breakfast;
-            List<DaysOfWeekModel> daysOfWeek = DateCalculationService.GetDaysOfWeek(hourBeforeDisable: 6);
+            List<DaysOfWeekModel> daysOfWeek = utilityServices.GetDaysOfWeek(hourBeforeDisable: 6);
             //string? Session_selectedDay = HttpContext.Session.GetString(SessionConstants.UserSelectedDay);
-            SessionDataModel sessionDataModel = SessionDataHelper.GetSessionDataModel(HttpContext.Session);
+            SessionDataModel sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
             int Session_selectedDay_On_SamePage = Convert.ToInt32(HttpContext.Session.GetString(SessionConstants.UserSelectedDayOnSamePage));
             if (sessionDataModel.UserSelectedDay != null)
             {

@@ -11,9 +11,11 @@ namespace CanteenManage.Controllers
     {
         //private readonly CanteenManageDBContext canteenManageContext;
         private readonly FoodListingService foodListingService;
-        public EmployDashboardController(FoodListingService foodListing)
+        private readonly UtilityServices utilityServices;
+        public EmployDashboardController(FoodListingService foodListing, UtilityServices utilityServices)
         {
             foodListingService = foodListing;
+            this.utilityServices = utilityServices;
         }
         public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
@@ -21,7 +23,7 @@ namespace CanteenManage.Controllers
             {
                 return RedirectToAction("Login", "Index");
             }
-            SessionDataModel sessionDataModel = SessionDataHelper.GetSessionDataModel(HttpContext.Session);
+            SessionDataModel sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
             EmployDashboardViewDataModel employDashboardViewDataModel = new EmployDashboardViewDataModel();
             employDashboardViewDataModel.UserName = sessionDataModel.UserName;
             employDashboardViewDataModel.UserId = sessionDataModel.UserId;
