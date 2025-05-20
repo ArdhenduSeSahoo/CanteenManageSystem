@@ -11,11 +11,11 @@ namespace CanteenManage.Controllers.CommitteeMembers
     public class CommitteeMemberController : Controller
     {
         private readonly CanteenManageDBContext context;
-        private readonly IWebHostEnvironment env;
-        public CommitteeMemberController(CanteenManageDBContext context, IWebHostEnvironment env)
+        //private readonly IWebHostEnvironment env;
+        public CommitteeMemberController(CanteenManageDBContext context)
         {
             this.context = context;
-            this.env = env;
+            //this.env = env;
         }
 
         public IActionResult CMDashboard()
@@ -27,6 +27,7 @@ namespace CanteenManage.Controllers.CommitteeMembers
         {
             var foodlist = await context.Foods
                 .Include(f => f.FoodType)
+                .Include(f => f.FoodAvailabilityDays)
                 .ToListAsync(cancellationToken);
             return View(foodlist);
         }
@@ -76,7 +77,7 @@ namespace CanteenManage.Controllers.CommitteeMembers
             {
                 food = await context.Foods
                 .Include(f => f.FoodType)
-                .Include(f=>f.FoodAvailabilityDays)
+                .Include(f => f.FoodAvailabilityDays)
                 .Select(f => new FoodFormDataModel()
                 {
                     Id = f.Id,
@@ -91,13 +92,13 @@ namespace CanteenManage.Controllers.CommitteeMembers
                     Rating = f.Rating,
                     AvailableOnDay = f.AvailableOnDay,
 
-                    MonDay=f.FoodAvailabilityDays.Where(fa=>fa.DayOfWeek==1).Count()>=1,
+                    MonDay = f.FoodAvailabilityDays.Where(fa => fa.DayOfWeek == 1).Count() >= 1,
                     TuesDay = f.FoodAvailabilityDays.Where(fa => fa.DayOfWeek == 2).Count() >= 1,
-                    WedgesDay = f.FoodAvailabilityDays.Where(fa => fa.DayOfWeek == 3).Count() >= 1,
+                    WednesDay = f.FoodAvailabilityDays.Where(fa => fa.DayOfWeek == 3).Count() >= 1,
                     ThusDay = f.FoodAvailabilityDays.Where(fa => fa.DayOfWeek == 4).Count() >= 1,
                     FryDay = f.FoodAvailabilityDays.Where(fa => fa.DayOfWeek == 5).Count() >= 1,
 
-                    WeekOneAndFive = f.FoodAvailabilityDays.Where(fa => fa.WeekOfMonth == 1||fa.WeekOfMonth==5).Count() >= 1,
+                    WeekOneAndFive = f.FoodAvailabilityDays.Where(fa => fa.WeekOfMonth == 1 || fa.WeekOfMonth == 5).Count() >= 1,
                     WeekTwo = f.FoodAvailabilityDays.Where(fa => fa.WeekOfMonth == 2).Count() >= 1,
                     WeekThree = f.FoodAvailabilityDays.Where(fa => fa.WeekOfMonth == 3).Count() >= 1,
                     WeekFour = f.FoodAvailabilityDays.Where(fa => fa.WeekOfMonth == 4).Count() >= 1
@@ -149,6 +150,7 @@ namespace CanteenManage.Controllers.CommitteeMembers
                 {
                     foodFormDataModel.ImageUrl = "DefaultFood.png";
                 }
+
                 var food_to_update = new Food()
                 {
                     Id = foodFormDataModel.Id,
@@ -165,6 +167,30 @@ namespace CanteenManage.Controllers.CommitteeMembers
                 };
 
                 context.Foods.Update(food_to_update);
+
+                var foodAvailabilityDays = await context.FoodAvailabilityDays.Where(fa => fa.FoodId == food_to_update.Id).ToListAsync();
+                context.FoodAvailabilityDays.RemoveRange(foodAvailabilityDays);
+                if (foodFormDataModel.WeekOneAndFive)
+                {
+                    context.FoodAvailabilityDays.AddRange(
+                    getListOfSelectedDayOfWeek(foodFormDataModel, foodFormDataModel.Id, 1));
+                }
+                if (foodFormDataModel.WeekTwo)
+                {
+                    context.FoodAvailabilityDays.AddRange(
+                    getListOfSelectedDayOfWeek(foodFormDataModel, foodFormDataModel.Id, 2));
+                }
+                if (foodFormDataModel.WeekThree)
+                {
+                    context.FoodAvailabilityDays.AddRange(
+                    getListOfSelectedDayOfWeek(foodFormDataModel, foodFormDataModel.Id, 3));
+                }
+                if (foodFormDataModel.WeekFour)
+                {
+                    context.FoodAvailabilityDays.AddRange(
+                    getListOfSelectedDayOfWeek(foodFormDataModel, foodFormDataModel.Id, 4));
+                }
+
                 await context.SaveChangesAsync();
                 //if (model.ProfileImage != null)
                 //{
@@ -219,6 +245,29 @@ namespace CanteenManage.Controllers.CommitteeMembers
                 {
                     foodFormDataModel.ImageUrl = "DefaultFood.png";
                 }
+                List<FoodAvailabilityDay> foodAvailabilityDays = new List<FoodAvailabilityDay>();
+
+                if (foodFormDataModel.WeekOneAndFive)
+                {
+                    foodAvailabilityDays.AddRange(
+                    getListOfSelectedDayOfWeek(foodFormDataModel, foodFormDataModel.Id, 1));
+                }
+                if (foodFormDataModel.WeekTwo)
+                {
+                    foodAvailabilityDays.AddRange(
+                    getListOfSelectedDayOfWeek(foodFormDataModel, foodFormDataModel.Id, 2));
+                }
+                if (foodFormDataModel.WeekThree)
+                {
+                    foodAvailabilityDays.AddRange(
+                    getListOfSelectedDayOfWeek(foodFormDataModel, foodFormDataModel.Id, 3));
+                }
+                if (foodFormDataModel.WeekFour)
+                {
+                    foodAvailabilityDays.AddRange(
+                    getListOfSelectedDayOfWeek(foodFormDataModel, foodFormDataModel.Id, 4));
+                }
+
                 var food_to_create = new Food()
                 {
                     Name = foodFormDataModel.Name,
@@ -230,15 +279,74 @@ namespace CanteenManage.Controllers.CommitteeMembers
                     IsAvailable = foodFormDataModel.IsAvailable,
                     ImageUrl = foodFormDataModel.ImageUrl,
                     Rating = foodFormDataModel.Rating,
-                    AvailableOnDay = foodFormDataModel.AvailableOnDay,
+                    FoodAvailabilityDays = foodAvailabilityDays,
                 };
                 context.Foods.Add(food_to_create);
                 await context.SaveChangesAsync();
+                return this.RedirectToAction("FoodList");
             }
             catch (Exception ex)
             {
+                Console.Write(ex.Message);
             }
             return View(foodFormDataModel);
+        }
+
+        public List<FoodAvailabilityDay> getListOfSelectedDayOfWeek(FoodFormDataModel foodFormDataModel, int foodId, int weekId)
+        {
+            List<FoodAvailabilityDay> foodAvailabilityDays = new List<FoodAvailabilityDay>();
+            if (foodFormDataModel.MonDay)
+            {
+                foodAvailabilityDays.Add(new FoodAvailabilityDay()
+                {
+                    DayOfWeek = 1,
+                    WeekOfMonth = weekId,
+                    FoodId = foodId
+                });
+            }
+            if (foodFormDataModel.TuesDay)
+            {
+                foodAvailabilityDays.Add(new FoodAvailabilityDay()
+                {
+                    DayOfWeek = 2,
+                    WeekOfMonth = weekId,
+                    FoodId = foodId
+                });
+            }
+            if (foodFormDataModel.WednesDay)
+            {
+                foodAvailabilityDays.Add(new FoodAvailabilityDay()
+                {
+                    DayOfWeek = 3,
+                    WeekOfMonth = weekId,
+                    FoodId = foodId
+                });
+            }
+            if (foodFormDataModel.ThusDay)
+            {
+                foodAvailabilityDays.Add(new FoodAvailabilityDay()
+                {
+                    DayOfWeek = 4,
+                    WeekOfMonth = weekId,
+                    FoodId = foodId
+                });
+            }
+            if (foodFormDataModel.FryDay)
+            {
+                foodAvailabilityDays.Add(new FoodAvailabilityDay()
+                {
+                    DayOfWeek = 5,
+                    WeekOfMonth = weekId,
+                    FoodId = foodId
+                });
+            }
+            return foodAvailabilityDays;
+        }
+
+        public async Task<IActionResult> FoodOrderList()
+        {
+            var foodTypeList = await context.FoodTypes.ToListAsync();
+            return View(foodTypeList);
         }
     }
 

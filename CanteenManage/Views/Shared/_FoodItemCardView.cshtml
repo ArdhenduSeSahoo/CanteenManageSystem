@@ -1,59 +1,59 @@
 ﻿@model CanteenManage.Models.parcialViewModel.FoodItemCardDataModel;
 @{
-    var food = Model.food;
+	var food = Model.food;
 }
 @*
     For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 *@
 
 <div class="card h-100 bg-white cardCustom" style=" border-radius:10px">
-    <div class="" style="">
-        <div class="itemImageDiv" style=" border-radius:10px;padding:2px">
-            <img src="~/FoodImage/@(food.ImageUrl)" class="card-img-top img-fluid rounded mx-auto d-block w-100" style="height: 200px;" alt="...">
-        </div>
-    </div>
-    <div class="card-body pt-2 pb-2">
-        <div class="d-flex justify-content-between">
-            <h5 class="card-title">@food.Name</h5>
-            <h6>@food.EmployeePrice </h6>
-        </div>
+	<div class="" style="">
+		<div class="itemImageDiv" style=" border-radius:10px;padding:2px">
+			<img src="~/FoodImage/@(food.ImageUrl)" class="card-img-top img-fluid rounded mx-auto d-block w-100" style="height: 200px;" alt="...">
+		</div>
+	</div>
+	<div class="card-body pt-2 pb-2">
+		<div class="d-flex justify-content-between">
+			<h5 class="card-title">@food.Name</h5>
+			<h6>@food.EmployeePrice </h6>
+		</div>
 
-        <div class="d-flex">
-            @foreach (int index in Enumerable.Range(1, Convert.ToInt32(food.Rating)))
-            {
-                <div class="d-flex">
-                    <img src="~/images/emoji/starRating.png" class=" star_design" alt="rating" style="">
-                </div>
-            }
-        </div>
-        <p class="card-subtitle mb-2 text-muted">@(food.Description == "" ? "." : food.Description)</p>
-    </div>
-    <div class="card-footer text-muted bg-white rounded-2">
-        <div class="d-flex justify-content-between">
-            <div></div>
-            <div>
-                <div class="row align-self-end">
-                    
-                    <div class="col align-self-end food_add_btn_div @(food.FoodOrders.Count()<=0?"":"d-none")" data-foodid="@food.Id">
-                            <button class="btn addBtn btn_addItem" data-foodid="@food.Id" type="button">Add</button>
-                        </div>
-                    <div class="col align-self-end food_add_remove_btn_div @(food.FoodOrders.Count()>0?"":"d-none")" data-foodid="@food.Id">
-                            <div class="btn-group" role="group" aria-label="">
-                                <button type="button" style="border-radius:0px; border-bottom-left-radius:7px;border-top-left-radius:7px;
-                " class="btn btn-outline-info btn_removeItem" data-foodid="@food.Id">
-                                    <i class="fa-solid fa-minus " style="color:red"></i>
-                                </button>
-                                <div type="button" class="btn btn-outline-info btn_food_quantity" data-foodid="@food.Id" style=" border-radius:0px; color:black">@food.FoodOrders?.FirstOrDefault()?.Quantity</div>
-                                <button type="button" class="btn btn-outline-info btn_addItem" data-foodid="@food.Id" style="border-radius:0px;border-bottom-right-radius:7px;border-top-right-radius:7px;"><i class="fa-solid fa-plus"></i></button>
-                             
-                            </div>
-                        </div>
-                    
-                </div>
-            </div>
-        </div>
+		<div class="d-flex">
+			@foreach (int index in Enumerable.Range(1, Convert.ToInt32(food.Rating)))
+			{
+				<div class="d-flex">
+					<img src="~/images/emoji/starRating.png" class=" star_design" alt="rating" style="">
+				</div>
+			}
+		</div>
+		<p class="card-subtitle mb-2 text-muted">@(food.Description == "" ? "." : food.Description)</p>
+	</div>
+	<div class="card-footer text-muted border-0 bg-white rounded-2">
+		<div class="d-flex justify-content-between">
+			<div></div>
+			<div>
+				<div class="row align-self-end">
 
-    </div>
+					<div class="col align-self-end food_add_btn_div @(food.EmployeeCarts.Count()<=0?"":"d-none")" data-foodid="@food.Id">
+						<button class="btn addBtn btn_addItem" data-foodid="@food.Id" type="button">Add</button>
+					</div>
+					<div class="col align-self-end food_add_remove_btn_div @(food.EmployeeCarts.Count()>0?"":"d-none")" data-foodid="@food.Id">
+						<div class="btn-group" role="group" aria-label="">
+							<button type="button" style="border-radius:0px; border-bottom-left-radius:7px;border-top-left-radius:7px;
+				" class="btn btn-outline-info btn_removeItem" data-foodid="@food.Id">
+								<i class="fa-solid fa-minus " style=""></i>
+							</button>
+							<div class="btn btn-outline-info btn_food_quantity" data-foodid="@food.Id" style=" border-radius:0px; color:black">@food.EmployeeCarts?.FirstOrDefault()?.Quantity</div>
+							<button type="button" class="btn btn-outline-info btn_addItem" data-foodid="@food.Id" style="border-radius:0px;border-bottom-right-radius:7px;border-top-right-radius:7px;"><i class="fa-solid fa-plus"></i></button>
+
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+
+	</div>
 </div>
 
 

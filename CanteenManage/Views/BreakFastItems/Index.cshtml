@@ -2,82 +2,79 @@
 @using CanteenManage.Models
 @using CanteenManage.Models.parcialViewModel
 @model BreakFastPageDataModel;
-@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
 
-@section HeadSection{
 
-<link rel="stylesheet" href="~/css/customStyles.css">
+@section HeadSection {
+
+	<link rel="stylesheet" href="~/css/customStyles.css">
+
 }
 
 <div class=" container-fluid" style="
 ">
-    <div class="d-flex justify-content-between">
-        <div class="row">
-            <div class="col">
-                <h3>Breakfast Items</h3>
-            </div>
-        </div>
-    </div>
+	<div class="d-flex justify-content-between">
+		<div class="row">
+			<div class="col">
+				<h3>Breakfast Items</h3>
+			</div>
+		</div>
+	</div>
 
-    <div class="date-selector">
-        <label class="date-label">Choose Date:</label>
-        <div class="date-buttons">
-            @foreach (var dayes in Model.DayOfWeeks)
-            {
-                
-                @(
-                    await Html.PartialAsync("_ChoseDateVew", new ChoseDateViewDataModel()
-            {
-                daysOfWeekModel = dayes,
-            })
-                    )
-            }
-            
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            <p>Total for day  @(Model.DayOfWeeks.Where(d => d.IsSelected)?.FirstOrDefault()?.DateShort) is:- <b><span class="food_total_quantity"> @(Model.totalCountForSelectedDay)</span></b></p>
-        </div>
-    </div>
-    <div class="row row-cols-1 row-cols-md-5 g-2">
-        @foreach (Food food in Model.foods)
-        {
-            <div class="col">
-                @(
-                    await Html.PartialAsync("_FoodItemCardView", new FoodItemCardDataModel()
-                {
-                    food=food,
-                })
-                )
-            </div>
-        }
+	<div class="date-selector">
+		<label class="date-label">Choose Date:</label>
+		<div class="date-buttons">
+			@foreach (var dayes in Model.DayOfWeeks)
+			{
 
-    </div>
+				@(
+							await Html.PartialAsync("_ChoseDateVew", new ChoseDateViewDataModel()
+			{
+				daysOfWeekModel = dayes,
+			})
+							)
+			}
+
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<p>Total for day  @(Model.DayOfWeeks.Where(d => d.IsSelected)?.FirstOrDefault()?.DateShort) is:- <b><span class="food_total_quantity"> @(Model.totalCountForSelectedDay)</span></b></p>
+		</div>
+	</div>
+	<div class="row row-cols-1 row-cols-md-5 g-2">
+		@foreach (Food food in Model.foods)
+		{
+			<div class="col">
+				@(
+							await Html.PartialAsync("_FoodItemCardView", new FoodItemCardDataModel()
+			{
+				food = food,
+			})
+							)
+			</div>
+		}
+
+	</div>
 </div>
 
 
 
-@section Scripts{
+@section Scripts {
 	<script src="~/js/canteensystem_js.js"></script>
-    <script>
-   
-                $(document).ready(function () {
+	<script>
 
-            $(".btn_addItem").click( async function (e) {
-                //debugger;
-                addFoodItem(e,"/api/FoodOrders/breakfastFoodOrderAdd");
+				$(document).ready(function () {
+
+			$(".btn_addItem").click( async function (e) {
+				//debugger;
+				addFoodItem(e,"/api/FoodOrders/breakfastFoodOrderAdd");
 				//console.log(response.json);
-            });
-            $(".btn_removeItem").click( async function (e) {
-                //debugger;
-                removeFoodItem(e,"/api/FoodOrders/breakfastFoodOrderRemove");
-                
-            });
-        });
-    </script>
+			});
+			$(".btn_removeItem").click( async function (e) {
+				//debugger;
+				removeFoodItem(e,"/api/FoodOrders/OrderRemove");
+
+			});
+		});
+	</script>
 }

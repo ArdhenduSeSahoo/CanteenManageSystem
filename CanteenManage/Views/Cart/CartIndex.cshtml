@@ -1,0 +1,141 @@
+﻿@model CanteenManage.Models.CartViewDataModel
+
+@{
+	ViewData["Title"] = "My Orders";
+}
+
+@section HeadSection {
+	<link rel="stylesheet" href="~/css/customStyles.css">
+	<style>
+
+	</style>
+}
+
+<div class=" container-fluid h-100" style="">
+
+	<div class="row mb-2">
+		<div class="col">
+			<div class="card " style="border-radius:10px">
+				<div class="" style="margin-left:15px; margin-top:10px">
+					<h3 class="">Cart</h3>
+				</div>
+				<div class="card-body">
+
+					<div class="row row-cols-1">
+						<div class="col-2">
+							<table class="table table-hover table-responsive-sm table-borderless customTable">
+								<thead>
+									<tr>
+										<th>Name</th>
+										<th>Quantity</th>
+										<th>Price</th>
+										<th></th>
+									</tr>
+								</thead>
+								<tbody>
+									@if (Model.BreakFastFoodOrders.Count() > 0)
+									{
+										<tr>
+											<td>Breakfast</td>
+											<td>@Model.BreakFastFoodOrders.Sum(fo => fo.Quantity)</td>
+											<td>@Model.BreakFastFoodOrders.Sum(fo => fo.TotalPrice)</td>
+											<td>
+												<form asp-action="RemoveOrder" method="post">
+													<input type="hidden" name="orderId" value="-1" />
+													<input type="hidden" name="orderType" value="1" />
+													<button type="submit" class="btn btn-outline-danger btn-sm">
+														<i class="fa fa-trash" aria-hidden="true"></i>
+													</button>
+												</form>
+											</td>
+										</tr>
+									}
+									@if (Model.LunchFoodOrders.Count() > 0)
+									{
+										<tr>
+											<td>Lunch</td>
+											<td>@Model.LunchFoodOrders.Sum(fo => fo.Quantity)</td>
+											<td>@Model.LunchFoodOrders.Sum(fo => fo.TotalPrice)</td>
+											<td>
+												<form asp-action="RemoveOrder" method="post">
+													<input type="hidden" name="orderId" value="-1" />
+													<input type="hidden" name="orderType" value="2" />
+													<button type="submit" class="btn btn-outline-danger btn-sm">
+														<i class="fa fa-trash" aria-hidden="true"></i>
+													</button>
+												</form>
+											</td>
+										</tr>
+									}
+									@if (Model.SnaksFoodOrders.Count() > 0)
+									{
+										<tr>
+											<td>Snacks</td>
+											<td>@Model.SnaksFoodOrders.Sum(fo => fo.Quantity)</td>
+											<td>@Model.SnaksFoodOrders.Sum(fo => fo.TotalPrice)</td>
+											<td>
+												<form asp-action="RemoveOrder" method="post">
+													<input type="hidden" name="orderId" value="-1" />
+													<input type="hidden" name="orderType" value="3" />
+													<button type="submit" class="btn btn-outline-danger btn-sm">
+														<i class="fa fa-trash" aria-hidden="true"></i>
+													</button>
+												</form>
+											</td>
+										</tr>
+									}
+								</tbody>
+							</table>
+						</div>
+						<div class="col">
+							<form asp-action="PlaceOrder" method="post">
+								<button type="submit" class="btn btn-sm btn-success">Place Order</button>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row row-cols-1 row-cols-md-3">
+
+		@(
+				await Html.PartialAsync("__CartItemListPanel", new CartItemListPanelViewDataModel()
+		{
+			panelTitle = "Breakfast",
+			employeeCarts = Model.BreakFastFoodOrders
+		})
+				)
+
+		@(
+				await Html.PartialAsync("__CartItemListPanel", new CartItemListPanelViewDataModel()
+		{
+			panelTitle = "Lunch",
+			employeeCarts = Model.LunchFoodOrders
+		})
+				)
+		@(
+				await Html.PartialAsync("__CartItemListPanel", new CartItemListPanelViewDataModel()
+		{
+			panelTitle = "Snacks",
+			employeeCarts = Model.SnaksFoodOrders
+		})
+				)
+		@(
+				await Html.PartialAsync("__CartItemListPanel", new CartItemListPanelViewDataModel()
+		{
+			panelTitle = "Snacks",
+			employeeCarts = Model.OutOfStockOrders
+		})
+				)
+
+	</div>
+
+</div>
+
+@section Scripts {
+	<script>
+
+	</script>
+}
+

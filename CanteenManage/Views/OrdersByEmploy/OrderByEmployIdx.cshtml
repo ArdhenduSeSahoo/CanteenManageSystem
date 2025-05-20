@@ -1,0 +1,187 @@
+﻿@using CanteenManage.Utility
+@model CanteenManage.Models.OrderByEmployViewDataModel
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+	Layout = "_Layout_canteenEmploy";
+	bool firstRow = true;
+}
+@section HeadSection
+{
+	<style>
+		.customBage {
+			background-color: #7e7e7ebf !important;
+		}
+
+	</style>
+}
+<div class="container-fluid">
+	<div class="card">
+		<div class="card-body">
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-12">
+						<h5 class="">Order By Employee</h5>
+						<div class="d-flex gap-2">
+							<div class="">
+								<a class="btn btn-primary" asp-controller="OrdersByEmploy" asp-action="OrderByEmployBreakfast">BreakFast</a>
+							</div>
+							<div class="">
+								<a class="btn btn-primary" asp-controller="OrdersByEmploy" asp-action="OrderByEmployLunch">Lunch</a>
+							</div>
+							<div class="">
+								<a class="btn btn-primary" asp-controller="OrdersByEmploy" asp-action="OrderByEmploySnacks">Snacks</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="card bg-white">
+		<div class="card-header">
+			<h4 class="card-title">@Model.screenTitle</h4>
+		</div>
+
+		<div class="card-body">
+			<div class="row">
+				<div class="col">
+					<div class="row g-3">
+						<div class="col-auto">
+							<label>Search</label>
+
+						</div>
+						<div class="col-auto">
+							<label for="inputPassword2" class="visually-hidden">Name</label>
+							<input type="text" class="form-control" id="empName" placeholder="Employ Name">
+						</div>
+						<div class="col-auto">
+							<button type="submit" id="searchEmp" class="btn btn-primary mb-3">Search</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+			@foreach (var order in Model.FoodOrders)
+			{
+
+
+				<div class="card m-1">
+					<div class="card-body">
+						<div class="row row-cols-1 row-cols-md-2">
+							<div class="col col-md-4">
+								<div class="row row-cols-3">
+
+									<div class="col-auto">
+										<span class="badge customBage bg-secondary @(firstRow?"":"d-md-none")">Name</span>
+										<p class="p-0 m-0 " style="font-weight:600">@order.EmployeeName</p>
+									</div>
+									<div class="col-3">
+										<span class="badge customBage bg-secondary @(firstRow?"":"d-md-none")">Status</span>
+										@if (order.OrderCompleteStatus == 0)
+										{
+											<span>Pending</span>
+										}
+										else
+										{
+											<span>Completed</span>
+										}
+									</div>
+								</div>
+							</div>
+							<div class="col col-md-8">
+								<div class="row row-cols-4 row-cols-md-5">
+
+									<div class="col-4">
+										<span class="badge customBage bg-secondary @(firstRow?"":"d-md-none")">Item</span>
+										<p class="m-0" style="font-weight:600">@order.FoodName</p>
+									</div>
+									<div class="col-2">
+										<span class="badge customBage bg-secondary @(firstRow?"":"d-md-none")">Qnt</span>
+										<span>@order.Quantity</span>
+									</div>
+									<div class="col-3">
+										<span class="badge customBage bg-secondary @(firstRow?"":"d-md-none")">Price</span>
+										<span>@order.TotalPrice</span>
+									</div>
+									<div class="col-3 text-end">
+										@if (order.OrderCompleteStatus == 0)
+										{
+											<form method="post" asp-action="CompleteFoodOrder" asp-controller="OrdersByEmploy">
+												<input type="hidden" value="@order.FoodOrderId" name="foodId" />
+												<input type="hidden" value="@Model.FoodType" name="foodtype" />
+												<button type="submit" class="btn btn-primary btn-sm">Complete</button>
+											</form>
+										}
+									</div>
+
+								</div>
+
+							</div>
+						</div>
+					</div>
+				</div>
+				firstRow = false;
+			}
+
+
+			<div class="table-responsive  d-none">
+				<table class="table table-hover table-responsive-sm table-borderless customTable">
+					<thead>
+						<tr>
+							<th>Order Date</th>
+							<th>Employ Name</th>
+							<th>Food Name</th>
+							<th>Quantity</th>
+							<th>Price</th>
+							<th>Status</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach (var order in Model.FoodOrders)
+						{
+							<tr>
+								<td>@order.OrderDate.ToString("dd/MM/yyyy")</td>
+								<td>@order.EmployeeName</td>
+								<td>@order.FoodName</td>
+								<td>@order.Quantity</td>
+								<td>@order.TotalPrice.ToString()</td>
+								<td>
+									@if (@order.OrderCompleteStatus == (int)OrderCompleteStatusEnum.Pending)
+									{
+										<span class="badge rounded-pill bg-secondary">Pending</span>
+									}
+									else
+									{
+										<span class="badge rounded-pill bg-primary">Completed</span>
+									}
+								</td>
+								<td>
+									<form method="post" asp-action="CompleteFoodOrder" asp-controller="OrdersByEmploy">
+										<input type="hidden" value="@order.FoodOrderId" name="foodId" />
+										<input type="hidden" value="@Model.FoodType" name="foodtype" />
+										<button type="submit" class="btn btn-primary btn-sm">Complete</button>
+									</form>
+								</td>
+							</tr>
+						}
+
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+	</div>
+</div>
+@section Scripts {
+	<script>
+			 $(document).ready(function () {
+			$('#searchEmp').click(function () {
+				//alert("btnclick");
+			});
+		});
+	</script>
+}

@@ -25,7 +25,7 @@ namespace CanteenManage.Models
         public bool WeekFour { get; set; }
         public bool MonDay { get; set; }
         public bool TuesDay { get; set; }
-        public bool WedgesDay { get; set; }
+        public bool WednesDay { get; set; }
         public bool ThusDay { get; set; }
         public bool FryDay { get; set; }
 

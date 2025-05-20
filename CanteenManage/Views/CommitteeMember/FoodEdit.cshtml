@@ -63,7 +63,7 @@
                     </div>
                     <div class="form-check form-check-inline">
                         <label class="form-check-label">
-                            <input class="form-check-input" asp-for="WedgesDay" /> WednesDay
+                            <input class="form-check-input" asp-for="WednesDay" /> WednesDay
                         </label>
                     </div>
                     <div class="form-check form-check-inline">
@@ -106,11 +106,7 @@
                     <input asp-for="Rating" class="form-control" type="number" min="0" max="5" />
                         <span asp-validation-for="Rating" class="text-danger"></span>
                     </div>
-                    <div class="form-group">
-                        <label asp-for="AvailableOnDay" class="control-label"></label>
-                        <input asp-for="AvailableOnDay" type="number" class="form-control" min="0" max="5" />
-                        <span asp-validation-for="AvailableOnDay" class="text-danger"></span>
-                    </div>
+                   
                     <div class="form-group">
                         <label asp-for="ImageUrl" class="control-label">Image Name (image type should equal to uploaded image)</label>
                         <input asp-for="ImageUrl" class="form-control" />

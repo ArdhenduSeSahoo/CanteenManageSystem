@@ -1,0 +1,84 @@
+﻿@using CanteenManage.Utility
+@model CanteenManage.Models.CanteenOrderReportViewDataModel
+
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+	Layout = "_Layout_canteenEmploy";
+}
+
+
+<div class="container-fluid">
+	<div class="card">
+		<div class="card-body">
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-3">
+						<h5 class="">Order Report</h5>
+
+						<form asp-action="GetCanteenOrderReportData" method="post">
+							<div class="form-group">
+								<div class="input-group">
+									<select class="form-select" id="DDL_Id" name="DDL_Id" aria-label="months" asp-items="@(new SelectList(Model.ReportMonthsDDLDataModel,"DDL_Id", "Values"))">
+									</select>
+									<button class="btn btn-outline-primary" type="submit">Search</button>
+								</div>
+							</div>
+						</form>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="card">
+		<div class="card-body">
+			<span>@Model.ReportForMonthName</span>
+			<br />
+			<div class="table-responsive">
+				<table class="table table-bordered table-striped table-hover">
+					<thead>
+						<tr>
+
+							<th>Order Date</th>
+							<th>Order Count</th>
+							<th>Employ Order Count</th>
+							<th>TotalPrice</th>
+							<th>TotalEmployeePrice</th>
+							<th>TotalSubsidyPrice</th>
+
+						</tr>
+					</thead>
+					<tbody>
+						@foreach (var item in Model.canteenOrdersReportTableViewDataModels.Take(Model.canteenOrdersReportTableViewDataModels.Count() - 1))
+						{
+							<tr>
+								<td>@item.OrderDate.ToString("dd/MM/yyyy")</td>
+								<td>@item.TotalOrderCount</td>
+								<td>@item.TotalEmployeeCount</td>
+								<td>@item.TotalPrice</td>
+								<td>@item.TotalEmployeePrice</td>
+								<td>@item.TotalSubsidyPrice</td>
+							</tr>
+						}
+
+					</tbody>
+					<tfoot>
+						<tr>
+							<td style="font-weight:600">Total</td>
+							<td style="font-weight:600">@(Model.canteenOrdersReportTableViewDataModels.LastOrDefault().TotalOrderCount)</td>
+							<td style="font-weight:600">
+								@(Model.canteenOrdersReportTableViewDataModels.LastOrDefault().TotalEmployeeCount)
+							</td>
+							<td style="font-weight:600">@(Model.canteenOrdersReportTableViewDataModels.LastOrDefault().TotalPrice)</td>
+							<td style="font-weight:600">@(Model.canteenOrdersReportTableViewDataModels.LastOrDefault().TotalEmployeePrice)</td>
+							<td style="font-weight:600">@(Model.canteenOrdersReportTableViewDataModels.LastOrDefault().TotalSubsidyPrice)</td>
+						</tr>
+					</tfoot>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>

@@ -58,6 +58,7 @@
     transition: all 0.2s ease-in-out;
     min-width: 55px;
 }
+
     .date-btn small {
         font-size: 12px;
         color: #666;
@@ -66,6 +67,7 @@
     .date-btn:hover {
         background-color: #e0e0e0;
     }
+
     .date-btn[disabled] {
         cursor: no-drop;
     }
@@ -78,3 +80,30 @@
         .date-btn.active small {
             color: #f0f0f0;
         }
+
+.customCard {
+    border-radius: 10px;
+}
+
+.cardTitle {
+    padding: 15px;
+    padding-left: 15px;
+    padding-bottom: 5px;
+    color: green;
+}
+
+.custom_card_body {
+    padding-top: 2px;
+}
+
+.customTable thead tr th {
+    font-weight: 500;
+}
+
+.customTable tbody tr td {
+    vertical-align: middle;
+}
+
+.customTableBoldCell {
+    font-weight: 600;
+}

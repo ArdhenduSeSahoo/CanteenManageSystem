@@ -2,7 +2,7 @@
 
 namespace CanteenManage.Models
 {
-    public class OrderHistoryPageDataModel
+    public class OrderHistoryPageDataModel : LayoutViewDataModel
     {
         public List<FoodOrder> BreakFastFoodOrders { get; set; }
         public List<FoodOrder> LunchFoodOrders { get; set; }

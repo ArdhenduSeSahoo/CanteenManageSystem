@@ -1,7 +1,7 @@
-﻿using CanteenManage.Repo.Models;
+﻿using CanteenManage.CanteenRepository.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace CanteenManage.Repo.Contexts
+namespace CanteenManage.CanteenRepository.Contexts
 {
     public class CanteenManageDBContext : DbContext
     {
@@ -11,11 +11,12 @@ namespace CanteenManage.Repo.Contexts
         public DbSet<Food> Foods { get; set; }
         public DbSet<FoodType> FoodTypes { get; set; }
         public DbSet<FoodOrder> FoodOrders { get; set; }
-        public DbSet<Employe> Employes { get; set; }
+        public DbSet<Employee> Employes { get; set; }
         public DbSet<EmployType> EmployTypes { get; set; }
         public DbSet<FoodReviewDetails> FoodReviewDetails { get; set; }
-
-
+        public DbSet<FoodAvailabilityDay> FoodAvailabilityDays { get; set; }
+        public DbSet<EmployFeedback> EmployFeedbacks { get; set; }
+        public DbSet<EmployeeCart> EmployeeCarts { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             //base.OnModelCreating(modelBuilder);
@@ -36,6 +37,11 @@ namespace CanteenManage.Repo.Contexts
                 {
                     Id = 3,
                     Name = "Evening Snacks"
+                },
+                new FoodType
+                {
+                    Id = 4,
+                    Name = "Quick Food"
                 }
                 );
             });
@@ -180,7 +186,7 @@ namespace CanteenManage.Repo.Contexts
                     Price = 100,
                     FoodTypeId = 2,
                     IsAvailable = true,
-                    ImageUrl = "Chicken_Thali.jpg"
+                    ImageUrl = "Egg_Thali.jpg"
                 },
                 new Food
                 {
@@ -364,48 +370,69 @@ namespace CanteenManage.Repo.Contexts
                     Id = 3,
                     Name = "Employee",
                     Description = "Employee"
+                },
+                new EmployType
+                {
+                    Id = 4,
+                    Name = "Committee Members",
+                    Description = "committee members"
                 }
                 );
             });
-            modelBuilder.Entity<Employe>(e =>
+            modelBuilder.Entity<Employee>(e =>
             {
                 e.HasData(
-                    new Employe
+                    new Employee
                     {
                         Id = 1,
                         Name = "Ardhendu Sekhar Sahoo",
                         EmployTypeId = 3,
                         EmployID = "SD1265",
+                        Password = "",
                         Email = "",
                         PhoneNumber = "",
                         IsActive = true
                     }
-                    , new Employe
+                    , new Employee
                     {
                         Id = 2,
                         Name = "Rojalin ",
                         EmployTypeId = 3,
                         EmployID = "EMP002",
+                        Password = "",
                         Email = "",
                         PhoneNumber = "",
                         IsActive = true
                     },
-                    new Employe
+                    new Employee
                     {
                         Id = 3,
                         Name = "Satyajit",
                         EmployTypeId = 2,
                         EmployID = "EMP003",
+                        Password = "",
                         Email = "",
                         PhoneNumber = "",
                         IsActive = true
                     },
-                    new Employe
+                    new Employee
                     {
                         Id = 4,
                         Name = "Ardhendu Admin",
                         EmployTypeId = 1,
                         EmployID = "EMP004",
+                        Password = "",
+                        Email = "",
+                        PhoneNumber = "",
+                        IsActive = true
+                    },
+                    new Employee
+                    {
+                        Id = 5,
+                        Name = "Ardhendu Member",
+                        EmployTypeId = 4,
+                        EmployID = "EMP005",
+                        Password = "",
                         Email = "",
                         PhoneNumber = "",
                         IsActive = true

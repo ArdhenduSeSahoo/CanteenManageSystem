@@ -1,0 +1,62 @@
+﻿@model CanteenManage.Models.CartItemListPanelViewDataModel
+@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+<div class="col @(Model.employeeCarts.Count()<=0?"d-none":"") ">
+	<div class="card customCard">
+		<div class="cardTitle fw-bold">
+			@Model.panelTitle
+		</div>
+		<div class="card-body custom_card_body">
+			<div class="table-responsive">
+				<table class="table table-hover table-responsive-sm table-borderless customTable">
+					<thead>
+						<tr>
+							<th>Date</th>
+							<th>Name</th>
+							<th>Quantity</th>
+							<th>Price</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach (var order in Model.employeeCarts)
+						{
+							<tr>
+								<td>@order.OrderDate.ToString("dd-MM-")@order.OrderDate.ToString("ddd")</td>
+								<td class="customTableBoldCell">@order.Food.Name</td>
+								<td>@order.Quantity.ToString()</td>
+								<td class="" style="text-align:end">@order.TotalPrice.ToString()</td>
+								<td class="align-self-center text-center align-t" style="vertical-align:middle;">
+									@if (
+																	false
+																	)
+									{
+										@if (int.Parse(DateTime.Now.ToString("HH")) < 6)
+										{
+											<form asp-action="RemoveOrder" method="post">
+												<input type="hidden" name="orderId" value="@order.Id" />
+												<button type="submit" class="btn btn-danger btn-sm">
+													old
+												</button>
+											</form>
+										}
+									}
+									else
+									{
+										<form asp-action="RemoveOrder" method="post">
+											<input type="hidden" name="orderId" value="@order.Id" />
+											<button type="submit" class="btn btn-outline-danger btn-sm">
+												<i class="fa fa-trash" aria-hidden="true"></i>
+											</button>
+										</form>
+									}
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>

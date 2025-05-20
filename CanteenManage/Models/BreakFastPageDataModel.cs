@@ -2,7 +2,7 @@
 
 namespace CanteenManage.Models
 {
-    public class BreakFastPageDataModel
+    public class BreakFastPageDataModel : LayoutViewDataModel
     {
         public List<DaysOfWeekModel> DayOfWeeks { get; set; }
         public FoodOrder foodOrder { get; set; }
