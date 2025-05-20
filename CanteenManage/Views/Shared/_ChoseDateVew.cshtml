@@ -6,19 +6,20 @@
 
 
 @{
-    var dayes = Model.daysOfWeekModel;
+	var dayes = Model.daysOfWeekModel;
 }
 
 
 <div class="" style="margin-left:2px">
-    <form asp-action="SelectDaysOfWeek" method="post">
-        <input type="hidden" name="selecteddate" value="@(dayes.DateShort)" />
-        <input type="hidden" name="selecteddatefull" value="@(dayes.DateFull)" />
-        @* <button class="date-btn @(dayes.IsSelected ? "active" : "")" @(!dayes.IsActiveDay ? "disabled" : "")>
-            @dayes.DateShort<br><small>@dayes.DaysOfWeekName</small></button> *@
-        <button class="date-btn @(dayes.IsSelected ? "active" : "")">
+	<form asp-action="SelectDaysOfWeek" method="post">
+		<input type="hidden" name="selecteddate" value="@(dayes.DateShort)" />
+		<input type="hidden" name="selecteddatefull" value="@(dayes.DateFull)" />
+		<button class="date-btn @(dayes.IsSelected ? "active" : "")" @(!dayes.IsActiveDay ? "disabled" : "")>
+			@dayes.DateShort<br><small>@dayes.DaysOfWeekName</small>
+		</button>
+		@* <button class="date-btn @(dayes.IsSelected ? "active" : "")">
             @dayes.DateShort<br><small>@dayes.DaysOfWeekName</small>
-        </button>
-       
-    </form>
+        </button> *@
+
+	</form>
 </div>
