@@ -67,7 +67,7 @@ namespace CanteenManage.Controllers
             {
 
             }
-            return View();
+            return this.RedirectToAction(actionName: "Index", controllerName: "Login");
         }
 
         public IActionResult Signout()
