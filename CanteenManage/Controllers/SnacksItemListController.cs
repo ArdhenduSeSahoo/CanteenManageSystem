@@ -28,13 +28,13 @@ namespace CanteenManage.Controllers
         public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
 
-            if (SessionDataHelper.getSessionUserId(HttpContext.Session) is null)
+            if (utilityServices.getSessionUserId(HttpContext.Session) is null)
             {
                 return RedirectToAction("Login", "Index");
             }
             int snaksFoodID = (int)FoodTypeEnum.Snacks;
-            List<DaysOfWeekModel> daysOfWeek = DateCalculationService.GetDaysOfWeek(hourBeforeDisable: 15);
-            SessionDataModel sessionDataModel = SessionDataHelper.GetSessionDataModel(HttpContext.Session);
+            List<DaysOfWeekModel> daysOfWeek = utilityServices.GetDaysOfWeek(hourBeforeDisable: 15);
+            SessionDataModel sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
             int Session_selectedDay_On_SamePage = Convert.ToInt32(HttpContext.Session.GetString(SessionConstants.UserSelectedDayOnSamePage));
 
             if (sessionDataModel.UserSelectedDay != null && Session_selectedDay_On_SamePage == 1)
@@ -82,7 +82,7 @@ namespace CanteenManage.Controllers
             snaksItemPageDataModel.totalCountForSelectedDay = foodOrderByUser.Sum(fo => fo.Quantity);
             snaksItemPageDataModel.foods = foodSnaksAll;
             snaksItemPageDataModel.CartItemCount = await foodListingService.GetCartItemCount(
-                                                           SessionDataHelper.getSessionUserId(HttpContext.Session) ?? 0,
+                                                           utilityServices.getSessionUserId(HttpContext.Session) ?? 0,
                                                            cancellationToken
                                                            );
             return View(snaksItemPageDataModel);

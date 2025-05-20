@@ -19,7 +19,7 @@ namespace CanteenManage.Controllers
         }
         public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
-            if (SessionDataHelper.getSessionUserId(HttpContext.Session) is null)
+            if (utilityServices.getSessionUserId(HttpContext.Session) is null)
             {
                 return RedirectToAction("Login", "Index");
             }
@@ -27,7 +27,7 @@ namespace CanteenManage.Controllers
             try
             {
                 //TimeSpan ts= utilityServices.GetSpecificTimeSpan(foodTypeEnum: FoodTypeEnum.Snacks);
-                SessionDataModel sessionDataModel = SessionDataHelper.GetSessionDataModel(HttpContext.Session);
+                SessionDataModel sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
                 DateTime snacks_dateTime = DateTime.Now.Date; //+ ts;
                 //List<DaysOfWeekModel> daysOfWeek = DateCalculationService.GetDaysOfWeek();
                 //var daysOfWeek_for_snaks = daysOfWeek.Where(
@@ -58,7 +58,7 @@ namespace CanteenManage.Controllers
                     .Include(f => f.Food)
                     .Where(
                     fo => fo.Food.FoodTypeId == 2
-                    && fo.EmployeeId == SessionDataHelper.getSessionUserId(HttpContext.Session)
+                    && fo.EmployeeId == utilityServices.getSessionUserId(HttpContext.Session)
                     //&& daysOfWeek_for_lunch.Select(s => s.DateTime.Date).Contains(fo.OrderDate.Date)
                     && fo.OrderDate.Date >= DateTime.Now.Date
                     )
@@ -76,7 +76,7 @@ namespace CanteenManage.Controllers
                     .Include(f => f.Food)
                     .Where(
                     fo => fo.Food.FoodTypeId == 1
-                    && fo.EmployeeId == SessionDataHelper.getSessionUserId(HttpContext.Session)
+                    && fo.EmployeeId == utilityServices.getSessionUserId(HttpContext.Session)
                     //&& daysOfWeek_for_breakfast.Select(s => s.DateTime.Date).Contains(fo.OrderDate.Date)
                     && fo.OrderDate.Date >= DateTime.Now.Date
                     )
@@ -94,7 +94,7 @@ namespace CanteenManage.Controllers
         [HttpPost]
         public async Task<IActionResult> removeOrder(IFormCollection formcollect)
         {
-            if (SessionDataHelper.getSessionUserId(HttpContext.Session) is null)
+            if (utilityServices.getSessionUserId(HttpContext.Session) is null)
             {
                 return RedirectToAction("Login", "Index");
             }

@@ -12,22 +12,24 @@ namespace CanteenManage.Controllers
         private readonly CanteenManageDBContext canteenManageContext;
         private readonly OrderingService orderingService;
         private readonly CartService cartService;
-        public CartController(CanteenManageDBContext canteenManageContext, OrderingService ordering, CartService cartService)
+        private readonly UtilityServices utilityServices;
+        public CartController(CanteenManageDBContext canteenManageContext, OrderingService ordering, CartService cartService, UtilityServices utilityServices)
         {
             this.canteenManageContext = canteenManageContext;
             this.orderingService = ordering;
             this.cartService = cartService;
+            this.utilityServices = utilityServices;
         }
         public async Task<IActionResult> CartIndex(CancellationToken cancellationToken)
         {
-            if (SessionDataHelper.getSessionUserId(HttpContext.Session) is null)
+            if (utilityServices.getSessionUserId(HttpContext.Session) is null)
             {
                 return RedirectToAction("Login", "Index");
             }
             CartViewDataModel cartViewDataModel = new CartViewDataModel();
             try
             {
-                SessionDataModel sessionDataModel = SessionDataHelper.GetSessionDataModel(HttpContext.Session);
+                SessionDataModel sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
                 var breakfastCart = await cartService.getCartList((int)FoodTypeEnum.Breakfast,
                     sessionDataModel.UserId,
                     cancellationToken
@@ -64,7 +66,7 @@ namespace CanteenManage.Controllers
 
                 if (!string.IsNullOrEmpty(orderId))
                 {
-                    SessionDataModel sessionDataModel = SessionDataHelper.GetSessionDataModel(HttpContext.Session);
+                    SessionDataModel sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
                     if (!string.IsNullOrEmpty(orderType))
                     {
                         await cartService.ClearCart(sessionDataModel, int.Parse(orderId), cancellationToken, int.Parse(orderType));
@@ -87,7 +89,7 @@ namespace CanteenManage.Controllers
         [HttpPost]
         public async Task<IActionResult> PlaceOrder(CancellationToken cancellationToken)//IFormCollection formcollect,
         {
-            SessionDataModel SessionDataModel = SessionDataHelper.GetSessionDataModel(HttpContext.Session);
+            SessionDataModel SessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
             await cartService.PlaceOrder(sessionData: SessionDataModel, cancellationToken: cancellationToken);
             return this.RedirectToAction("CartIndex");
         }
