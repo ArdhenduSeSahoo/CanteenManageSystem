@@ -5,24 +5,25 @@ using CanteenManage.Utility;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CanteenManage.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CanteenManage.Controllers
 {
+    [Authorize(Roles = "Employee")]
     public class MyOrdersController : Controller
     {
         private readonly CanteenManageDBContext canteenManageContext;
         private readonly UtilityServices utilityServices;
-        public MyOrdersController(CanteenManageDBContext canteenManageContext, UtilityServices utility)
+        private readonly FoodListingService foodListingService;
+        public MyOrdersController(CanteenManageDBContext canteenManageContext, UtilityServices utility, FoodListingService foodListingService)
         {
             this.canteenManageContext = canteenManageContext;
             this.utilityServices = utility;
+            this.foodListingService = foodListingService;
         }
         public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
-            if (utilityServices.getSessionUserId(HttpContext.Session) is null)
-            {
-                return RedirectToAction("Login", "Index");
-            }
+
             MyOrderViewDataModel myOrderViewDataModel = new MyOrderViewDataModel();
             try
             {
@@ -57,7 +58,7 @@ namespace CanteenManage.Controllers
                 var lunchorders = await canteenManageContext.FoodOrders
                     .Include(f => f.Food)
                     .Where(
-                    fo => fo.Food.FoodTypeId == 2
+                    fo => fo.Food.FoodTypeId == (int)FoodTypeEnum.Lunch
                     && fo.EmployeeId == utilityServices.getSessionUserId(HttpContext.Session)
                     //&& daysOfWeek_for_lunch.Select(s => s.DateTime.Date).Contains(fo.OrderDate.Date)
                     && fo.OrderDate.Date >= DateTime.Now.Date
@@ -75,13 +76,18 @@ namespace CanteenManage.Controllers
                 var breakfastorders = await canteenManageContext.FoodOrders
                     .Include(f => f.Food)
                     .Where(
-                    fo => fo.Food.FoodTypeId == 1
+                    fo => fo.Food.FoodTypeId == (int)FoodTypeEnum.Breakfast
                     && fo.EmployeeId == utilityServices.getSessionUserId(HttpContext.Session)
                     //&& daysOfWeek_for_breakfast.Select(s => s.DateTime.Date).Contains(fo.OrderDate.Date)
                     && fo.OrderDate.Date >= DateTime.Now.Date
                     )
                     .ToListAsync(cancellationToken);
                 myOrderViewDataModel.BreakFastFoodOrders = breakfastorders;
+
+                myOrderViewDataModel.CartItemCount = await foodListingService.GetCartItemCount(
+                                                           utilityServices.getSessionUserId(HttpContext.Session) ?? 0,
+                                                           cancellationToken
+                                                           );
             }
             catch (Exception ex)
             {
@@ -94,10 +100,10 @@ namespace CanteenManage.Controllers
         [HttpPost]
         public async Task<IActionResult> removeOrder(IFormCollection formcollect)
         {
-            if (utilityServices.getSessionUserId(HttpContext.Session) is null)
-            {
-                return RedirectToAction("Login", "Index");
-            }
+            //if (utilityServices.getSessionUserId(HttpContext.Session) is null)
+            //{
+            //    return RedirectToAction("Login", "Index");
+            //}
             try
             {
                 var foodstoremove = canteenManageContext.FoodOrders.Where(fo => fo.Id == int.Parse(formcollect["orderId"])).FirstOrDefault();

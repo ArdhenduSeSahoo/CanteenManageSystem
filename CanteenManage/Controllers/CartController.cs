@@ -3,10 +3,12 @@ using CanteenManage.CanteenRepository.Contexts;
 using CanteenManage.Models;
 using CanteenManage.Services;
 using CanteenManage.Utility;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CanteenManage.Controllers
 {
+    [Authorize(Roles = "Employee")]
     public class CartController : Controller
     {
         private readonly CanteenManageDBContext canteenManageContext;
@@ -22,10 +24,6 @@ namespace CanteenManage.Controllers
         }
         public async Task<IActionResult> CartIndex(CancellationToken cancellationToken)
         {
-            if (utilityServices.getSessionUserId(HttpContext.Session) is null)
-            {
-                return RedirectToAction("Login", "Index");
-            }
             CartViewDataModel cartViewDataModel = new CartViewDataModel();
             try
             {

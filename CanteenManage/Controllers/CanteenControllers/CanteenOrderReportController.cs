@@ -8,10 +8,12 @@ namespace CanteenManage.Controllers.CanteenControllers
     public class CanteenOrderReportController : Controller
     {
         private readonly FoodListingService foodListingService;
+        private readonly OrderingService _orderingService;
 
-        public CanteenOrderReportController(FoodListingService foodListingService)
+        public CanteenOrderReportController(FoodListingService foodListingService, OrderingService orderingService)
         {
             this.foodListingService = foodListingService;
+            _orderingService = orderingService;
         }
 
         public async Task<IActionResult> CanteenOrderReport(CancellationToken cancellationToken, int? month, int? year)
@@ -56,6 +58,39 @@ namespace CanteenManage.Controllers.CanteenControllers
 
             }
             return this.RedirectToAction("CanteenOrderReport", new { month = monthfromForm, year = yearfromForm });
+        }
+
+        public async Task<IActionResult> Feedback(int page = 1, int pageSize = 10, CancellationToken cancellationToken = default)
+        {
+            var feedbackList = await _orderingService.GrtFeedbackList(cancellationToken);
+
+            // Calculate pagination values
+            var totalItems = feedbackList.Count;
+            var totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+            var paginatedItems = feedbackList.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            FeedbackViewModel canteenFeedbackViewDataModel = new FeedbackViewModel
+            {
+                foodOrders = paginatedItems,
+                CurrentPage = page,
+                PageSize = pageSize,
+                TotalItems = totalItems,
+                TotalPages = totalPages
+            };
+
+            return View(canteenFeedbackViewDataModel);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> FeedbackSubmit(int FoodOrderId, string ActionTaken, CancellationToken cancellationToken)
+        {
+            if (FoodOrderId > 0 && !string.IsNullOrWhiteSpace(ActionTaken))
+            {
+                await _orderingService.GetByIdFeedback(FoodOrderId, ActionTaken, cancellationToken);
+            }
+
+            return RedirectToAction("Feedback");
         }
     }
 }

@@ -20,6 +20,7 @@ namespace CanteenManage.CanteenRepository.Models
         public int? Rating { get; set; }
         [StringLength(10000)]
         public string Review { get; set; } = string.Empty;
+        public string ActionTaken { get; set; } = string.Empty;
         public DateTime RatingCreatedAt { get; set; }
 
 

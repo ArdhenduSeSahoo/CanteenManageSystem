@@ -5,24 +5,18 @@
     using CanteenManage.Models;
     using CanteenManage.Services;
     using CanteenManage.Utility;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
 
-    /// <summary>
-    /// Defines the <see cref="BreakFastItemsController" />
-    /// </summary>
+
+    [Authorize(Roles = "Employee")]
     public class BreakFastItemsController : Controller
     {
 
         private readonly FoodListingService foodListingService;
 
-        /// <summary>
-        /// Defines the cartService
-        /// </summary>
         private readonly CartService cartService;
 
-        /// <summary>
-        /// Defines the utilityServices
-        /// </summary>
         private readonly UtilityServices utilityServices;
 
         public BreakFastItemsController(FoodListingService foodListingService, CartService cartService, UtilityServices utilityServices)
@@ -39,21 +33,21 @@
         /// </summary>
         /// <param name="cancellationToken">The cancellationToken<see cref="CancellationToken"/></param>
         /// <returns>The <see cref="Task{IActionResult}"/></returns>
-        public async Task<IActionResult> Index(CancellationToken cancellationToken)
+        public async Task<IActionResult> Index(CancellationToken cancellationToken, int DaySelectOnSamePage = 0)
         {
             int FoodType = (int)FoodTypeEnum.Breakfast;
             List<DaysOfWeekModel> daysOfWeek = utilityServices.GetDaysOfWeek(hourBeforeDisable: 6);
             //string? Session_selectedDay = HttpContext.Session.GetString(SessionConstants.UserSelectedDay);
             SessionDataModel sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
-            int Session_selectedDay_On_SamePage = Convert.ToInt32(HttpContext.Session.GetString(SessionConstants.UserSelectedDayOnSamePage));
-            if (sessionDataModel.UserSelectedDay != null)
+
+            if (sessionDataModel.UserSelectedDay != null && DaySelectOnSamePage == 1)
             {
                 var selectedDate = daysOfWeek.Where(d => d.DateShort == sessionDataModel.UserSelectedDay).FirstOrDefault();
                 if (selectedDate != null)
                 {
                     selectedDate.IsSelected = true;
                 }
-                HttpContext.Session.SetString(SessionConstants.UserSelectedDayOnSamePage, "0");
+
             }
             else
             {
@@ -64,6 +58,7 @@
                     HttpContext.Session.SetString(SessionConstants.UserSelectedDay, firstActiveDay.DateShort);
                     HttpContext.Session.SetString(SessionConstants.UserSelectedDayFull, firstActiveDay.DateFull);
                 }
+                sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
             }
             await cartService.CheckOutOfOrderInCart(
                                                                 foodTypeEnum: FoodTypeEnum.Breakfast,
@@ -113,7 +108,7 @@
 
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", new { DaySelectOnSamePage = 1 });
         }
     }
 }

@@ -186,5 +186,46 @@ namespace CanteenManage.Services
                     .ToListAsync();
             return orderList;
         }
+
+        public async Task<List<FoodOrder>> GrtFeedbackList(CancellationToken cancellationToken)
+        {
+            var feedbacklist = await canteenManageContext.FoodOrders
+                .Include(f => f.Food)
+                .Where(x => x.Review != "")
+                .ToListAsync(cancellationToken);
+            return feedbacklist;
+        }
+        //public async Task<FoodOrder> GetByIdFeedback(int FoodOrderId, string ActionTaken, CancellationToken cancellationToken)
+        //{
+        //    var order = await canteenManageContext.FoodOrders.FindAsync(FoodOrderId);
+        //    if (order != null && !string.IsNullOrWhiteSpace(ActionTaken))
+        //    {
+        //        order.ActionTaken = ActionTaken;
+        //        await canteenManageContext.SaveChangesAsync(cancellationToken);
+        //    }
+        //    return order;
+        //}
+        public async Task<FoodOrder?> GetByIdFeedback(int FoodOrderId, string? ActionTaken, CancellationToken cancellationToken)
+        {
+            if (FoodOrderId <= 0)
+            {
+                return null;
+            }
+
+            var order = await canteenManageContext.FoodOrders.FindAsync(FoodOrderId);
+
+            if (order == null)
+            {
+                return null;
+            }
+
+            if (!string.IsNullOrWhiteSpace(ActionTaken))
+            {
+                order.ActionTaken = ActionTaken;
+                await canteenManageContext.SaveChangesAsync(cancellationToken);
+            }
+
+            return order;
+        }
     }
 }

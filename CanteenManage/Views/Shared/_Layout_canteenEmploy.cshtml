@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using CanteenManage.Utility
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+<!DOCTYPE html>
 <html lang="en">
 <head>
 	<meta charset="utf-8" />
@@ -9,6 +11,9 @@
 
 	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/CanteenManage.styles.css" asp-append-version="true" />
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
 	@await RenderSectionAsync("HeadSection", required: false)
 </head>
 <body style="
@@ -20,6 +25,7 @@ background-color:#f7f7f7
 				<div class="bg-white rounded-3">
 					<a class="navbar-brand" style="margin:0px" asp-area="" asp-controller="EmployDashboard" asp-action="Index">
 						<img src="~/images/logoImg2.png" alt="logo" class="img-fluid" style="height:40px;width:115px" />
+
 					</a>
 				</div>
 				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
@@ -29,26 +35,51 @@ background-color:#f7f7f7
 				<div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
 					<ul class="navbar-nav flex-grow-1" style="">
 						<li class="nav-item customNavItem">
-							<a class="nav-link nav_link text-center" asp-area="" asp-controller="CanteenEmploy" asp-action="Index">Food Orders</a>
+							<a class="nav-link nav_link text-center" asp-area="" asp-controller="CanteenEmploy" asp-action="Index">All Orders</a>
 						</li>
 						<li class="nav-item customNavItem">
-							<a class="nav-link nav_link text-center" asp-area="" asp-controller="OrdersByEmploy" asp-action="OrderByEmployIdx">Employ Orders</a>
+							<a class="nav-link nav_link text-center" asp-area="" asp-controller="OrdersByEmploy" asp-action="OrderByEmployIdx">Today's Orders</a>
 						</li>
 
 						<li class="nav-item customNavItem">
 							<a class="nav-link nav_link text-center" asp-area="" asp-controller="CanteenOrderReport" asp-action="CanteenOrderReport">Orders Reports</a>
 						</li>
+						<li class="nav-item customNavItem">
+							<a class="nav-link nav_link text-center" asp-area="" asp-controller="CanteenOrderReport" asp-action="Feedback">Feedback</a>
+						</li>
+
 
 
 					</ul>
 					<ul class="navbar-nav" style="">
-						<li class="nav-item customNavItem" style="background-color: #a3e3f0;
+						@* 	<li class="nav-item customNavItem" style="background-color: #a3e3f0;
     color: red !important;
     font-size: 17px;
     font-weight: 500;
     border-radius: 10px;">
 							<a class="nav-link " asp-area="" asp-controller="Login" asp-action="Signout" style="color:red;">
 								<img src="~/images/logout.png" alt="sdf" class="fa-navicon" style="height:22px" />
+							</a>
+						</li> *@
+						<li class="nav-item" style=" font-weight: 600;
+color: white;">
+							@* <span class="nav-link text-center nav_link ">Ardhendu</span> *@
+							@{
+								var username = HttpContextAccessor.HttpContext.Session.GetString(SessionConstants.UserName);
+								var firstName = !string.IsNullOrEmpty(username) ? username.Split(' ')[0] : "";
+							}
+
+							@if (!string.IsNullOrEmpty(username))
+							{
+								<span class="nav-link text-center nav_link ">
+									@firstName
+								</span>
+							}
+
+						</li>
+						<li>
+							<a class="nav-link text-center" asp-area="" asp-controller="Login" asp-action="Signout" title="Logout">
+								<i class="fa fa-sign-out" aria-hidden="true" style="font-size:30px; z-index:100; margin-right:5px; color:white;"></i>
 							</a>
 						</li>
 					</ul>
@@ -68,6 +99,7 @@ background-color:#f7f7f7
 	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 	<script src="~/lib/fontawesome-free-6.7.2-web/js/all.min.js"></script>
 	<script src="~/js/site.js" asp-append-version="true"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 	@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

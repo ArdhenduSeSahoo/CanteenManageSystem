@@ -1,74 +1,91 @@
-﻿<!DOCTYPE html>
+﻿@using CanteenManage.Utility
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - ESSPL Canteen Connect</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/lib/fontawesome-free-6.7.2-web/css/all.min.css" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>@ViewData["Title"] - ESSPL Canteen Connect</title>
+	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="~/lib/fontawesome-free-6.7.2-web/css/all.min.css" />
 
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/CanteenManage.styles.css" asp-append-version="true" />
-    <style>
-        .nav_link {
-            color: white !important;
-        }
-    </style>
-    @await RenderSectionAsync("HeadSection", required: false)
+	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/CanteenManage.styles.css" asp-append-version="true" />
+	<style>
+		.nav_link {
+			color: white !important;
+		}
+	</style>
+	@await RenderSectionAsync("HeadSection", required: false)
 </head>
 <body style="
 background-color:#f7f7f7
 ">
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-info border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <div class="bg-white rounded-3">
-                    <a class="navbar-brand" style="margin:0px" asp-area="" asp-controller="EmployDashboard" asp-action="Index">
-                        <img src="~/images/logoImg2.png" alt="logo" class="img-fluid" style="height:40px;width:115px" />
-                    </a>
-                </div>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1" style="">
-                        <li class="nav-item customNavItem">
-                            <a class="nav-link nav_link text-center" asp-area="" asp-controller="EmployDashboard" asp-action="Index">Dashboard</a>
-                        </li>
-                        <li class="nav-item customNavItem">
-                            <a class="nav-link text-center nav_link " asp-action="FoodList">Food List</a>
-                        </li>
-                        
-
-                    </ul>
-                    <ul class="navbar-nav" style="">
-                        <li class="nav-item customNavItem" style="background-color: #a3e3f0;
-    color: red !important;
-    font-size: 17px;
-    font-weight: 500;
-    border-radius: 10px;">
-                            <a class="nav-link text-center " asp-area="" asp-controller="Login" asp-action="Signout" style="color:red;">
-                                <img src="~/images/logout.png" alt="sdf" class="fa-navicon" style="height:22px" />
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
-    <div class="">
-        <main role="main" class="">
-            @RenderBody()
-        </main>
-    </div>
+	<header>
+		<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-info border-bottom box-shadow mb-3">
+			<div class="container-fluid">
+				<div class="bg-white rounded-3">
+					<a class="navbar-brand" style="margin:0px" asp-area="" asp-controller="EmployDashboard" asp-action="Index">
+						<img src="~/images/logoImg2.png" alt="logo" class="img-fluid" style="height:40px;width:115px" />
+					</a>
+				</div>
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+						aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+					<ul class="navbar-nav flex-grow-1" style="">
+						<li class="nav-item customNavItem">
+							<a class="nav-link nav_link text-center" asp-area="" asp-controller="CommitteeMember" asp-action="CMDashboard">Dashboard</a>
+						</li>
+						<li class="nav-item customNavItem">
+							<a class="nav-link text-center nav_link " asp-controller="CommitteeMember" asp-action="FoodList">Food List</a>
+						</li>
+						<li class="nav-item customNavItem">
+							<a class="nav-link text-center nav_link " asp-controller="EmployeeOrderReport" asp-action="EmployeeCanteenOrderReports">Orders Reports</a>
+						</li>
 
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+					</ul>
+					<ul class="navbar-nav" style="">
+						<li class="nav-item" style=" font-weight: 600;
+color: white;">
+							@* <span class="nav-link text-center nav_link ">Ardhendu</span> *@
+							@{
+								var username = HttpContextAccessor.HttpContext.Session.GetString(SessionConstants.UserName);
+								var firstName = !string.IsNullOrEmpty(username) ? username.Split(' ')[0] : "";
+							}
 
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/lib/fontawesome-free-6.7.2-web/js/all.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+							@if (!string.IsNullOrEmpty(username))
+							{
+								<span class="nav-link text-center nav_link ">
+									@firstName
+								</span>
+							}
+
+						</li>
+						<li>
+							<a class="nav-link text-center" asp-area="" asp-controller="Login" asp-action="Signout" title="Logout">
+								<i class="fa fa-sign-out" aria-hidden="true" style="font-size:30px; z-index:100; margin-right:5px; color:white;"></i>
+							</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+	</header>
+	<div class="">
+		<main role="main" class="">
+			@RenderBody()
+		</main>
+	</div>
+
+
+	<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="~/lib/fontawesome-free-6.7.2-web/js/all.min.js"></script>
+	<script src="~/js/site.js" asp-append-version="true"></script>
+	@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

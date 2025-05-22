@@ -1,6 +1,6 @@
 ﻿namespace CanteenManage.Models
 {
-    public class EmployFoodOrdersTableDataModel
+    public class EmployeeFoodOrdersTableDataModel
     {
         public int FoodOrderId { get; set; }
         public string FoodName { get; set; }

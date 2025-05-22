@@ -45,6 +45,10 @@ body {
         color: black !important;
     }
 
+.btn-rounded {
+    border-radius: 25px;
+}
+
 .btn_addItem {
 }
 

@@ -12,35 +12,40 @@
 
 <div class=" container-fluid" style="
 ">
-	<div class="d-flex justify-content-between">
-		<div class="row">
-			<div class="col">
-				<h3>Breakfast Items</h3>
+	<div class="card mb-1" style="border-radius:15px">
+		<div class="card-body">
+			<div class="d-flex justify-content-between">
+				<div class="row">
+					<div class="col">
+						<h3>Breakfast Items</h3>
+					</div>
+				</div>
+			</div>
+
+			<div class="date-selector">
+				<label class="date-label">Choose Date:</label>
+				<div class="date-buttons">
+					@foreach (var dayes in Model.DayOfWeeks)
+					{
+
+						@(
+													await Html.PartialAsync("_ChoseDateVew", new ChoseDateViewDataModel()
+					{
+						daysOfWeekModel = dayes,
+					})
+													)
+					}
+
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<p>Total for day  @(Model.DayOfWeeks.Where(d => d.IsSelected)?.FirstOrDefault()?.DateShort) is:- <b><span class="food_total_quantity"> @(Model.totalCountForSelectedDay)</span></b></p>
+				</div>
 			</div>
 		</div>
 	</div>
 
-	<div class="date-selector">
-		<label class="date-label">Choose Date:</label>
-		<div class="date-buttons">
-			@foreach (var dayes in Model.DayOfWeeks)
-			{
-
-				@(
-							await Html.PartialAsync("_ChoseDateVew", new ChoseDateViewDataModel()
-			{
-				daysOfWeekModel = dayes,
-			})
-							)
-			}
-
-		</div>
-	</div>
-	<div class="row">
-		<div class="col">
-			<p>Total for day  @(Model.DayOfWeeks.Where(d => d.IsSelected)?.FirstOrDefault()?.DateShort) is:- <b><span class="food_total_quantity"> @(Model.totalCountForSelectedDay)</span></b></p>
-		</div>
-	</div>
 	<div class="row row-cols-1 row-cols-md-5 g-2">
 		@foreach (Food food in Model.foods)
 		{

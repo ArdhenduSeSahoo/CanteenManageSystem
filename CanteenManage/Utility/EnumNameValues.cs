@@ -23,4 +23,11 @@
         Pending = 0,
         Complete = 1
     }
+    public enum EmployTypeEnum
+    {
+        Admin = 1,
+        CanteenStaf = 2,
+        Employee = 3,
+        Committee_Members = 4,
+    }
 }

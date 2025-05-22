@@ -1,10 +1,14 @@
 using CanteenManage.CanteenRepository.Contexts;
+using CanteenManage.CanteenMiddleWare;
 using CanteenManage.Models;
 using CanteenManage.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using static NuGet.Packaging.PackagingConstants;
+using Microsoft.IdentityModel.Tokens;
+using CanteenManage.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,6 +50,43 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+
+    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = appConfigs.TokenIssuer,
+        ValidAudience = appConfigs.TokenAudience,
+        IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(appConfigs.SecretKey))
+    };
+    options.Events = new JwtBearerEvents
+    {
+        OnAuthenticationFailed = context =>
+        {
+            Console.WriteLine("Authentication failed: " + context.Exception.Message);
+            // Handle token validation failures (e.g., invalid token)
+            if (context.Exception is SecurityTokenInvalidSignatureException)
+            {
+                context.Fail("Invalid signature");
+            }
+            else if (context.Exception is SecurityTokenExpiredException)
+            {
+                context.Fail("Token expired");
+            }
+            return Task.CompletedTask;
+        }
+    };
+});
+
 builder.Services.AddPooledDbContextFactory<CanteenManageDBContext>(option =>
 {
     //option.UseSqlServer(builder.Configuration.GetConnectionString("CantenSystemDBConnection"));
@@ -54,7 +95,9 @@ builder.Services.AddPooledDbContextFactory<CanteenManageDBContext>(option =>
 
 builder.Services.AddScoped<CanteenManageContextFactory>();
 builder.Services.AddScoped(sp => sp.GetRequiredService<CanteenManageContextFactory>().CreateDbContext());
+builder.Services.AddScoped<AppConfigProvider>();
 builder.Services.AddScoped<UtilityServices>();
+builder.Services.AddTransient<LoginService>();
 builder.Services.AddScoped<FoodListingService>();
 builder.Services.AddScoped<OrderingService>();
 builder.Services.AddScoped<CartService>();
@@ -76,16 +119,20 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+app.UseStatusCodePages();
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
+    app.UseExceptionHandler("/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-
-app.UseCors(MyAllowSpecificOrigins);
 app.UseHttpsRedirection();
+
+app.UseMiddleware<ErrorHandlerMiddleware>();
+app.UseCors(MyAllowSpecificOrigins);
+
 app.UseStaticFiles(
     new StaticFileOptions
     {
@@ -102,6 +149,11 @@ app.UseStaticFiles(
     });
 app.UseStaticFiles();
 
+app.UseMiddleware<TokenAuthMiddleWare>();
+
+
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseRouting();
 
 app.UseAuthorization();

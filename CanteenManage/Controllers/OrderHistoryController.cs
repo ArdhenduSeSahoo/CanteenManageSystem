@@ -5,9 +5,11 @@ using CanteenManage.Utility;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CanteenManage.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CanteenManage.Controllers
 {
+    [Authorize(Roles = "Employee")]
     public class OrderHistoryController : Controller
     {
         private readonly CanteenManageDBContext canteenManageContext;
@@ -21,10 +23,10 @@ namespace CanteenManage.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            if (utilityServices.getSessionUserId(HttpContext.Session) is null)
-            {
-                return RedirectToAction("Login", "Index");
-            }
+            //if (utilityServices.getSessionUserId(HttpContext.Session) is null)
+            //{
+            //    return RedirectToAction("Login", "Index");
+            //}
             OrderHistoryPageDataModel myOrderViewDataModel = new OrderHistoryPageDataModel();
             try
             {
@@ -58,6 +60,7 @@ namespace CanteenManage.Controllers
                 var options = formcollect["options"];
                 var review = formcollect["review_text"];
                 var orderId = formcollect["order_id"];
+                var reviewdata = formcollect["review_text"];
                 //!string.IsNullOrEmpty(review) &&
                 if (!string.IsNullOrEmpty(options) && !string.IsNullOrEmpty(orderId))
                 {
@@ -86,7 +89,7 @@ namespace CanteenManage.Controllers
                         canteenManageContext.FoodReviewDetails.Update(foodReviewDetails);
                     }
                     foodOrder.Rating = Convert.ToInt32(options);
-                    foodOrder.Review = "..";
+                    foodOrder.Review = reviewdata;
                     foodOrder.RatingCreatedAt = DateTime.Now;
                     foodOrder.Food.Rating = (foodReviewDetails.TotalRating / foodReviewDetails.TotalUserCount);
                     canteenManageContext.FoodOrders.Update(foodOrder);

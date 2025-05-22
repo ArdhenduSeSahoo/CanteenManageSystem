@@ -19,10 +19,6 @@ namespace CanteenManage.Controllers
         }
         public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
-            if (utilityServices.getSessionUserId(HttpContext.Session) is null)
-            {
-                return RedirectToAction("Login", "Index");
-            }
 
             var snackesFoodlist = await foodListingService.getFoodOrderGroupList(3, cancellationToken);
 

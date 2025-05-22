@@ -15,6 +15,45 @@
 		}
 
 	</style>
+	<style>
+		/* Stack table rows on small screens */
+		@@media (max-width: 767.98px) {
+			.customTable thead {
+				display: none;
+			}
+
+			.customTable tr {
+				display: block;
+				margin-bottom: 1rem;
+				border: 1px solid #dee2e6;
+				border-radius: 0.5rem;
+				padding: 0.5rem;
+				background-color: #f8f9fa;
+			}
+
+			.customTable td {
+				display: flex;
+				justify-content: space-between;
+				padding: 0.5rem;
+				border: none;
+				border-bottom: 1px solid #dee2e6;
+			}
+
+				.customTable td:last-child {
+					border-bottom: none;
+				}
+
+				.customTable td::before {
+					content: attr(data-label);
+					font-weight: bold;
+					color: #6c757d;
+				}
+
+				.customTable td button {
+					margin-top: 0.5rem;
+				}
+		}
+	</style>
 }
 <div class="container-fluid">
 	<div class="card">
@@ -64,7 +103,7 @@
 			</div>
 
 
-			@foreach (var order in Model.FoodOrders)
+			@* @foreach (var order in Model.FoodOrders)
 			{
 
 
@@ -125,52 +164,112 @@
 				</div>
 				firstRow = false;
 			}
+ *@
 
-
-			<div class="table-responsive  d-none">
-				<table class="table table-hover table-responsive-sm table-borderless customTable">
-					<thead>
-						<tr>
-							<th>Order Date</th>
-							<th>Employ Name</th>
-							<th>Food Name</th>
-							<th>Quantity</th>
-							<th>Price</th>
-							<th>Status</th>
-							<th></th>
-						</tr>
-					</thead>
-					<tbody>
-						@foreach (var order in Model.FoodOrders)
-						{
+			<div class="table-responsive">
+				<div class="table-responsive">
+					<table class="table table-hover table-responsive-sm table-borderless customTable">
+						<thead>
 							<tr>
-								<td>@order.OrderDate.ToString("dd/MM/yyyy")</td>
-								<td>@order.EmployeeName</td>
-								<td>@order.FoodName</td>
-								<td>@order.Quantity</td>
-								<td>@order.TotalPrice.ToString()</td>
-								<td>
-									@if (@order.OrderCompleteStatus == (int)OrderCompleteStatusEnum.Pending)
-									{
-										<span class="badge rounded-pill bg-secondary">Pending</span>
-									}
-									else
-									{
-										<span class="badge rounded-pill bg-primary">Completed</span>
-									}
-								</td>
-								<td>
-									<form method="post" asp-action="CompleteFoodOrder" asp-controller="OrdersByEmploy">
-										<input type="hidden" value="@order.FoodOrderId" name="foodId" />
-										<input type="hidden" value="@Model.FoodType" name="foodtype" />
-										<button type="submit" class="btn btn-primary btn-sm">Complete</button>
-									</form>
-								</td>
+								<th>Order Date</th>
+								<th>Employ Name</th>
+								<th>Food Name</th>
+								<th>Quantity</th>
+								<th>Price</th>
+								<th>Status</th>
+								<th></th>
 							</tr>
+						</thead>
+						<tbody>
+							@foreach (var order in Model.FoodOrders)
+							{
+								<tr>
+									<td data-label="Order Date">@order.OrderDate.ToString("dd/MM/yyyy")</td>
+									<td data-label="Employ Name">@order.EmployeeName</td>
+									<td data-label="Food Name">@order.FoodName</td>
+									<td data-label="Quantity">@order.Quantity</td>
+									<td data-label="Price">@order.TotalPrice.ToString()</td>
+									<td data-label="Status">
+										@if (order.OrderCompleteStatus == (int)OrderCompleteStatusEnum.Pending)
+										{
+											<span class="badge rounded-pill bg-secondary">Pending</span>
+										}
+										else
+										{
+											<span class="badge rounded-pill bg-primary">Completed</span>
+										}
+									</td>
+									<td data-label="Action">
+										<form method="post" asp-action="CompleteFoodOrder" asp-controller="OrdersByEmploy">
+											<input type="hidden" value="@order.FoodOrderId" name="foodId" />
+											<input type="hidden" value="@Model.FoodType" name="foodtype" />
+											<button type="submit" class="btn btn-primary btn-sm">Complete</button>
+										</form>
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+
+				<style>
+					/* Mobile-first table styles */
+					@@media (max-width: 767.98px) {
+						tr .border-bottom {
+							border: 1px solid #dee2e6;
+							border-radius: 0.25rem;
+							display: block;
+							margin-bottom: 1rem;
+							padding: 0.75rem;
 						}
 
-					</tbody>
-				</table>
+						td {
+							display: flex;
+							justify-content: space-between;
+							padding: 0.5rem 0;
+							border: none !important;
+						}
+
+							td:before {
+								content: attr(data-label);
+								font-weight: bold;
+								margin-right: 1rem;
+							}
+
+							td[data-label]:before {
+								content: attr(data-label) ":";
+							}
+
+						thead th {
+							border: none !important;
+						}
+					}
+
+					/* Desktop styles */
+					@@media (min-width: 768px) {
+						.table-responsive {
+							overflow-x: auto;
+						}
+
+						tr.border-bottom {
+							border-bottom: 1px solid #dee2e6;
+						}
+					}
+				</style>
+
+				<style>
+					.customTable {
+						border-collapse: collapse;
+					}
+
+						.customTable tr {
+							border-bottom: 1px solid #dee2e6; /* Bootstrap's default border color */
+						}
+
+							.customTable tr:last-child {
+								border-bottom: none; /* Remove border from last row */
+							}
+				</style>
 			</div>
 		</div>
 

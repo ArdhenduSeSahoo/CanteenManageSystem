@@ -1,4 +1,4 @@
-﻿@model CanteenManage.Models.EmployDashboardViewDataModel
+﻿@model CanteenManage.Models.EmployeeDashboardViewDataModel
 @*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
@@ -89,7 +89,9 @@
 
 									<div class="row mt-2">
 										<div class="col">
-											<span>Masala Dosa,Bread & Omelette,Veg Sandwich</span>
+											<span>
+												@string.Join(", ", Model.BreakfastFoods)
+											</span>
 										</div>
 									</div>
 								</div>
@@ -109,9 +111,12 @@
 											Lunch
 										</h5><span></span>
 									</div>
+
 									<div class="row mt-2">
 										<div class="col">
-											<span>Veg Thali,Fish Curry with Rice,Chicken Biryani,Chole Chawal</span>
+											<span>
+												@string.Join(", ", Model.LunchFoods)
+											</span>
 										</div>
 									</div>
 								</div>
@@ -131,9 +136,13 @@
 											Snacks
 										</h5><span></span>
 									</div>
+
+
 									<div class="row mt-2">
 										<div class="col">
-											<span>Samosa,Onion Pakoda,Bread Pakora,Pav Bhaji,Non-Veg Roll</span>
+											<span>
+												@string.Join(", ", Model.SnacksFoods)
+											</span>
 										</div>
 									</div>
 								</div>
@@ -144,5 +153,6 @@
 			</div>
 		</div>
 	</div>
+
 </div>
 

@@ -125,7 +125,7 @@ namespace CanteenManage.Services
             return ((date.Day + offset - 1) / 7) + 1;
         }
 
-        public async Task<List<EmployFoodOrdersTableDataModel>> GetFoodOrdersToday(FoodTypeEnum foodTypeEnum, CancellationToken cancellationToken)
+        public async Task<List<EmployeeFoodOrdersTableDataModel>> GetFoodOrdersToday(FoodTypeEnum foodTypeEnum, CancellationToken cancellationToken)
         {
             var foodOrders = await Context.FoodOrders
                 .Include(f => f.Food)
@@ -134,7 +134,7 @@ namespace CanteenManage.Services
                 && fo.Food.FoodTypeId == (int)foodTypeEnum
                 //&& fo.OrderCompleteStatus == (int)OrderCompleteStatusEnum.Pending
                 )
-                .Select(fo => new EmployFoodOrdersTableDataModel()
+                .Select(fo => new EmployeeFoodOrdersTableDataModel()
                 {
                     FoodOrderId = fo.Id,
                     EmployeeId = fo.EmployeeId,
@@ -148,10 +148,7 @@ namespace CanteenManage.Services
 
                 })
                 .ToListAsync(cancellationToken);
-            foodOrders.Add(new EmployFoodOrdersTableDataModel()
-            {
 
-            });
             return foodOrders;
         }
 
@@ -227,6 +224,28 @@ namespace CanteenManage.Services
             };
             reportlist.Add(total_data);
             return reportlist;
+        }
+
+        public async Task<List<string>> GetTodayFoodNames(int foodType, CancellationToken cancellationToken)
+        {
+            var dayOfWeek = (int)DateTime.Now.DayOfWeek;
+            var weekOfMonth = GetWeekOfMonth(DateTime.Now);
+            if (weekOfMonth == 5)
+            {
+                weekOfMonth = 1;
+            }
+            var allFoodWithUserOrderDetails = new List<Food>();
+
+            var FoodNameList = await Context.Foods
+               .Where(f => f.FoodTypeId == foodType)
+               .Where(f => f.IsAvailable)
+               .Where(f => f.FoodAvailabilityDays.Any(fa =>
+               (fa.DayOfWeek == dayOfWeek) &&
+               (fa.WeekOfMonth == weekOfMonth)
+               ))
+               .Select(x => x.Name)
+               .ToListAsync(cancellationToken);
+            return FoodNameList;
         }
     }
 }

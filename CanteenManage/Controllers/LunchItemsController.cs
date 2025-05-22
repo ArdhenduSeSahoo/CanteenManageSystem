@@ -6,9 +6,11 @@ using CanteenManage.Utility;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CanteenManage.Controllers
 {
+    [Authorize(Roles = "Employee")]
     public class LunchItemsController : Controller
     {
         //private readonly CanteenManageDBContext canteenManageContext;
@@ -24,18 +26,15 @@ namespace CanteenManage.Controllers
             this.utilityServices = utilityServices;
             this.cartService = cartService;
         }
-        public async Task<IActionResult> Index(CancellationToken cancellationToken)
+        public async Task<IActionResult> Index(CancellationToken cancellationToken, int DaySelectOnSamePage = 0)
         {
-            if (utilityServices.getSessionUserId(HttpContext.Session) is null)
-            {
-                return RedirectToAction("Login", "Index");
-            }
+
             int FoodID = (int)FoodTypeEnum.Lunch;
             List<DaysOfWeekModel> daysOfWeek = utilityServices.GetDaysOfWeek(hourBeforeDisable: 10);
             //string? Session_selectedDay = HttpContext.Session.GetString(SessionConstants.UserSelectedDay);
             SessionDataModel sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
             int Session_selectedDay_On_SamePage = Convert.ToInt32(HttpContext.Session.GetString(SessionConstants.UserSelectedDayOnSamePage));
-            if (sessionDataModel.UserSelectedDay != null)
+            if (sessionDataModel.UserSelectedDay != null && DaySelectOnSamePage == 1)
             {
                 var selectedDate = daysOfWeek.Where(d => d.DateShort == sessionDataModel.UserSelectedDay).FirstOrDefault();
                 if (selectedDate != null)
@@ -53,6 +52,7 @@ namespace CanteenManage.Controllers
                     HttpContext.Session.SetString(SessionConstants.UserSelectedDay, firstActiveDay.DateShort);
                     HttpContext.Session.SetString(SessionConstants.UserSelectedDayFull, firstActiveDay.DateFull);
                 }
+                sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
             }
 
             await cartService.CheckOutOfOrderInCart(
@@ -97,7 +97,7 @@ namespace CanteenManage.Controllers
             {
 
             }
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", new { DaySelectOnSamePage = 1 });
         }
 
     }

@@ -3,9 +3,9 @@
     public class AppConfigs
     {
         public string ConnectionString { get; set; } = "";
-        //public string SecretKey { get; set; }
-        //public string TokenIssuer { get; set; }
-        //public string TokenAudience { get; set; }
+        public string SecretKey { get; set; } = "";
+        public string TokenIssuer { get; set; } = "";
+        public string TokenAudience { get; set; } = "";
         //public int TokenExpirationMinutes { get; set; }
         //public string RedisConnectionString { get; set; }
         //public string RedisInstanceName { get; set; }

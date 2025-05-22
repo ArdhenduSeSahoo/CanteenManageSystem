@@ -7,11 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CanteenManage.CanteenRepository.Contexts;
 using CanteenManage.CanteenRepository.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CanteenManage.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Employee")]
     public class FoodOrdersAPIController : ControllerBase
     {
         private readonly CanteenManageDBContext _context;

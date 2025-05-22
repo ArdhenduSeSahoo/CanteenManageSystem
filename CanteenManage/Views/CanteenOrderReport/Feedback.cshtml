@@ -1,0 +1,158 @@
+﻿@using CanteenManage.Utility
+@model CanteenManage.Models.FeedbackViewModel
+
+@{
+	Layout = "_Layout_canteenEmploy";
+}
+
+<div class="container-fluid">
+	<div class="card">
+		<div class="card-header">
+			<h4>Feedbacks</h4>
+		</div>
+		<div class="card-body">
+			<br />
+
+			<!-- Page Size Selector -->
+			<div class="row mb-3">
+				<div class="col-md-3">
+					<label for="pageSizeSelect" class="form-label">Items per page:</label>
+					<select class="form-select" id="pageSizeSelect" onchange="changePageSize(this)">
+						@{
+							var pageSizes = new[] { 5, 10, 25, 50 };
+							foreach (var size in pageSizes)
+							{
+								<option value="@size" selected="@(Model.PageSize == size)">@size</option>
+							}
+						}
+					</select>
+				</div>
+			</div>
+
+			<div class="table-responsive">
+				<table class="table table-bordered table-striped table-hover">
+					<thead>
+						<tr>
+							<th>Items</th>
+							<th>Feedback</th>
+							<th>Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach (var item in Model.foodOrders)
+						{
+							<tr>
+								<td>@item.Food?.Name</td>
+								<td>@item.Review</td>
+								<td>
+									<a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#feedbackModal-@item.Id" title="Add Feedback">
+										<i class="bi bi-chat-left-text-fill fs-5 text-primary me-3"></i>
+									</a>
+
+									@if (!string.IsNullOrWhiteSpace(item.ActionTaken))
+									{
+										<a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#viewReviewModal-@item.Id" title="View Feedback">
+											<i class="bi bi-eye-fill fs-5 text-success"></i>
+										</a>
+									}
+
+									<!-- Feedback Modal -->
+									<div class="modal fade" id="feedbackModal-@item.Id" tabindex="-1" aria-labelledby="modalLabel-@item.Id" aria-hidden="true">
+										<div class="modal-dialog modal-dialog-centered">
+											<div class="modal-content">
+												<form asp-action="FeedbackSubmit" asp-controller="CanteenOrderReport" method="post">
+													<div class="modal-header">
+														<h5 class="modal-title" id="modalLabel-@item.Id">Submit Feedback for @item.Food?.Name</h5>
+														<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+													</div>
+													<div class="modal-body">
+														<input type="hidden" name="FoodOrderId" value="@item.Id" />
+														<textarea name="ActionTaken" class="form-control" rows="4" placeholder="Write your feedback..." required></textarea>
+													</div>
+													<div class="modal-footer">
+														<button type="submit" class="btn btn-primary">Submit</button>
+														<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+													</div>
+												</form>
+											</div>
+										</div>
+									</div>
+
+									<!-- View Review Modal -->
+									@if (!string.IsNullOrWhiteSpace(item.ActionTaken))
+									{
+										<div class="modal fade" id="viewReviewModal-@item.Id" tabindex="-1" aria-labelledby="viewReviewLabel-@item.Id" aria-hidden="true">
+											<div class="modal-dialog modal-dialog-centered">
+												<div class="modal-content">
+													<div class="modal-header">
+														<h5 class="modal-title" id="viewReviewLabel-@item.Id">Review for @item.Food?.Name</h5>
+														<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+													</div>
+													<div class="modal-body">
+														<p>@item.ActionTaken</p>
+													</div>
+													<div class="modal-footer">
+														<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+													</div>
+												</div>
+											</div>
+										</div>
+									}
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+
+			<!-- Pagination -->
+			<div class="row">
+				<div class="col-md-6">
+					<p>Showing @((Model.CurrentPage - 1) * Model.PageSize + 1) to @Math.Min(Model.CurrentPage * Model.PageSize, Model.TotalItems) of @Model.TotalItems entries</p>
+				</div>
+				<div class="col-md-6">
+					<nav aria-label="Page navigation">
+						<ul class="pagination justify-content-end">
+							<li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+								<a class="page-link" href="@Url.Action("Feedback", new { page = Model.CurrentPage - 1, pageSize = Model.PageSize })">Previous</a>
+							</li>
+
+							@for (int i = 1; i <= Model.TotalPages; i++)
+							{
+								<li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+									<a class="page-link" href="@Url.Action("Feedback", new { page = i, pageSize = Model.PageSize })">@i</a>
+								</li>
+							}
+
+							<li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+								<a class="page-link" href="@Url.Action("Feedback", new { page = Model.CurrentPage + 1, pageSize = Model.PageSize })">Next</a>
+							</li>
+						</ul>
+					</nav>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<style>
+	.pagination .page-item.active .page-link {
+		background-color: #0d6efd;
+		border-color: #0d6efd;
+	}
+
+	.pagination .page-link {
+		color: #0d6efd;
+	}
+
+	.pagination .page-item.disabled .page-link {
+		color: #6c757d;
+	}
+</style>
+
+<script>
+	function changePageSize(select) {
+		const pageSize = select.value;
+		window.location.href = '@Url.Action("Feedback")' + `?page=1&pageSize=${pageSize}`;
+	}
+</script>
