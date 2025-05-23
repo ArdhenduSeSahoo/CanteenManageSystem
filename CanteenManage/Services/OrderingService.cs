@@ -187,7 +187,7 @@ namespace CanteenManage.Services
             return orderList;
         }
 
-        public async Task<List<FoodOrder>> GrtFeedbackList(CancellationToken cancellationToken)
+        public async Task<List<FoodOrder>> GetFeedbackList(CancellationToken cancellationToken)
         {
             var feedbacklist = await canteenManageContext.FoodOrders
                 .Include(f => f.Food)

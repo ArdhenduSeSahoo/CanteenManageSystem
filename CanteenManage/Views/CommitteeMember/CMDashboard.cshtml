@@ -1,5 +1,16 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@model CanteenManage.Models.CMDashboardViewDataModel
+
+<!-- Welcome Page Content -->
+<div class="flex items-center justify-center min-h-screen bg-gray-100">
+	<div class="bg-white p-10 rounded-2xl shadow-xl text-center max-w-xl">
+		<h1 class="text-4xl font-bold text-green-600 mb-4">Welcome!</h1>
+		<p class="text-gray-600 mb-6 text-lg">
+			Manage orders, update the menu, Food list, Order reports and keep our Employees happy..
+		</p>
+		<div class="flex flex-col sm:flex-row justify-center gap-4">
+			<a href="/dashboard" class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg text-lg transition">
+				Go to Dashboard
+			</a>
+		</div>
+	</div>
+</div>

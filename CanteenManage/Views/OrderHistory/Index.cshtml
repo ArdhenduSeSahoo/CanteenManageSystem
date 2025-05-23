@@ -150,7 +150,7 @@
 												<div class="modal fade" id="viewReviewModal-@order.Id" tabindex="-1" aria-labelledby="viewReviewModalLabel-@order.Id" aria-hidden="true">
 													<div class="modal-dialog modal-dialog-centered">
 														<div class="modal-content">
-															<div class="modal-header">
+															<div class="modal-header border-0">
 																<h5 class="modal-title" id="viewReviewModalLabel-@order.Id">Feedback for @order.Food?.Name</h5>
 																<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 															</div>
@@ -159,9 +159,9 @@
 																	<strong>Rating:</strong>
 																	<img src="~/images/emoji/@GetEmojiFileName(order.Rating)" alt="Rating Emoji" style="width: 40px; height: 40px;" />
 																</p>
-																<p><strong>Comment:</strong> @order.Review</p>
+																<p class="m-0"><strong>Comment:</strong> @order.Review</p>
 															</div>
-															<div class="modal-footer">
+															<div class="modal-footer border-0">
 																<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
 															</div>
 														</div>

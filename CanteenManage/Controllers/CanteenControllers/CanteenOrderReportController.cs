@@ -62,7 +62,7 @@ namespace CanteenManage.Controllers.CanteenControllers
 
         public async Task<IActionResult> Feedback(int page = 1, int pageSize = 10, CancellationToken cancellationToken = default)
         {
-            var feedbackList = await _orderingService.GrtFeedbackList(cancellationToken);
+            var feedbackList = await _orderingService.GetFeedbackList(cancellationToken);
 
             // Calculate pagination values
             var totalItems = feedbackList.Count;

@@ -4,6 +4,7 @@
     {
         public int? UserId { get; set; }
         public int UserIdOrZero { get; set; }
+        public string? UserEmpIdOrNull { get; set; } = "";
         public DateTime? UserSelectedDate { get; set; }
         public string? UserSelectedDay { get; set; }
 

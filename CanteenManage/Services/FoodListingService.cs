@@ -125,7 +125,7 @@ namespace CanteenManage.Services
             return ((date.Day + offset - 1) / 7) + 1;
         }
 
-        public async Task<List<EmployeeFoodOrdersTableDataModel>> GetFoodOrdersToday(FoodTypeEnum foodTypeEnum, CancellationToken cancellationToken)
+        public async Task<List<EmployeeFoodOrdersTableDataModel>> GetFoodOrdersToday(FoodTypeEnum foodTypeEnum, CancellationToken cancellationToken, string SearchVal = "")
         {
             var foodOrders = await Context.FoodOrders
                 .Include(f => f.Food)
@@ -133,11 +133,13 @@ namespace CanteenManage.Services
                 .Where(fo => fo.OrderDate.Date >= DateTime.Now.Date
                 && fo.Food.FoodTypeId == (int)foodTypeEnum
                 //&& fo.OrderCompleteStatus == (int)OrderCompleteStatusEnum.Pending
+                && (fo.Employee.Name.ToLower().Contains(SearchVal) || fo.Employee.EmployID.ToLower().Contains(SearchVal))
                 )
                 .Select(fo => new EmployeeFoodOrdersTableDataModel()
                 {
                     FoodOrderId = fo.Id,
                     EmployeeId = fo.EmployeeId,
+                    EmployeeCode = fo.Employee.EmployID,
                     FoodName = fo.Food.Name,
                     OrderDate = fo.OrderDate,
                     Quantity = fo.Quantity,
@@ -247,5 +249,36 @@ namespace CanteenManage.Services
                .ToListAsync(cancellationToken);
             return FoodNameList;
         }
+
+        public async Task<List<EmployFeedback>> GetAllEmployeeFeedbacks()
+        {
+            return await Context.EmployFeedbacks
+                .OrderByDescending(m => m.SubmittedAt)
+                .ToListAsync();
+        }
+
+        public async Task SubmitEmployeeFeedbacks(int employeeID, string message)
+        {
+
+            Context.EmployFeedbacks.Add(new EmployFeedback
+            {
+                EmployeeId = employeeID,
+                Message = message,
+                SubmittedAt = DateTime.Now
+            });
+            await Context.SaveChangesAsync();
+
+        }
+        public async Task<List<FoodOrder>> SearchOrdersByEmployee(string searchTerm)
+        {
+            return await Context.FoodOrders
+                .Include(f => f.Employee)
+                .Where(f =>
+                    f.Employee.Name.Contains(searchTerm) ||
+                    f.Employee.Id.ToString() == searchTerm
+                )
+                .ToListAsync();
+        }
+
     }
 }

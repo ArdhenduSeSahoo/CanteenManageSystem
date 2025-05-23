@@ -15,7 +15,7 @@ namespace CanteenManage.Controllers.CanteenControllers
             this.foodListingService = foodListingService;
             this.utilityServices = utilityServices;
         }
-        public async Task<IActionResult> OrderByEmployIdx(string FoodType, CancellationToken cancellationToken)
+        public async Task<IActionResult> OrderByEmployIdx(string FoodType, CancellationToken cancellationToken, string searchTerm = "")
         {
             FoodTypeEnum foodType = FoodTypeEnum.Breakfast;
             if (!string.IsNullOrEmpty(FoodType))
@@ -23,26 +23,19 @@ namespace CanteenManage.Controllers.CanteenControllers
                 try
                 {
                     var foodtype_qp = Convert.ToInt32(FoodType);
-                    if (foodtype_qp == (int)FoodTypeEnum.Breakfast)
-                    {
-                        foodType = FoodTypeEnum.Breakfast;
-                    }
-                    else if (foodtype_qp == (int)FoodTypeEnum.Lunch)
-                    {
-                        foodType = FoodTypeEnum.Lunch;
-                    }
-                    else if (foodtype_qp == (int)FoodTypeEnum.Snacks)
-                    {
-                        foodType = FoodTypeEnum.Snacks;
-                    }
+                    foodType = (FoodTypeEnum)foodtype_qp;
                 }
                 catch (Exception ex)
                 {
-
+                    // Optional: log error
                 }
             }
+            searchTerm = searchTerm.Trim().ToLower();
 
-            var foodlist = await foodListingService.GetFoodOrdersToday(foodType, cancellationToken);
+            var foodlist = await foodListingService.GetFoodOrdersToday(foodType, cancellationToken, searchTerm);
+
+
+
             var screenTile = foodType switch
             {
                 FoodTypeEnum.Breakfast => "Breakfast Orders",
@@ -51,11 +44,14 @@ namespace CanteenManage.Controllers.CanteenControllers
                 _ => "Orders",
             };
 
-            OrderByEmployViewDataModel orderByEmployViewDataModel = new OrderByEmployViewDataModel();
-            orderByEmployViewDataModel.screenTitle = screenTile;
-            orderByEmployViewDataModel.FoodOrders = foodlist;
-            orderByEmployViewDataModel.FoodType = (int)foodType;
-            return View(orderByEmployViewDataModel);
+            OrderByEmployViewDataModel model = new OrderByEmployViewDataModel
+            {
+                screenTitle = screenTile,
+                FoodOrders = foodlist,
+                FoodType = (int)foodType
+            };
+
+            return View(model);
         }
 
         public async Task<IActionResult> OrderByEmployBreakfast()
@@ -95,5 +91,11 @@ namespace CanteenManage.Controllers.CanteenControllers
             return PartialView("OrderByEmploySearchResult");
         }
 
+        [HttpGet]
+        public async Task<IActionResult> SearchOrders(string query)
+        {
+            var results = await foodListingService.SearchOrdersByEmployee(query);
+            return View("OrderByEmployIdx", results);
+        }
     }
 }

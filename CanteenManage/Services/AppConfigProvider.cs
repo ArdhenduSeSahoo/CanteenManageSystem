@@ -31,19 +31,32 @@ namespace CanteenManage.Services
         }
         public string? GetConnectionString()
         {
-            return appConfigs?.ConnectionString;
+            return appConfigs?.getConnectionString();
         }
         public string? GetSecretKey()
         {
-            return appConfigs?.SecretKey;
+            return appConfigs?.getSecretKey();
         }
         public string? GetTokenIssuer()
         {
-            return appConfigs?.TokenIssuer;
+            return appConfigs?.getTokenIssuer();
         }
         public string? GetTokenAudience()
         {
-            return appConfigs?.TokenAudience;
+            return appConfigs?.getTokenAudience();
+        }
+
+        public bool IsDevelopment()
+        {
+            if (appConfigs?.getAppEnvironment() == "Development")
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+            //return appConfigs?.getTokenAudience();
         }
 
     }

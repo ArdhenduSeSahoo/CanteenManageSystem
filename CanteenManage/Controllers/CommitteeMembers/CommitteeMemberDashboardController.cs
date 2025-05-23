@@ -20,7 +20,9 @@ namespace CanteenManage.Controllers.CommitteeMembers
 
         public IActionResult CMDashboard()
         {
-            return View();
+            CMDashboardViewDataModel cMDashboardViewDataModel = new CMDashboardViewDataModel();
+
+            return View(cMDashboardViewDataModel);
         }
 
         public async Task<IActionResult> FoodList(CancellationToken cancellationToken)

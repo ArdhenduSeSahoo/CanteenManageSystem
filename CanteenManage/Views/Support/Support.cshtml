@@ -1,0 +1,31 @@
+﻿@model CanteenManage.Models.EmployeeFeedbackViewModel
+
+
+@{
+	ViewData["Title"] = "Feedback List";
+}
+
+<h2>Submitted Feedback</h2>
+
+<table class="table table-bordered">
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Email</th>
+			<th>Message</th>
+			<th>Date</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var feedback in Model.EmployeeFeedbacks)
+		{
+			<tr>
+				<td>@feedback.Name</td>
+				<td>@feedback.Email</td>
+				<td>@feedback.Message</td>
+				<td>@feedback.SubmittedAt.ToString("g")</td>
+			</tr>
+		}
+	</tbody>
+</table>
+

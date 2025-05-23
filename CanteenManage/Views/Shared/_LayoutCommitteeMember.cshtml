@@ -1,5 +1,7 @@
 ﻿@using CanteenManage.Utility
+
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,6 +16,7 @@
 	<style>
 		.nav_link {
 			color: white !important;
+			font-weight: 600;
 		}
 	</style>
 	@await RenderSectionAsync("HeadSection", required: false)
@@ -42,17 +45,17 @@ background-color:#f7f7f7
 							<a class="nav-link text-center nav_link " asp-controller="CommitteeMember" asp-action="FoodList">Food List</a>
 						</li>
 						<li class="nav-item customNavItem">
-							<a class="nav-link text-center nav_link " asp-controller="EmployeeOrderReport" asp-action="EmployeeCanteenOrderReports">Orders Reports</a>
+							<a class="nav-link text-center nav_link " asp-controller="EmployeeOrderReport" asp-action="EmpOrderReport">Orders Reports</a>
 						</li>
-
 
 					</ul>
 					<ul class="navbar-nav" style="">
 						<li class="nav-item" style=" font-weight: 600;
 color: white;">
-							@* <span class="nav-link text-center nav_link ">Ardhendu</span> *@
+
 							@{
-								var username = HttpContextAccessor.HttpContext.Session.GetString(SessionConstants.UserName);
+								var username = HttpContextAccessor.HttpContext?.Session.GetString(SessionConstants.UserName);
+								//var username = Model.UserName ?? Model.UserEmpId ?? "";
 								var firstName = !string.IsNullOrEmpty(username) ? username.Split(' ')[0] : "";
 							}
 
@@ -65,7 +68,7 @@ color: white;">
 
 						</li>
 						<li>
-							<a class="nav-link text-center" asp-area="" asp-controller="Login" asp-action="Signout" title="Logout">
+							<a class="nav-link text-center" asp-area="" asp-controller="Login" asp-action="LoginSignOutEmployee" title="Logout">
 								<i class="fa fa-sign-out" aria-hidden="true" style="font-size:30px; z-index:100; margin-right:5px; color:white;"></i>
 							</a>
 						</li>

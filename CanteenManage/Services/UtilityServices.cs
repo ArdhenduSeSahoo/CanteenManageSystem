@@ -13,39 +13,34 @@ namespace CanteenManage.Services
 
             var daysOfWeek = new List<DaysOfWeekModel>();
 
-            List<DateTime> dates = new List<DateTime>();
-            DateTime myDate = DateTime.ParseExact("2025-05-18 05:40:52,531", "yyyy-MM-dd HH:mm:ss,fff",
-                                       System.Globalization.CultureInfo.InvariantCulture);
-            DateTime currentDatetime = DateTime.Now;
-            if (((int)DateTime.Now.DayOfWeek) == 6)
-            {
-                currentDatetime = DateTime.Now.AddDays(2);
-            }
-            else if (((int)DateTime.Now.DayOfWeek) == 0)
-            {
-                currentDatetime = DateTime.Now.AddDays(1);
-            }
-            DayOfWeek currentDay = currentDatetime.DayOfWeek;
-            int daysTillCurrentDay = currentDay - DayOfWeek.Monday;
-            DateTime currentWeekMonday = currentDatetime.AddDays(-daysTillCurrentDay);
-            DateTime currentWeekTuesday = currentWeekMonday.AddDays(1);
-            DateTime currentWeekwednesday = currentWeekMonday.AddDays(2);
-            DateTime currentWeekThursday = currentWeekMonday.AddDays(3);
-            DateTime currentWeekFriday = currentWeekMonday.AddDays(4);
-            dates.Add(currentWeekMonday);
-            dates.Add(currentWeekTuesday);
-            dates.Add(currentWeekwednesday);
-            dates.Add(currentWeekThursday);
-            dates.Add(currentWeekFriday);
+            List<DateTime> TwoWeekdates = new List<DateTime>();
 
-            //daysOfWeek.Add(new DaysOfWeekModel
-            //{
-            //    DaysOfWeek = (int)currentWeekMonday.DayOfWeek,
-            //    DaysOfWeekName = currentWeekMonday.DayOfWeek.ToString(),
-            //    IsSelected = DateTime.Now.DayOfWeek == currentWeekMonday.DayOfWeek,
-            //    IsActiveDay = currentWeekMonday.DayOfWeek>= DateTime.Now.DayOfWeek 
-            //});
-            foreach (var day in dates)
+
+            DateTime today = DateTime.Today;
+
+
+            DayOfWeek firstDayOfWeek = CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek;
+
+
+            int diff = (7 + (today.DayOfWeek - firstDayOfWeek)) % 7;
+            DateTime startOfCurrentWeek = today.AddDays(-1 * diff).Date;
+
+
+            List<DateTime> currentWeekDates = new List<DateTime>();
+            List<DateTime> nextWeekDates = new List<DateTime>();
+
+            //list range is 0 to 7 but
+            // Fill lists start from 1 is monday end with 6 is fryday
+            for (int i = 1; i < 6; i++)
+            {
+                currentWeekDates.Add(startOfCurrentWeek.AddDays(i));
+                nextWeekDates.Add(startOfCurrentWeek.AddDays(i + 7));
+            }
+            TwoWeekdates.AddRange(currentWeekDates);
+            TwoWeekdates.AddRange(nextWeekDates);
+
+
+            foreach (var day in TwoWeekdates)
             {
                 daysOfWeek.Add(new DaysOfWeekModel
                 {
@@ -63,11 +58,13 @@ namespace CanteenManage.Services
             //    daysOfWeek[0].IsActiveDay = true;
             //    daysOfWeek[0].IsSelected = true;
             //}
-            var firstActiveDay = daysOfWeek.Where(d => d.IsActiveDay).OrderBy(d => d.DateShort).FirstOrDefault();
-            if (firstActiveDay != null)
-            {
-                firstActiveDay.IsSelected = true;
-            }
+
+            //var firstActiveDay = daysOfWeek.Where(d => d.IsActiveDay).OrderBy(d => d.DateShort).FirstOrDefault();
+            //if (firstActiveDay != null)
+            //{
+            //    firstActiveDay.IsSelected = true;
+            //}
+
             //var testing = false;
             //if (!testing)
             {
@@ -75,11 +72,11 @@ namespace CanteenManage.Services
                 {
                     item.IsSelected = false;
                     var hourss = int.Parse(DateTime.Now.ToString("HH"));
-                    if (((int)item.DateTime.DayOfWeek) < ((int)DateTime.Now.DayOfWeek))
+                    if (item.DateTime.Date < DateTime.Now.Date) //(((int)item.DateTime.DayOfWeek) < ((int)DateTime.Now.DayOfWeek))
                     {
                         item.IsActiveDay = false;
                     }
-                    else if (((int)item.DateTime.DayOfWeek) == ((int)DateTime.Now.DayOfWeek))
+                    else if (item.DateTime.Date == DateTime.Now.Date) //(((int)item.DateTime.DayOfWeek) == ((int)DateTime.Now.DayOfWeek))
                     {
                         if (hourBeforeDisable != null && int.Parse(DateTime.Now.ToString("HH")) < hourBeforeDisable)
                         {
@@ -90,12 +87,11 @@ namespace CanteenManage.Services
                             item.IsActiveDay = false;
                         }
                     }
-                    else if (((int)item.DateTime.DayOfWeek) > ((int)DateTime.Now.DayOfWeek))
+                    else if (item.DateTime.Date > DateTime.Now.Date) //(((int)item.DateTime.DayOfWeek) > ((int)DateTime.Now.DayOfWeek))
                     {
                         item.IsActiveDay = true;
                     }
                 }
-
             }
 
             return daysOfWeek;

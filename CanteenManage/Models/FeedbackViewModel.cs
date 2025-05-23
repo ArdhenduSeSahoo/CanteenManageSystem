@@ -2,7 +2,7 @@
 
 namespace CanteenManage.Models
 {
-    public class FeedbackViewModel
+    public class FeedbackViewModel : LayoutViewDataModel
     {
         public List<FoodOrder> foodOrders { get; set; }
         public int CurrentPage { get; set; }

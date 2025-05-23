@@ -1,4 +1,6 @@
-﻿namespace CanteenManage.Models
+﻿using CanteenManage.CanteenRepository.Models;
+
+namespace CanteenManage.Models
 {
     public class EmployeeFoodOrdersTableDataModel
     {
@@ -11,6 +13,7 @@
         public int EmployeeId { get; set; }
         public string EmployeeName { get; set; }
         public int OrderCompleteStatus { get; set; }
-
+        public string EmployeeCode { get; set; }
+        public Employee Employee { get; set; }
     }
 }

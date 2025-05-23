@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using static NuGet.Packaging.PackagingConstants;
 using Microsoft.IdentityModel.Tokens;
 using CanteenManage.Middleware;
+using CanteenManage.Utility;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,16 +21,23 @@ if (!Directory.Exists(projectFolder))
     Directory.CreateDirectory(projectFolder);
 }
 AppConfigs appConfigs = new AppConfigs();
-if (File.Exists(Path.Combine(projectFolder, "AppConfigs.json")))
+//if (File.Exists(Path.Combine(projectFolder, "AppConfigs.json")))
 {
     try
     {
+
         var appConfigJson = File.ReadAllText(Path.Combine(projectFolder, "AppConfigs.json"));
         appConfigs = System.Text.Json.JsonSerializer.Deserialize<AppConfigs>(appConfigJson) ?? new AppConfigs();
+        builder.Environment.EnvironmentName = appConfigs.getAppEnvironment();
+
+        AppConfigs appconff = appConfigs.getEncryptedObject();
+        var appConfigJson2 = System.Text.Json.JsonSerializer.Serialize(appconff);
+
+
     }
     catch (Exception ex)
     {
-
+        throw;
     }
 
 }
@@ -64,9 +72,9 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        ValidIssuer = appConfigs.TokenIssuer,
-        ValidAudience = appConfigs.TokenAudience,
-        IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(appConfigs.SecretKey))
+        ValidIssuer = appConfigs.getTokenIssuer(),
+        ValidAudience = appConfigs.getTokenAudience(),
+        IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(appConfigs.getSecretKey()))
     };
     options.Events = new JwtBearerEvents
     {
@@ -90,7 +98,7 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddPooledDbContextFactory<CanteenManageDBContext>(option =>
 {
     //option.UseSqlServer(builder.Configuration.GetConnectionString("CantenSystemDBConnection"));
-    option.UseSqlServer(appConfigs.ConnectionString);
+    option.UseSqlServer(appConfigs.getConnectionString());
 });
 
 builder.Services.AddScoped<CanteenManageContextFactory>();
@@ -101,7 +109,8 @@ builder.Services.AddTransient<LoginService>();
 builder.Services.AddScoped<FoodListingService>();
 builder.Services.AddScoped<OrderingService>();
 builder.Services.AddScoped<CartService>();
-
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddSession();
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 builder.Services.AddCors(options =>

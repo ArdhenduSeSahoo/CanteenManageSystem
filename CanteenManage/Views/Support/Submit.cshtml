@@ -1,0 +1,99 @@
+﻿@model CanteenManage.Models.EmployeeFeedbackViewModel
+@{
+	ViewData["Title"] = "Contact Our Team";
+}
+
+<style>
+	.contact-container {
+		display: flex;
+		background-color: #f4f6f5;
+		padding: 30px;
+		border-radius: 10px;
+		font-family: Arial, sans-serif;
+	}
+
+	.contact-left {
+		flex: 1;
+		background-color: white;
+		padding: 20px;
+		text-align: center;
+		border-right: 1px solid #ddd;
+	}
+
+		.contact-left img {
+			width: 150px;
+			height: 150px;
+			border-radius: 50%;
+			object-fit: cover;
+		}
+
+		.contact-left h3 {
+			margin-top: 20px;
+		}
+
+	.contact-right {
+		flex: 2;
+		padding: 30px;
+	}
+
+		.contact-right h2 {
+			color: #d35400;
+			font-weight: bold;
+			margin-bottom: 20px;
+		}
+
+	.form-group {
+		margin-bottom: 20px;
+	}
+
+	.form-control {
+		width: 100%;
+		padding: 10px;
+		border-radius: 5px;
+		border: 1px solid #ccc;
+	}
+
+	.btn-submit {
+		background-color: #d35400;
+		color: white;
+		padding: 10px 25px;
+		border: none;
+		border-radius: 5px;
+		font-weight: bold;
+	}
+</style>
+
+<div class="contact-container">
+	<div class="contact-left">
+		<img src="~/images/esspl_original.jpeg" alt="Support">
+		<h3>GET IN TOUCH</h3>
+		<p>Let's create something awesome together.</p>
+		<p>📞 +91-674-7106000</p>
+		<p>📧 Foodcommittee@esspl.com</p>
+	</div>
+	<div class="contact-right">
+		<h2>CONTACT OUR TEAM</h2>
+		<form asp-action="Submit" method="post" asp-controller="Support">
+			<div class="form-group">
+				<input name="Name" id="Name" class="form-control" placeholder="Your Name (required)" />
+
+			</div>
+			<div class="form-group">
+				<input name="Email" id="Email" class="form-control" placeholder="Your Email (required)" />
+
+			</div>
+
+			<div class="form-group">
+				<textarea name="Message" id="Message" class="form-control" rows="4" placeholder="Your Message"></textarea>
+
+			</div>
+			<button type="submit" class="btn-submit">Submit</button>
+		</form>
+	</div>
+</div>
+
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+}

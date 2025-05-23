@@ -1,6 +1,6 @@
 ﻿namespace CanteenManage.Models
 {
-    public class CanteenOrderReportViewDataModel
+    public class CanteenOrderReportViewDataModel : LayoutViewDataModel
     {
         public string ReportForMonthName { get; set; }
         public List<ReportMonthsDDLDataModel> ReportMonthsDDLDataModel { get; set; }
