@@ -6,10 +6,11 @@ namespace CanteenManage.Middleware
     {
         private readonly RequestDelegate _next;
         private readonly AppConfigProvider _appConfigProvider;
-
-        public ErrorHandlerMiddleware(RequestDelegate next)
+        private readonly ILogger<ErrorHandlerMiddleware> _logger;
+        public ErrorHandlerMiddleware(RequestDelegate next, ILogger<ErrorHandlerMiddleware> logger)
         {
             _next = next;
+            _logger = logger;
             //_appConfigProvider = appConfigProvider;
         }
 
@@ -26,7 +27,7 @@ namespace CanteenManage.Middleware
                 //    context.Response.StatusCode = StatusCodes.Status404NotFound;
                 //    await context.Response.WriteAsJsonAsync(new { status = "Some error Found." + ex.Message });
                 //}
-
+                _logger.LogError("An error occurred while processing the request. From ErrorHandlerMiddleware---" + ex);
                 context.Response.StatusCode = StatusCodes.Status404NotFound;
                 await context.Response.WriteAsJsonAsync(new { status = "Some error Found. Please login again." });
             }

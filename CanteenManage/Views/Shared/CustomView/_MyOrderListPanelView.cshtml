@@ -78,7 +78,7 @@
 									}
 								</td>
 								<td class="align-self-center text-center align-t" style="vertical-align:middle;">
-									@if (orderShouldDelete || order.OrderCompleteStatus == (int)OrderCompleteStatusEnum.Pending)
+									@if (orderShouldDelete && order.OrderCompleteStatus == (int)OrderCompleteStatusEnum.Pending)
 									{
 										<form asp-action="removeOrder" method="post">
 											<input type="hidden" name="orderId" value="@order.Id" />

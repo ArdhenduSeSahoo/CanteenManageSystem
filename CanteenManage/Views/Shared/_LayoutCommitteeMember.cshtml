@@ -54,9 +54,15 @@ background-color:#f7f7f7
 color: white;">
 
 							@{
-								var username = HttpContextAccessor.HttpContext?.Session.GetString(SessionConstants.UserName);
-								//var username = Model.UserName ?? Model.UserEmpId ?? "";
-								var firstName = !string.IsNullOrEmpty(username) ? username.Split(' ')[0] : "";
+								var username = HttpContextAccessor.HttpContext?.Session.GetString(SessionConstants.UserName) ?? "";
+								var userempId = HttpContextAccessor.HttpContext?.Session.GetString(SessionConstants.UserEmpId) ?? "";
+								string firstName = userempId;
+								try
+								{
+									firstName = !string.IsNullOrEmpty(username) ? username.Split(' ')[0] : userempId;
+								}
+								catch (Exception ex) { }
+
 							}
 
 							@if (!string.IsNullOrEmpty(username))

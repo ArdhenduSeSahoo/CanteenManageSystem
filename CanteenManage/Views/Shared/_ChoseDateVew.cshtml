@@ -6,20 +6,28 @@
 
 
 @{
-	var dayes = Model.daysOfWeekModel;
+	//var dayes = Model.daysOfWeekModel;
 }
 
 
-<div class="" style="margin-left:2px">
-	<form asp-action="SelectDaysOfWeek" method="post">
-		<input type="hidden" name="selecteddate" value="@(dayes.DateShort)" />
-		<input type="hidden" name="selecteddatefull" value="@(dayes.DateFull)" />
-		<button class="date-btn @(dayes.IsSelected ? "active" : "")" @(!dayes.IsActiveDay ? "disabled" : "")>
-			@dayes.DateShort<br><small>@dayes.DaysOfWeekName</small>
-		</button>
-		@* <button class="date-btn @(dayes.IsSelected ? "active" : "")">
-            @dayes.DateShort<br><small>@dayes.DaysOfWeekName</small>
-        </button> *@
+<div class="d-inline-flex text-center ">
+	<h6 class="m-0">Choose Date:</h6>
 
-	</form>
+	<!-- Example single danger button -->
+	<div class="btn-group">
+		<button type="button" class="btn btn-sm btn-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" style="min-width:170px;flex:0; font-weight:500;background-color:#eeffe8;">
+			@(Model.daysOfWeekModels.Where(d => d.IsSelected).Select(d => new { disptext = d.DateShort + "-" + d.DaysOfWeekName }).FirstOrDefault()?.disptext)
+		</button>
+		<ul class="dropdown-menu rounded-3 border-0 ">
+			@foreach (var dayes in Model.daysOfWeekModels)
+			{
+				if (dayes.IsActiveDay)
+				{
+					<li><a class="dropdown-item ddp_item" asp-action="SelectDaysOfWeek" asp-route-selectedDate="@dayes.DateShort" asp-route-selectedFullDate="@dayes.DateFull">@dayes.DateShort-@dayes.DaysOfWeekName</a></li>
+				}
+			}
+
+		</ul>
+	</div>
 </div>
+

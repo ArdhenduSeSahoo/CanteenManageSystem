@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using CanteenManage.Models;
 using CanteenManage.Services;
 using CanteenManage.Utility;
@@ -18,23 +19,32 @@ namespace CanteenManage.Controllers.CanteenControllers
         public async Task<IActionResult> OrderByEmployIdx(string FoodType, CancellationToken cancellationToken, string searchTerm = "")
         {
             FoodTypeEnum foodType = FoodTypeEnum.Breakfast;
-            if (!string.IsNullOrEmpty(FoodType))
+            List<EmployeeFoodOrdersTableDataModel> foodOrders = new List<EmployeeFoodOrdersTableDataModel>();
+
+            try
             {
-                try
+                if (!string.IsNullOrEmpty(FoodType))
                 {
                     var foodtype_qp = Convert.ToInt32(FoodType);
-                    foodType = (FoodTypeEnum)foodtype_qp;
-                }
-                catch (Exception ex)
-                {
-                    // Optional: log error
+                    if (foodtype_qp < 1)
+                    {
+                        searchTerm = searchTerm.Trim().ToLower();
+
+                        foodOrders = await foodListingService.GetFoodOrdersOld(cancellationToken, searchTerm);
+                    }
+                    else
+                    {
+                        foodType = (FoodTypeEnum)foodtype_qp;
+                        searchTerm = searchTerm.Trim().ToLower();
+
+                        foodOrders = await foodListingService.GetFoodOrdersToday(foodType, cancellationToken, searchTerm);
+                    }
                 }
             }
-            searchTerm = searchTerm.Trim().ToLower();
-
-            var foodlist = await foodListingService.GetFoodOrdersToday(foodType, cancellationToken, searchTerm);
-
-
+            catch (Exception ex)
+            {
+                // Optional: log error
+            }
 
             var screenTile = foodType switch
             {
@@ -47,25 +57,25 @@ namespace CanteenManage.Controllers.CanteenControllers
             OrderByEmployViewDataModel model = new OrderByEmployViewDataModel
             {
                 screenTitle = screenTile,
-                FoodOrders = foodlist,
+                FoodOrders = foodOrders,
                 FoodType = (int)foodType
             };
 
             return View(model);
         }
 
-        public async Task<IActionResult> OrderByEmployBreakfast()
-        {
-            return this.RedirectToAction("OrderByEmployIdx", new { FoodType = "1" });
-        }
-        public async Task<IActionResult> OrderByEmployLunch()
-        {
-            return this.RedirectToAction("OrderByEmployIdx", new { FoodType = "2" });
-        }
-        public async Task<IActionResult> OrderByEmploySnacks()
-        {
-            return this.RedirectToAction("OrderByEmployIdx", new { FoodType = "3" });
-        }
+        //public async Task<IActionResult> OrderByEmployBreakfast()
+        //{
+        //    return this.RedirectToAction("OrderByEmployIdx", new { FoodType = "1" });
+        //}
+        //public async Task<IActionResult> OrderByEmployLunch()
+        //{
+        //    return this.RedirectToAction("OrderByEmployIdx", new { FoodType = "2" });
+        //}
+        //public async Task<IActionResult> OrderByEmploySnacks()
+        //{
+        //    return this.RedirectToAction("OrderByEmployIdx", new { FoodType = "3" });
+        //}
         public async Task<IActionResult> CompleteFoodOrder(IFormCollection formcollect)
         {
             var foodOrderId = formcollect["foodId"];

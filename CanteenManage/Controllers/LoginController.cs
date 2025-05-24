@@ -16,15 +16,18 @@ namespace CanteenManage.Controllers
     {
         private readonly AppConfigProvider appConfigProvider;
         private readonly LoginService loginService;
-        public LoginController(AppConfigProvider appConfig, LoginService loginService)
+        private ILogger logger;
+        public LoginController(AppConfigProvider appConfig, LoginService loginService, ILogger<LoginController> logger)
         {
             this.appConfigProvider = appConfig;
             this.loginService = loginService;
+            this.logger = logger;
         }
 
         [AllowAnonymous]
         public IActionResult Index()
         {
+            logger.LogInformation("Login accessed");
             try
             {
                 HttpContext.Session.Clear();
@@ -63,7 +66,7 @@ namespace CanteenManage.Controllers
                 {
                     if (userFound.EmployTypeId == 3)
                     {
-                        return setEmployeeSessionAndRedirect(userFound.Name, userFound.Id);
+                        return setEmployeeSessionAndRedirect(userFound.Name, userFound.Id, userFound.EmployID);
                     }
                     else if (userFound.EmployTypeId == 4)
                     {
@@ -77,7 +80,7 @@ namespace CanteenManage.Controllers
                         SetJWTCookie(jwttokens);
                         //HttpContext.Session.SetString(SessionConstants.UserId, userFound.Id.ToString());
                         //HttpContext.Session.SetString(SessionConstants.UserName, userFound.Name.ToString());
-                        return this.RedirectToAction(actionName: "ChoseModeOfUse", controllerName: "Login", new { empid = userFound.Id, empname = userFound.Name });
+                        return this.RedirectToAction(actionName: "ChoseModeOfUse", controllerName: "Login", new { eid = userFound.Id, empid = userFound.EmployID, empname = userFound.Name });
                     }
 
                 }
@@ -115,7 +118,7 @@ namespace CanteenManage.Controllers
                 {
                     if (userFound.EmployTypeId == 3)
                     {
-                        return setEmployeeSessionAndRedirect(userFound.Name, userFound.Id);
+                        return setEmployeeSessionAndRedirect(userFound.Name, userFound.Id, userFound.EmployID);
                     }
                     else if (userFound.EmployTypeId == 4)
                     {
@@ -129,7 +132,7 @@ namespace CanteenManage.Controllers
                         SetJWTCookie(jwttokens);
                         //HttpContext.Session.SetString(SessionConstants.UserId, userFound.Id.ToString());
                         //HttpContext.Session.SetString(SessionConstants.UserName, userFound.Name.ToString());
-                        return this.RedirectToAction(actionName: "ChoseModeOfUse", controllerName: "Login", new { empid = userFound.Id, empname = userFound.Name });
+                        return this.RedirectToAction(actionName: "ChoseModeOfUse", controllerName: "Login", new { eid = userFound.Id, empid = userFound.EmployID, empname = userFound.Name });
                     }
 
                 }
@@ -143,25 +146,26 @@ namespace CanteenManage.Controllers
         }
 
         [Authorize(Roles = "Employee")]
-        public IActionResult ChoseModeOfUse(string empid, string empname)
+        public IActionResult ChoseModeOfUse(string empid, string empname, string eid)
         {
             ViewBag.empid = empid;
+            ViewBag.eid = eid;
             ViewBag.empname = empname;
             return View();
         }
 
         [Authorize]
-        public IActionResult LoginAsEmployee(string empid, string empname)
+        public IActionResult LoginAsEmployee(string empid, string empname, string eid)
         {
-            if (string.IsNullOrEmpty(empid) || string.IsNullOrEmpty(empname))
+            if (string.IsNullOrEmpty(empid) || string.IsNullOrEmpty(empname) || string.IsNullOrEmpty(eid))
             {
                 return this.RedirectToAction(actionName: "Index", controllerName: "Error");
             }
-            else if (!string.IsNullOrEmpty(empid) || !string.IsNullOrEmpty(empname))
+            else if (!string.IsNullOrEmpty(empid) || !string.IsNullOrEmpty(empname) || !string.IsNullOrEmpty(eid))
             {
                 try
                 {
-                    return setEmployeeSessionAndRedirect(empname, int.Parse(empid));
+                    return setEmployeeSessionAndRedirect(empname, int.Parse(eid), empid);
                 }
                 catch (Exception ex)
                 {
@@ -176,17 +180,17 @@ namespace CanteenManage.Controllers
             return this.RedirectToAction(actionName: "Index", controllerName: "Error");
         }
         [Authorize]
-        public IActionResult LoginAsCanteenMember(string empid, string empname)
+        public IActionResult LoginAsCanteenMember(string empid, string empname, string eid)
         {
-            if (string.IsNullOrEmpty(empid) || string.IsNullOrEmpty(empname))
+            if (string.IsNullOrEmpty(empid) || string.IsNullOrEmpty(empname) || string.IsNullOrEmpty(eid))
             {
                 return this.RedirectToAction(actionName: "Index", controllerName: "Error");
             }
-            else if (!string.IsNullOrEmpty(empid) || !string.IsNullOrEmpty(empname))
+            else if (!string.IsNullOrEmpty(empid) || !string.IsNullOrEmpty(empname) || !string.IsNullOrEmpty(eid))
             {
                 try
                 {
-                    return setCommitmemberSessionAndRedirect(empname, int.Parse(empid));
+                    return setCommitmemberSessionAndRedirect(empname, int.Parse(eid), empid);
                 }
                 catch (Exception ex)
                 {
@@ -269,7 +273,7 @@ namespace CanteenManage.Controllers
             return this.RedirectToAction(actionName: "Index", controllerName: "Login");
         }
 
-        private RedirectToActionResult setEmployeeSessionAndRedirect(string Ename, int Eid)
+        private RedirectToActionResult setEmployeeSessionAndRedirect(string Ename, int Eid, string empId)
         {
             var claims = new List<Claim>
                         {
@@ -282,10 +286,11 @@ namespace CanteenManage.Controllers
 
             HttpContext.Session.SetString(SessionConstants.UserId, Eid.ToString());
             HttpContext.Session.SetString(SessionConstants.UserName, Ename.ToString());
+            HttpContext.Session.SetString(SessionConstants.UserEmpId, empId.ToString());
             return this.RedirectToAction(actionName: "Index", controllerName: "EmployDashboard");
         }
 
-        private RedirectToActionResult setCommitmemberSessionAndRedirect(string Ename, int Eid)
+        private RedirectToActionResult setCommitmemberSessionAndRedirect(string Ename, int Eid, string empId)
         {
             var claims = new List<Claim>
                         {
@@ -298,6 +303,7 @@ namespace CanteenManage.Controllers
 
             HttpContext.Session.SetString(SessionConstants.UserId, Eid.ToString());
             HttpContext.Session.SetString(SessionConstants.UserName, Ename.ToString());
+            HttpContext.Session.SetString(SessionConstants.UserEmpId, empId.ToString());
             return this.RedirectToAction(actionName: "CMDashboard", controllerName: "CommitteeMember");
         }
 

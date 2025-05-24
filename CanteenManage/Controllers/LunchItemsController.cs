@@ -83,6 +83,25 @@ namespace CanteenManage.Controllers
 
             return View(lunchPageDataModel);
         }
+
+        public IActionResult SelectDaysOfWeek(string selectedDate, string selectedFullDate)
+        {
+            //Console.WriteLine(formcollect["selecteddate"]);
+            try
+            {
+                utilityServices.SetDateTimeToSession(HttpContext.Session,
+                    selectedDate,
+                    selectedFullDate
+                    );
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            return RedirectToAction("Index", new { DaySelectOnSamePage = 1 });
+        }
+
         [HttpPost]
         public IActionResult SelectDaysOfWeek(IFormCollection formcollect)
         {

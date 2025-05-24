@@ -1,16 +1,16 @@
 ﻿using CanteenManage.Models;
+using CanteenManage.Utility;
 
 namespace CanteenManage.Services
 {
     public class AppConfigProvider
     {
         AppConfigs? appConfigs = new AppConfigs();
-
-        public AppConfigProvider()
+        private readonly IConfiguration _configuration;
+        public AppConfigProvider(IConfiguration configuration)
         {
-
-            var projectFolder = Path.Combine(Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments), "CanteenManagementSystem");
-
+            _configuration = configuration;
+            var projectFolder = CustomDataConstants.ProjectFolder;
             if (!Directory.Exists(projectFolder))
             {
                 Directory.CreateDirectory(projectFolder);
@@ -28,6 +28,7 @@ namespace CanteenManage.Services
 
                 }
             }
+            //appConfigs = new AppConfigs().getDefaultObject();
         }
         public string? GetConnectionString()
         {

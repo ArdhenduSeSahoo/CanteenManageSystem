@@ -15,10 +15,10 @@
 	<div class="container-fluid justify-content-center text-center mt-5">
 		<div class="card">
 			<div class="card-body">
-				<a href="@Url.Action("LoginAsCanteenMember", "Login",new { empid = ViewBag.empid, empname = ViewBag.empname })" class="btn btn-primary">Use as Member</a>
+				<a href="@Url.Action("LoginAsCanteenMember", "Login",new { empid = ViewBag.empid, empname = ViewBag.empname,eid=ViewBag.eid })" class="btn btn-primary">Use as Member</a>
 				<br />
 				<br />
-				<a href="@Url.Action("LoginAsEmployee", "Login",new { empid = ViewBag.empid, empname = ViewBag.empname })" class="btn btn-primary">Use as Employee</a>
+				<a href="@Url.Action("LoginAsEmployee", "Login",new { empid = ViewBag.empid, empname = ViewBag.empname,eid=ViewBag.eid })" class="btn btn-primary">Use as Employee</a>
 			</div>
 		</div>
 

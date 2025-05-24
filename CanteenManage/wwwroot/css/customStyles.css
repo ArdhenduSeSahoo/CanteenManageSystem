@@ -107,3 +107,10 @@
 .customTableBoldCell {
     font-weight: 600;
 }
+
+.ddp_item {
+    margin: 2px;
+    background-color: #e6ffdd;
+    border-radius: 10px;
+    font-weight: 500;
+}

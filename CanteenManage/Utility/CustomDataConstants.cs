@@ -6,6 +6,7 @@
         public static int LunchTimeHour = 10;
         public static int SnacksTimeHour = 15;
 
+        public static string ProjectFolder = Path.Combine(Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "CMS_Files");
         public static string CustomViewPath = "CustomView";
 
         public static string jwtTokencookieName = "iqweurhdsakfhabvdsreteh";

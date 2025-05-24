@@ -86,9 +86,15 @@ margin-top: 2px;"></i>
 color: white;">
 							@* <span class="nav-link text-center nav_link ">Ardhendu</span> *@
 							@{
-								var username = HttpContextAccessor.HttpContext?.Session.GetString(SessionConstants.UserName);
+								var username = HttpContextAccessor.HttpContext?.Session.GetString(SessionConstants.UserName) ?? "";
+								var userempId = HttpContextAccessor.HttpContext?.Session.GetString(SessionConstants.UserEmpId) ?? "";
 								//var username = Model.UserName ?? Model.UserEmpId ?? ""; //HttpContextAccessor.HttpContext.Session.GetString(SessionConstants.UserName);
-								var firstName = !string.IsNullOrEmpty(username) ? username.Split(' ')[0] : "";
+								string firstName = userempId;
+								try
+								{
+									firstName = !string.IsNullOrEmpty(username) ? username.Split(' ')[0] : userempId;
+								}
+								catch (Exception ex) { }
 							}
 
 							@if (!string.IsNullOrEmpty(username))
@@ -153,6 +159,7 @@ color: white;">
 	</div>
 
 	<script src="~/lib/jquery/dist/jquery.min.js"></script>
+	<script src="~/js/popper.min.js"></script>
 
 	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 	<script src="~/lib/fontawesome-free-6.7.2-web/js/all.min.js"></script>

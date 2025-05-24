@@ -88,6 +88,25 @@
             return View(breakFastPageDataModel);
         }
 
+
+        public IActionResult SelectDaysOfWeek(string selectedDate, string selectedFullDate)
+        {
+            //Console.WriteLine(formcollect["selecteddate"]);
+            try
+            {
+                utilityServices.SetDateTimeToSession(HttpContext.Session,
+                    selectedDate,
+                    selectedFullDate
+                    );
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            return RedirectToAction("Index", new { DaySelectOnSamePage = 1 });
+        }
+
         /// <summary>
         /// The SelectDaysOfWeek
         /// </summary>

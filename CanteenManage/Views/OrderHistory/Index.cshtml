@@ -1,4 +1,5 @@
 ﻿@model CanteenManage.Models.OrderHistoryPageDataModel
+@using CanteenManage.Utility;
 
 @{
 	Func<int?, string> GetEmojiFileName = (rating) =>
@@ -57,46 +58,52 @@
 										<td>@order.Food.Name</td>
 										<td style="font-weight:normal">@order.Quantity.ToString()</td>
 										<td>
-											@if (string.IsNullOrEmpty(order.Review))
+											@if (order.OrderCompleteStatus != (int)OrderCompleteStatusEnum.Pending)
 											{
-												<a href="javascript:void(0);"
-												   data-bs-toggle="modal"
-												   data-bs-target="#exampleModal"
-												   data-bs-orderid="@order.Id"
-												   title="Add Review">
-													<i class="bi bi-chat-left-text-fill fs-5 text-primary"></i>
-												</a>
+												<span class="badge rounded-pill bg-secondary">Pending</span>
 											}
-
-											@if (order.Rating != null)
+											else
 											{
-												<a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#viewReviewModal-@order.Id" title="View Review">
-													<i class="bi bi-eye-fill fs-5 text-success"></i>
-												</a>
+												@if (string.IsNullOrEmpty(order.Review))
+												{
+													<a href="javascript:void(0);"
+													   data-bs-toggle="modal"
+													   data-bs-target="#exampleModal"
+													   data-bs-orderid="@order.Id"
+													   title="Add Review">
+														<i class="bi bi-chat-left-text-fill fs-5 text-primary"></i>
+													</a>
+												}
 
-												<!-- Modal to View Review -->
-												<div class="modal fade" id="viewReviewModal-@order.Id" tabindex="-1" aria-labelledby="viewReviewModalLabel-@order.Id" aria-hidden="true">
-													<div class="modal-dialog modal-dialog-centered">
-														<div class="modal-content">
-															<div class="modal-header">
-																<h5 class="modal-title" id="viewReviewModalLabel-@order.Id">Feedback for @order.Food?.Name</h5>
-																<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-															</div>
-															<div class="modal-body">
-																<p>
-																	<strong>Rating:</strong>
-																	<img src="~/images/emoji/@GetEmojiFileName(order.Rating)" alt="Rating Emoji" style="width: 40px; height: 40px;" />
-																</p>
-																<p><strong>Comment:</strong> @order.Review</p>
-															</div>
-															<div class="modal-footer">
-																<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+												@if (order.Rating != null)
+												{
+													<a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#viewReviewModal-@order.Id" title="View Review">
+														<i class="bi bi-eye-fill fs-5 text-success"></i>
+													</a>
+
+													<!-- Modal to View Review -->
+													<div class="modal fade" id="viewReviewModal-@order.Id" tabindex="-1" aria-labelledby="viewReviewModalLabel-@order.Id" aria-hidden="true">
+														<div class="modal-dialog modal-dialog-centered">
+															<div class="modal-content">
+																<div class="modal-header">
+																	<h5 class="modal-title" id="viewReviewModalLabel-@order.Id">Feedback for @order.Food?.Name</h5>
+																	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+																</div>
+																<div class="modal-body">
+																	<p>
+																		<strong>Rating:</strong>
+																		<img src="~/images/emoji/@GetEmojiFileName(order.Rating)" alt="Rating Emoji" style="width: 40px; height: 40px;" />
+																	</p>
+																	<p><strong>Comment:</strong> @order.Review</p>
+																</div>
+																<div class="modal-footer">
+																	<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+																</div>
 															</div>
 														</div>
 													</div>
-												</div>
+												}
 											}
-
 										</td>
 									</tr>
 								}

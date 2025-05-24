@@ -53,5 +53,17 @@ namespace CanteenManage.Models
             return appConfigs;
 
         }
+        public AppConfigs getDefaultObject()
+        {
+            return new AppConfigs()
+            {
+                ConnectionString = "Data Source=192.168.0.83\\SQLSERVER2022;Initial Catalog=CanteenMgmt; User ID=CanteenUser;password=CanteenUser;TrustServerCertificate=True;",
+                SecretKey = "askdypwesdtd6u543335465u6yfoywtmcvyw]toi437sddvf843543vxnsrgaht45jdvle34tV879iuraoylaeg",
+                TokenIssuer = "CanteenMgtSyt",
+                TokenAudience = "CanteenEmploy",
+                AppEnvironment = "Production",
+
+            };
+        }
     }
 }

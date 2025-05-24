@@ -130,8 +130,37 @@ namespace CanteenManage.Services
             var foodOrders = await Context.FoodOrders
                 .Include(f => f.Food)
                 .Include(f => f.Employee)
-                .Where(fo => fo.OrderDate.Date >= DateTime.Now.Date
+                .Where(fo => fo.OrderDate.Date == DateTime.Now.Date
                 && fo.Food.FoodTypeId == (int)foodTypeEnum
+                //&& fo.OrderCompleteStatus == (int)OrderCompleteStatusEnum.Pending
+                && (fo.Employee.Name.ToLower().Contains(SearchVal) || fo.Employee.EmployID.ToLower().Contains(SearchVal))
+                )
+                .Select(fo => new EmployeeFoodOrdersTableDataModel()
+                {
+                    FoodOrderId = fo.Id,
+                    EmployeeId = fo.EmployeeId,
+                    EmployeeCode = fo.Employee.EmployID,
+                    FoodName = fo.Food.Name,
+                    OrderDate = fo.OrderDate,
+                    Quantity = fo.Quantity,
+                    TotalPrice = fo.TotalPrice,
+                    FoodType = fo.Food.FoodTypeId,
+                    EmployeeName = fo.Employee.Name,
+                    OrderCompleteStatus = fo.OrderCompleteStatus
+
+                })
+                .ToListAsync(cancellationToken);
+
+            return foodOrders;
+        }
+
+        public async Task<List<EmployeeFoodOrdersTableDataModel>> GetFoodOrdersOld(CancellationToken cancellationToken, string SearchVal = "")
+        {
+            var foodOrders = await Context.FoodOrders
+                .Include(f => f.Food)
+                .Include(f => f.Employee)
+                .Where(fo => fo.OrderDate.Date < DateTime.Now.Date
+                //&& fo.Food.FoodTypeId == (int)foodTypeEnum
                 //&& fo.OrderCompleteStatus == (int)OrderCompleteStatusEnum.Pending
                 && (fo.Employee.Name.ToLower().Contains(SearchVal) || fo.Employee.EmployID.ToLower().Contains(SearchVal))
                 )
