@@ -19,7 +19,7 @@ namespace CanteenManage.Services
             DateTime today = DateTime.Today;
 
 
-            DayOfWeek firstDayOfWeek = CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek;
+            DayOfWeek firstDayOfWeek = CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek + 1;
 
 
             int diff = (7 + (today.DayOfWeek - firstDayOfWeek)) % 7;
@@ -31,7 +31,7 @@ namespace CanteenManage.Services
 
             //list range is 0 to 7 but
             // Fill lists start from 1 is monday end with 6 is fryday
-            for (int i = 1; i < 6; i++)
+            for (int i = 0; i < 5; i++)
             {
                 currentWeekDates.Add(startOfCurrentWeek.AddDays(i));
                 nextWeekDates.Add(startOfCurrentWeek.AddDays(i + 7));

@@ -23,15 +23,15 @@
 					</div>
 				</div>
 			</div>
-
+			@* 
 			@(
 						await Html.PartialAsync("_ChoseDateVew", new ChoseDateViewDataModel()
 			{
 				daysOfWeekModels = Model.DayOfWeeks,
 			})
-						)
+						) *@
 
-			@* <div class="date-selector">
+			<div class="date-selector">
 				<label class="date-label">Choose Date:</label>
 				<div class="date-buttons">
 					@foreach (var dayes in Model.DayOfWeeks)
@@ -46,11 +46,11 @@
 					}
 
 				</div>
-			</div> *@
+			</div>
 			<div class="d-flex ">
 				<div class="row">
 					<div class="col">
-						<p>Total for @(Model.DayOfWeeks.Where(d => d.IsSelected)?.FirstOrDefault()?.DateShort) is:- <b><span class="food_total_quantity"> @(Model.totalCountForSelectedDay)</span></b></p>
+						<p>Total for @(Model.DayOfWeeks.Where(d => d.IsSelected)?.FirstOrDefault()?.DateTime.ToString("dd-MMM")) is:- <b><span class="food_total_quantity"> @(Model.totalCountForSelectedDay)</span></b></p>
 					</div>
 				</div>
 			</div>
