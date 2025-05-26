@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CanteenManage.Controllers
 {
-    [Authorize(Roles = "Employee")]
+    //[Authorize(Roles = "Employee")]
     public class CartController : Controller
     {
         private readonly CanteenManageDBContext canteenManageContext;

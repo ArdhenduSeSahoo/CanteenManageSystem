@@ -17,10 +17,10 @@ using CanteenManage.Controllers;
 
 
 var projectFolder = CustomDataConstants.ProjectFolder;
-Log.Logger = new LoggerConfiguration()
-    //.WriteTo.Console()
-    .WriteTo.File(projectFolder + "\\Logs" + "\\log-.txt", rollingInterval: RollingInterval.Day)
-    .CreateLogger();
+//Log.Logger = new LoggerConfiguration()
+//    //.WriteTo.Console()
+//    .WriteTo.File(projectFolder + "\\Logs" + "\\log-.txt", rollingInterval: RollingInterval.Day)
+//    .CreateLogger();
 
 try
 {
@@ -35,6 +35,16 @@ try
         //loggerConfiguration.WriteTo.Console();
         loggerConfiguration.ReadFrom.Configuration(context.Configuration);
     });
+
+    if (builder.Environment.IsProduction())
+    {
+        projectFolder = builder.Environment.ContentRootPath + "\\CMS_Files";
+        CustomDataConstants.ProjectFolder = builder.Environment.ContentRootPath + "\\CMS_Files";
+    }
+    Log.Logger = new LoggerConfiguration()
+        //.WriteTo.Console()
+        .WriteTo.File(projectFolder + "\\Logs" + "\\log-.txt", rollingInterval: RollingInterval.Day)
+        .CreateLogger();
 
     AppConfigs appConfigs = new AppConfigs();
 
@@ -84,42 +94,42 @@ try
         options.Cookie.IsEssential = true;
     });
 
-    builder.Services.AddAuthentication(options =>
-    {
-        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-    }).AddJwtBearer(options =>
-    {
+    //builder.Services.AddAuthentication(options =>
+    //{
+    //    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    //    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    //    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+    //}).AddJwtBearer(options =>
+    //{
 
-        options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = appConfigs.getTokenIssuer(),
-            ValidAudience = appConfigs.getTokenAudience(),
-            IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(appConfigs.getSecretKey()))
-        };
-        options.Events = new JwtBearerEvents
-        {
-            OnAuthenticationFailed = context =>
-            {
-                Console.WriteLine("Authentication failed: " + context.Exception.Message);
-                // Handle token validation failures (e.g., invalid token)
-                if (context.Exception is SecurityTokenInvalidSignatureException)
-                {
-                    context.Fail("Invalid signature");
-                }
-                else if (context.Exception is SecurityTokenExpiredException)
-                {
-                    context.Fail("Token expired");
-                }
-                return Task.CompletedTask;
-            }
-        };
-    });
+    //    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+    //    {
+    //        ValidateIssuer = true,
+    //        ValidateAudience = true,
+    //        ValidateLifetime = true,
+    //        ValidateIssuerSigningKey = true,
+    //        ValidIssuer = appConfigs.getTokenIssuer(),
+    //        ValidAudience = appConfigs.getTokenAudience(),
+    //        IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(appConfigs.getSecretKey()))
+    //    };
+    //    options.Events = new JwtBearerEvents
+    //    {
+    //        OnAuthenticationFailed = context =>
+    //        {
+    //            Console.WriteLine("Authentication failed: " + context.Exception.Message);
+    //            // Handle token validation failures (e.g., invalid token)
+    //            if (context.Exception is SecurityTokenInvalidSignatureException)
+    //            {
+    //                context.Fail("Invalid signature");
+    //            }
+    //            else if (context.Exception is SecurityTokenExpiredException)
+    //            {
+    //                context.Fail("Token expired");
+    //            }
+    //            return Task.CompletedTask;
+    //        }
+    //    };
+    //});
 
     builder.Services.AddPooledDbContextFactory<CanteenManageDBContext>(option =>
     {
@@ -192,11 +202,11 @@ try
         });
     app.UseStaticFiles();
 
-    app.UseMiddleware<TokenAuthMiddleWare>();
+    //app.UseMiddleware<TokenAuthMiddleWare>();
 
 
-    app.UseAuthentication();
-    app.UseAuthorization();
+    //app.UseAuthentication();
+    //app.UseAuthorization();
     app.UseRouting();
 
     app.UseAuthorization();

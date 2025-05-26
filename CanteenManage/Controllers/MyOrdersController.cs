@@ -10,7 +10,7 @@ using CanteenManage.CanteenRepository.Models;
 
 namespace CanteenManage.Controllers
 {
-    [Authorize(Roles = "Employee")]
+    //[Authorize(Roles = "Employee")]
     public class MyOrdersController : Controller
     {
         private readonly CanteenManageDBContext canteenManageContext;
