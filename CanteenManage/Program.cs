@@ -17,10 +17,10 @@ using CanteenManage.Controllers;
 
 
 var projectFolder = CustomDataConstants.ProjectFolder;
-Log.Logger = new LoggerConfiguration()
-    //.WriteTo.Console()
-    .WriteTo.File(projectFolder + "\\Logs" + "\\log-.txt", rollingInterval: RollingInterval.Day)
-    .CreateLogger();
+//Log.Logger = new LoggerConfiguration()
+//    //.WriteTo.Console()
+//    .WriteTo.File(projectFolder + "\\Logs" + "\\log-.txt", rollingInterval: RollingInterval.Day)
+//    .CreateLogger();
 
 try
 {
@@ -35,6 +35,16 @@ try
         //loggerConfiguration.WriteTo.Console();
         loggerConfiguration.ReadFrom.Configuration(context.Configuration);
     });
+
+    if (builder.Environment.IsProduction())
+    {
+        projectFolder = builder.Environment.ContentRootPath + "\\CMS_Files";
+        CustomDataConstants.ProjectFolder = builder.Environment.ContentRootPath + "\\CMS_Files";
+    }
+    Log.Logger = new LoggerConfiguration()
+        //.WriteTo.Console()
+        .WriteTo.File(projectFolder + "\\Logs" + "\\log-.txt", rollingInterval: RollingInterval.Day)
+        .CreateLogger();
 
     AppConfigs appConfigs = new AppConfigs();
 

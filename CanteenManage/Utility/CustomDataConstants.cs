@@ -10,7 +10,7 @@
         public static int LunchTimeHourEnd = 15;
         public static int SnacksTimeHourEnd = 19;
 
-        public static string ProjectFolder = Path.Combine(Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "CMS_Files");
+        public static string ProjectFolder = Path.Combine(Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments), "CMS_Files");
         public static string CustomViewPath = "CustomView";
 
         public static string jwtTokencookieName = "iqweurhdsakfhabvdsreteh";
