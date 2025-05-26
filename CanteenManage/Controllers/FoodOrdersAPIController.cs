@@ -13,7 +13,7 @@ namespace CanteenManage.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Employee")]
+    //[Authorize(Roles = "Employee")]
     public class FoodOrdersAPIController : ControllerBase
     {
         private readonly CanteenManageDBContext _context;

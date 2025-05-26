@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace CanteenManage.Controllers
 {
-    [Authorize]
+    //[Authorize]
     public class OrderingHub : Hub
     {
         //public static ConcurrentBag<string> canteenEmpList = new ConcurrentBag<string>();
