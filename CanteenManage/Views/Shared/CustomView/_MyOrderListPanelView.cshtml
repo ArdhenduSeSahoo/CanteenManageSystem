@@ -90,11 +90,17 @@
 								<td>
 									@if (@order.OrderCompleteStatus == (int)OrderCompleteStatusEnum.Pending)
 									{
-										<span class="badge rounded-pill bg-secondary">Pending</span>
+										@* <span class="badge rounded-pill bg-secondary">Pending</span> *@
+										<span class="badge bg-warning text-dark rounded-pill px-3 py-2 shadow-sm d-inline-flex align-items-center">
+											<i class="bi bi-hourglass-split me-1"></i> Pending
+										</span>
 									}
 									else
 									{
-										<span class="badge rounded-pill bg-success">Complete</span>
+										@* <span class="badge rounded-pill bg-success">Complete</span> *@
+										<span class="badge bg-success rounded-pill px-3 py-2 shadow-sm d-inline-flex align-items-center">
+											<i class="bi bi-check-circle me-1"></i> Completed
+										</span>
 									}
 								</td>
 								<td class="align-self-center text-center" style="vertical-align:middle;">
