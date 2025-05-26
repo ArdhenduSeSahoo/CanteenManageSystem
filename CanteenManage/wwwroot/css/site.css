@@ -38,11 +38,18 @@ body {
     color: white;
 }
 
-    .customNavItem:hover {
+    /*.customNavItem:hover {*/
         /*box-shadow: 0 0 0 0.1rem #ff0086bd, 0 0 0 0.25rem #258cfb91;*/
-        background-color: #FFC312;
+        /*background-color: #FFC312;
         color: black !important;
+    }*/
+    .customNavItem:hover {
+        background-color: white;
     }
+
+        .customNavItem:hover .nav-link {
+            color: black !important;
+        }
 
 .btn-rounded {
     border-radius: 25px;
