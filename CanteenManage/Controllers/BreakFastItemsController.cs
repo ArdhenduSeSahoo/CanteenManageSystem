@@ -9,7 +9,7 @@
     using Microsoft.AspNetCore.Mvc;
 
 
-    [Authorize(Roles = "Employee")]
+    //[Authorize(Roles = "Employee")]
     public class BreakFastItemsController : Controller
     {
 

@@ -150,12 +150,12 @@ namespace CanteenManage.Services
             }
             else
             {
-                var selectedDateObj = Convert.ToInt32(selectedDay);
-                if (selectedDateObj < DateTime.Now.Day)
+                var selectedDateObj = DateTimeFromString(selectedDate);// Convert.ToInt32(selectedDay);
+                if (selectedDateObj < DateTime.Now)
                 {
                     session.SetString(SessionConstants.UserSelectedDay, DateTime.Now.Day.ToString());
                     session.SetString(SessionConstants.UserSelectedDayOnSamePage, "1");
-                    session.SetString(SessionConstants.UserSelectedDayFull, DateTime.Now.ToString());
+                    session.SetString(SessionConstants.UserSelectedDayFull, DateTimeToString(DateTime.Now));
                 }
                 else
                 {

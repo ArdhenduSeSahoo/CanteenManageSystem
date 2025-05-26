@@ -145,7 +145,7 @@ namespace CanteenManage.Controllers
             return this.RedirectToAction(actionName: "Index", controllerName: "Error");
         }
 
-        [Authorize(Roles = "Employee")]
+        //[Authorize(Roles = "Employee")]
         public IActionResult ChoseModeOfUse(string empid, string empname, string eid)
         {
             ViewBag.empid = empid;
@@ -154,7 +154,7 @@ namespace CanteenManage.Controllers
             return View();
         }
 
-        [Authorize]
+        //[Authorize]
         public IActionResult LoginAsEmployee(string empid, string empname, string eid)
         {
             if (string.IsNullOrEmpty(empid) || string.IsNullOrEmpty(empname) || string.IsNullOrEmpty(eid))
@@ -179,7 +179,7 @@ namespace CanteenManage.Controllers
             }
             return this.RedirectToAction(actionName: "Index", controllerName: "Error");
         }
-        [Authorize]
+        //[Authorize]
         public IActionResult LoginAsCanteenMember(string empid, string empname, string eid)
         {
             if (string.IsNullOrEmpty(empid) || string.IsNullOrEmpty(empname) || string.IsNullOrEmpty(eid))
