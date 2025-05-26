@@ -1,5 +1,6 @@
 ﻿@using CanteenManage.Utility
 @model CanteenManage.Models.MyOrderListPanelViewModel
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 
 @*
     For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
@@ -7,11 +8,12 @@
 @{
 	//ViewData["Title"] = "My Orders";
 
-
+	var username = HttpContextAccessor.HttpContext?.Session.GetString(SessionConstants.UserName) ?? "";
+	var userempId = HttpContextAccessor.HttpContext?.Session.GetString(SessionConstants.UserEmpId) ?? "";
 }
 
 <div class="col @(Model.FoodOrders.Count()<=0?"d-none":"") ">
-	<div class="card customCard">
+	<div class="card customCard mt-2">
 		<div class="cardTitle fw-bold">
 			@Model.PanelTitle
 		</div>
@@ -22,7 +24,7 @@
 						<tr>
 							<th>Date</th>
 							<th>Name</th>
-							<th>Quantity</th>
+							<th>Qnt.</th>
 							<th>Price</th>
 							<th>Status</th>
 							<th></th>
@@ -60,11 +62,29 @@
 							{
 								orderShouldDelete = true;
 							}
-
+							var shouldSendRequest = false;
+							if (order.OrderCompleteStatus == (int)OrderCompleteStatusEnum.Pending && !orderShouldDelete)
+							{
+								if (Model.FoodType == CanteenManage.Utility.FoodTypeEnum.Breakfast
+								&& int.Parse(DateTime.Now.ToString("HH")) < CustomDataConstants.BreakfastTimeHourEnd)
+								{
+									shouldSendRequest = true;
+								}
+								else if (Model.FoodType == CanteenManage.Utility.FoodTypeEnum.Lunch
+								&& int.Parse(DateTime.Now.ToString("HH")) < CustomDataConstants.LunchTimeHourEnd)
+								{
+									shouldSendRequest = true;
+								}
+								else if (Model.FoodType == CanteenManage.Utility.FoodTypeEnum.Snacks
+								&& int.Parse(DateTime.Now.ToString("HH")) < CustomDataConstants.SnacksTimeHourEnd)
+								{
+									shouldSendRequest = true;
+								}
+							}
 
 							<tr>
 								<td>@order.OrderDate.ToString("dd-MM-")@order.OrderDate.ToString("ddd")</td>
-								<td class="customTableBoldCell">@order.Food.Name</td>
+								<td class="customTableBoldCell">@order.Food?.Name</td>
 								<td>@order.Quantity.ToString()</td>
 								<td class="" style="text-align:end">@order.TotalEmployeePrice.ToString()</td>
 								<td>
@@ -74,24 +94,37 @@
 									}
 									else
 									{
-										<span class="badge rounded-pill bg-primary">Completed</span>
+										<span class="badge rounded-pill bg-success">Complete</span>
 									}
 								</td>
-								<td class="align-self-center text-center align-t" style="vertical-align:middle;">
-									@if (orderShouldDelete && order.OrderCompleteStatus == (int)OrderCompleteStatusEnum.Pending)
+								<td class="align-self-center text-center" style="vertical-align:middle;">
+									@if (order.OrderCompleteStatus == (int)OrderCompleteStatusEnum.Pending)
 									{
-										<form asp-action="removeOrder" method="post">
-											<input type="hidden" name="orderId" value="@order.Id" />
-											<button type="submit" class="btn btn-outline-danger btn-sm">
-												<i class="fa fa-trash" aria-hidden="true"></i>
+										@if (orderShouldDelete)
+										{
+											<form asp-action="removeOrder" method="post">
+												<input type="hidden" name="orderId" value="@order.Id" />
+												<button type="submit" class="btn btn-outline-danger btn-sm">
+													<i class="fa fa-trash" aria-hidden="true"></i>
+												</button>
+											</form>
+										}
+										else if (shouldSendRequest)
+										{
+											<button type="submit" data-bs-orderid="@order.Id" data-bs-orderqnt="@order.Quantity" data-bs-ordername="@order.Food?.Name" data-bs-userempid="@userempId" data-bs-username="@username" class="btn btn-outline-success btn-sm btn_request_to_conform" data-bs-toggle="tooltip" data-bs-placement="top"
+													data-bs-custom-class="custom-tooltip"
+													data-bs-title="Send request for conformation of order.">
+												<i class="fa fa-paper-plane" aria-hidden="true"></i>
 											</button>
-										</form>
+
+										}
 
 									}
 									else
 									{
 
 									}
+
 								</td>
 							</tr>
 						}

@@ -125,6 +125,31 @@ namespace CanteenManage.Services
             return ((date.Day + offset - 1) / 7) + 1;
         }
 
+        public async Task<List<FoodOrder>> GetEmployFoodOrdersToday(int employeeId, FoodTypeEnum foodTypeEnum, CancellationToken cancellationToken)
+        {
+            var foodOrders = await Context.FoodOrders
+                .Include(f => f.Food)
+                .Include(f => f.Employee)
+                .Where(fo => fo.EmployeeId == employeeId
+                && fo.Food.FoodTypeId == (int)foodTypeEnum
+                && fo.OrderDate.Date == DateTime.Now.Date
+                )
+                .ToListAsync(cancellationToken);
+            return foodOrders;
+        }
+        public async Task<List<FoodOrder>> GetEmployFoodOrdersAll(int employeeId, FoodTypeEnum foodTypeEnum, CancellationToken cancellationToken)
+        {
+            var foodOrders = await Context.FoodOrders
+                .Include(f => f.Food)
+                .Include(f => f.Employee)
+                .Where(fo => fo.EmployeeId == employeeId
+                && fo.Food.FoodTypeId == (int)foodTypeEnum
+                && fo.OrderDate.Date >= DateTime.Now.Date
+                )
+                .OrderBy(fo => fo.OrderDate)
+                .ToListAsync(cancellationToken);
+            return foodOrders;
+        }
         public async Task<List<EmployeeFoodOrdersTableDataModel>> GetFoodOrdersToday(FoodTypeEnum foodTypeEnum, CancellationToken cancellationToken, string SearchVal = "")
         {
             var foodOrders = await Context.FoodOrders
@@ -286,13 +311,15 @@ namespace CanteenManage.Services
                 .ToListAsync();
         }
 
-        public async Task SubmitEmployeeFeedbacks(int employeeID, string message)
+        public async Task SubmitEmployeeFeedbacks(int employeeID, string message, string employeeName)
         {
 
             Context.EmployFeedbacks.Add(new EmployFeedback
             {
                 EmployeeId = employeeID,
                 Message = message,
+                Name = employeeName,
+                Email = "",
                 SubmittedAt = DateTime.Now
             });
             await Context.SaveChangesAsync();

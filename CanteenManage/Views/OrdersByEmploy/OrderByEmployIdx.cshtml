@@ -91,6 +91,43 @@
 			</div>
 		</div>
 	</div>
+
+	<div class="card bg-white d-none" id="cardUserRequestDiv">
+		<div class="card-header"><h6> User Request</h6></div>
+		<div class="card-body">
+			<div class="d-inline-flex">
+
+				<div class="card d-none" id="defaultcardorderdet" style="max-width:300px">
+					<div class="card-body p-2">
+						<div class="row row-cols-1">
+							<div class="col">
+								<div>Name:<span id="username" style="font-weight:500"></span></div>
+							</div>
+
+							<div class="col ">
+								<div class="d-inline-flex gap-3">
+									<div>Item:<span id="ordername" style="font-weight:500"></span></div>
+									<div>Qnt.:<span id="orderqnt" style="font-weight:500"></span></div>
+								</div>
+
+							</div>
+							<div class="col">
+								<div>EmpId:<span id="userempid"></span></div>
+							</div>
+							<div class="col ">
+								<button type="button" class="btn btn-primary align-self-end btn_conform_order_sr">Conform</button>
+
+							</div>
+						</div>
+
+
+					</div>
+				</div>
+			</div>
+			<div class="d-flex flex-wrap" id="userordergrid">
+			</div>
+		</div>
+	</div>
 	<div class="card bg-white">
 		<div class="card-header">
 			<h4 class="card-title">@Model.screenTitle</h4>
@@ -110,6 +147,9 @@
 					</button>
 				</div>
 			</form>
+			<button type="button" id="searchEmp" class="btn btn-outline-primary d-flex align-items-center">
+				<i class="bi bi-search me-2"></i> Search
+			</button>
 		</div>
 
 
@@ -240,13 +280,81 @@
 	</div>
 
 </div>
-</div>
+
+
 @section Scripts {
+	<script src="~/js/signalr.min.js"></script>
+
+@* <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script> *@
 	<script>
-			 $(document).ready(function () {
-			$('#searchEmp').click(function () {
-				//alert("btnclick");
+		$(document).ready(function() {
+		const connection = new signalR.HubConnectionBuilder()
+			.withUrl("/OrderingHub")
+			.build();
+
+
+		connection.on("OrderCompleteNotification", function (orderJson) {
+			//const msg = document.createElement("li");
+			//msg.textContent = `${user}: ${message}`;
+			//document.getElementById("messagesList").appendChild(msg);
+			//console.log("Order completed with ID: " + orderJson);
+				const myArr = JSON.parse(orderJson);
+				if(myArr.length>0)
+				{
+					$('#cardUserRequestDiv').removeClass('d-none');
+				}
+				else{
+					$('#cardUserRequestDiv').addClass('d-none');
+				}
+		$('#userordergrid').empty();
+		myArr.forEach(function(item) {
+				console.log("Order ID: " + item.OrderId);
+
+				var clone_card=$("#defaultcardorderdet").clone();
+				clone_card.removeClass('d-none');
+				clone_card.find("#username").html(item.UserName);
+				//var onme=clone_card.find("#ordername");
+				clone_card.find("#ordername").html(item.OrderName);
+				clone_card.find("#orderqnt").html(item.OrderQnt);
+				//var unam=clone_card.find("#userempid");
+				clone_card.find("#userempid").html(item.UserEmpId);
+				var confbtn=clone_card.find(".btn_conform_order_sr");
+				confbtn.attr("data-bs-orderid", item.OrderId);
+				$("#userordergrid").append(clone_card);
+				//console.log("Order Name: " + item.OrderName);
+				//console.log("User Emp ID: " + item.UserEmpId);
+				//console.log("User Name: " + item.UserName);
+				//console.log("Request Date Time: " + item.RequestDateTime);
 			});
 		});
+
+		connection.start()
+		.then(function() {
+			connection.invoke("AssignAsCanteenEmployee", "Hi");
+		})
+		.catch(function (err) {
+			return console.error(err.toString());
+		});
+
+
+		$(document).on('click', '.btn_conform_order_sr', function(event) {
+		  // Code to execute when the button is clicked
+		  console.log('Button clicked using .on() method!');
+		  const button = event.currentTarget
+			var orderId = button.getAttribute('data-bs-orderid');
+			console.log(orderId);
+			try {
+			connection.invoke("ConformingOrder", orderId)
+			.catch(function (err) {
+				return console.error(err.toString());
+				showErrorMessage("Some error happened. Please refresh page.");
+			});
+					} catch (err) {
+			console.error(err);
+		}
+		});
+		});
 	</script>
+
+
 }

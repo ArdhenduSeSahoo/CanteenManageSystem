@@ -1,6 +1,7 @@
 ﻿@model CanteenManage.Models.EmployeeFeedbackViewModel
 @{
 	ViewData["Title"] = "Contact Our Team";
+
 }
 
 <style>
@@ -90,10 +91,23 @@
 			<button type="submit" class="btn-submit">Submit</button>
 		</form>
 	</div>
+	<input type="hidden" id="hiddenFeedbackStatus" value="@(Model.FeedbackSubmitted?"true":"false")" />
 </div>
 
 @section Scripts {
 	@{
 		await Html.RenderPartialAsync("_ValidationScriptsPartial");
 	}
+	<script>
+
+		$(document).ready(function() {
+				const feedbackSubmitted = document.querySelector('#hiddenFeedbackStatus').value;
+				if (feedbackSubmitted === "true") {
+					//alert("Thank you for your feedback!");
+					showInfoMessage("Thank you for your feedback!");
+					feedbackSubmitted.value = "false";
+				}
+
+			});
+	</script>
 }

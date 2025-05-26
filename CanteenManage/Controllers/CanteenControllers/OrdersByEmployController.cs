@@ -11,10 +11,10 @@ namespace CanteenManage.Controllers.CanteenControllers
     {
         private readonly FoodListingService foodListingService;
         private readonly UtilityServices utilityServices;
-        public OrdersByEmployController(FoodListingService foodListingService, UtilityServices utilityServices)
+        public OrdersByEmployController(FoodListingService foodListingService)
         {
             this.foodListingService = foodListingService;
-            this.utilityServices = utilityServices;
+            //this.utilityServices = utilityServices;
         }
         public async Task<IActionResult> OrderByEmployIdx(string FoodType, CancellationToken cancellationToken, string searchTerm = "")
         {

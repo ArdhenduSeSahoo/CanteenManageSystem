@@ -12,6 +12,7 @@ using CanteenManage.Middleware;
 using CanteenManage.Utility;
 using System.Configuration;
 using Serilog;
+using CanteenManage.Controllers;
 
 
 
@@ -126,6 +127,13 @@ try
         option.UseSqlServer(appConfigs.getConnectionString());
     });
 
+    builder.Services.AddSingleton<SignalRDataHolder>();
+    builder.Services.AddSignalR(e =>
+    {
+        e.EnableDetailedErrors = true;
+        e.MaximumReceiveMessageSize = 1024000; // Set maximum message size to 1 MB
+    });
+    builder.Services.AddHostedService<SignalRBackgroundService>();
     builder.Services.AddScoped<CanteenManageContextFactory>();
     builder.Services.AddScoped(sp => sp.GetRequiredService<CanteenManageContextFactory>().CreateDbContext());
     builder.Services.AddScoped<AppConfigProvider>();
@@ -134,6 +142,7 @@ try
     builder.Services.AddScoped<FoodListingService>();
     builder.Services.AddScoped<OrderingService>();
     builder.Services.AddScoped<CartService>();
+
     builder.Services.AddHttpContextAccessor();
     builder.Services.AddSession();
 
@@ -201,6 +210,8 @@ try
     //    }
     //    await next();
     //});
+
+    app.MapHub<OrderingHub>("/OrderingHub");
     app.MapControllers();
 
     app.MapControllerRoute(

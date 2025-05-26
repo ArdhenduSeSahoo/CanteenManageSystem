@@ -100,7 +100,7 @@ namespace CanteenManage.Services
         public DaysOfWeekModel? getFirstActiveDate(List<DaysOfWeekModel> daysOfWeekModels)
         {
 
-            var firstActiveDay = daysOfWeekModels.Where(d => d.IsActiveDay).OrderBy(d => d.DateShort).FirstOrDefault();
+            var firstActiveDay = daysOfWeekModels.Where(d => d.IsActiveDay).OrderBy(d => d.DateTime).FirstOrDefault();
             return firstActiveDay;
         }
 

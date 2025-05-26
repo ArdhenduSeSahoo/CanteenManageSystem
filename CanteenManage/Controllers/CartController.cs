@@ -89,7 +89,7 @@ namespace CanteenManage.Controllers
         {
             SessionDataModel SessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
             await cartService.PlaceOrder(sessionData: SessionDataModel, cancellationToken: cancellationToken);
-            return this.RedirectToAction("CartIndex");
+            return RedirectToAction("Index", "MyOrders"); //this.RedirectToAction("CartIndex");
         }
     }
 }

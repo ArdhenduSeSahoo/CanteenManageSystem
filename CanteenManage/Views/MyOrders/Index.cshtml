@@ -23,12 +23,29 @@
 		<a asp-action="Index" asp-controller="OrderHistory" class="btn btn-outline-info">History</a>
 	</div>
 	<br />
+	<div class="d-flex text-center justify-content-between">
+		@if (Model.ShowAllOrder)
+		{
+			<h6>All</h6>
+		}
+		else
+		{
+			<h6>Today's</h6>
+		}
+
+		<div class="">
+			<input class="form-check-input" type="checkbox" @(Model.ShowAllOrder ? "checked" : "") id="ShowAllOrder" name="ShowAllOrder">
+			<a asp-action="Index" asp-controller="MyOrders" asp-route-ShowAllOrder="@(!Model.ShowAllOrder)">Show All</a>
+		</div>
+	</div>
+
 	<div class="row row-cols-1 row-cols-md-3">
 		@(
 				await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderListPanelView", new MyOrderListPanelViewModel()
 		{
 			PanelTitle = "Breakfast",
-			FoodOrders = Model.BreakFastFoodOrders
+			FoodOrders = Model.BreakFastFoodOrders,
+			FoodType = CanteenManage.Utility.FoodTypeEnum.Breakfast,
 		})
 				)
 
@@ -36,7 +53,9 @@
 				await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderListPanelView", new MyOrderListPanelViewModel()
 		{
 			PanelTitle = "Lunch",
-			FoodOrders = Model.LunchFoodOrders
+			FoodOrders = Model.LunchFoodOrders,
+			FoodType = CanteenManage.Utility.FoodTypeEnum.Lunch,
+
 		})
 				)
 
@@ -44,10 +63,58 @@
 				await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderListPanelView", new MyOrderListPanelViewModel()
 		{
 			PanelTitle = "Snacks",
-			FoodOrders = Model.SnaksFoodOrders
+			FoodOrders = Model.SnaksFoodOrders,
+			FoodType = CanteenManage.Utility.FoodTypeEnum.Snacks,
 		})
 				)
 
 	</div>
 </div>
 
+
+@section Scripts {
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+	<script>
+		$(document).ready(function() {
+
+			const connection = new signalR.HubConnectionBuilder()
+			.withUrl("/OrderingHub")
+			.build();
+
+		connection.start().catch(function (err) {
+			return console.error(err.toString());
+		});
+
+		$(".btn_request_to_conform").click(function(e){
+			const button = event.currentTarget
+			var orderId = button.getAttribute('data-bs-orderid');
+			var ordername = button.getAttribute('data-bs-ordername');
+			var userempid = button.getAttribute('data-bs-userempid');
+			var username = button.getAttribute('data-bs-username');
+			var orderqnt = button.getAttribute('data-bs-orderqnt');
+
+			try {
+			connection.invoke("RequestForOrderComplete", orderId,ordername,orderqnt,userempid,username)
+			  .then((m) => {
+		  console.log('Hub request send ');
+		  showInfoMessage("Request has send for conformation. Request will auto remove after 10 sec. ");
+		})
+			.catch(function (err) {
+				showErrorMessage("Some error happened.Please refresh Page.");
+				return console.error(err.toString());
+
+			});
+					} catch (err) {
+			console.error(err);
+
+		}
+		});
+
+		const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+		const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+
+		});
+
+	</script>
+}
