@@ -41,7 +41,7 @@ namespace CanteenManage.Controllers
 
             if (sessionDataModel.UserSelectedDay != null && DaySelectOnSamePage == 1)
             {
-                var selectedDate = daysOfWeek.Where(d => d.DateShort == sessionDataModel.UserSelectedDay).FirstOrDefault();
+                var selectedDate = utilityServices.getFirstActiveDate(daysOfWeek);
                 if (selectedDate != null)
                 {
                     selectedDate.IsSelected = true;

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CanteenManage.Services;
 using Microsoft.AspNetCore.Authorization;
+using CanteenManage.CanteenRepository.Models;
 
 namespace CanteenManage.Controllers
 {
@@ -21,67 +22,71 @@ namespace CanteenManage.Controllers
             this.utilityServices = utility;
             this.foodListingService = foodListingService;
         }
-        public async Task<IActionResult> Index(CancellationToken cancellationToken)
+        public async Task<IActionResult> Index(CancellationToken cancellationToken, bool ShowAllOrder = false)
         {
 
             MyOrderViewDataModel myOrderViewDataModel = new MyOrderViewDataModel();
+            myOrderViewDataModel.ShowAllOrder = ShowAllOrder;
             try
             {
-                //TimeSpan ts= utilityServices.GetSpecificTimeSpan(foodTypeEnum: FoodTypeEnum.Snacks);
-                SessionDataModel sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
-                DateTime snacks_dateTime = DateTime.Now.Date; //+ ts;
-                //List<DaysOfWeekModel> daysOfWeek = DateCalculationService.GetDaysOfWeek();
-                //var daysOfWeek_for_snaks = daysOfWeek.Where(
-                //    d =>
-                //    d.DateTime >= snacks_dateTime
-                //    ).ToList();
 
-                var snacksorders = await canteenManageContext.FoodOrders
-                    .Include(f => f.Food)
-                    .Where(
-                    fo => fo.Food.FoodTypeId == (int)FoodTypeEnum.Snacks
-                    && fo.EmployeeId == sessionDataModel.UserId
-                    //&& daysOfWeek_for_snaks.Select(s => s.DateTime.Date).Contains(fo.OrderDate.Date)
-                    && fo.OrderDate.Date >= snacks_dateTime.Date
-                    )
-                    .ToListAsync(cancellationToken);
+                SessionDataModel sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
+                DateTime snacks_dateTime = DateTime.Now.Date;
+
+                List<FoodOrder> snacksorders = new List<FoodOrder>();
+                List<FoodOrder> lunchorders = new List<FoodOrder>();
+                List<FoodOrder> breakfastorders = new List<FoodOrder>();
+
+                if (ShowAllOrder)
+                {
+                    snacksorders = await foodListingService.GetEmployFoodOrdersAll(sessionDataModel.UserIdOrZero,
+                                                                FoodTypeEnum.Snacks,
+                                                                cancellationToken
+                                                                );
+                }
+                else
+                {
+
+                    snacksorders = await foodListingService.GetEmployFoodOrdersToday(sessionDataModel.UserIdOrZero,
+                                                                    FoodTypeEnum.Snacks,
+                                                                    cancellationToken
+                                                                    );
+                }
                 myOrderViewDataModel.SnaksFoodOrders = snacksorders;
                 ////////////////////////////////////////////////////////////
-                //ts = new TimeSpan(11, 00, 0);
-                //DateTime lunch_dateTime = DateTime.Now.Date + ts;
 
-                //var daysOfWeek_for_lunch = daysOfWeek.Where(
-                //    d =>
-                //    d.DateTime >= snacks_dateTime
-                //    ).ToList();
+                if (ShowAllOrder)
+                {
+                    lunchorders = await foodListingService.GetEmployFoodOrdersAll(sessionDataModel.UserIdOrZero,
+                                                                FoodTypeEnum.Lunch,
+                                                                cancellationToken
+                                                                );
+                }
+                else
+                {
 
-                var lunchorders = await canteenManageContext.FoodOrders
-                    .Include(f => f.Food)
-                    .Where(
-                    fo => fo.Food.FoodTypeId == (int)FoodTypeEnum.Lunch
-                    && fo.EmployeeId == utilityServices.getSessionUserId(HttpContext.Session)
-                    //&& daysOfWeek_for_lunch.Select(s => s.DateTime.Date).Contains(fo.OrderDate.Date)
-                    && fo.OrderDate.Date >= DateTime.Now.Date
-                    )
-                    .ToListAsync(cancellationToken);
+                    lunchorders = await foodListingService.GetEmployFoodOrdersToday(sessionDataModel.UserIdOrZero,
+                                                                    FoodTypeEnum.Lunch,
+                                                                    cancellationToken
+                                                                    );
+                }
                 myOrderViewDataModel.LunchFoodOrders = lunchorders;
                 ////////////////////////////////////////////////////////////
-                //ts = new TimeSpan(15, 00, 0);
-                //DateTime breakfast_dateTime = DateTime.Now.Date + ts;
+                if (ShowAllOrder)
+                {
+                    breakfastorders = await foodListingService.GetEmployFoodOrdersAll(sessionDataModel.UserIdOrZero,
+                                                                FoodTypeEnum.Breakfast,
+                                                                cancellationToken
+                                                                );
+                }
+                else
+                {
 
-                //var daysOfWeek_for_breakfast = daysOfWeek.Where(
-                //    d => d.DateTime >= snacks_dateTime
-                //    ).ToList();
-
-                var breakfastorders = await canteenManageContext.FoodOrders
-                    .Include(f => f.Food)
-                    .Where(
-                    fo => fo.Food.FoodTypeId == (int)FoodTypeEnum.Breakfast
-                    && fo.EmployeeId == utilityServices.getSessionUserId(HttpContext.Session)
-                    //&& daysOfWeek_for_breakfast.Select(s => s.DateTime.Date).Contains(fo.OrderDate.Date)
-                    && fo.OrderDate.Date >= DateTime.Now.Date
-                    )
-                    .ToListAsync(cancellationToken);
+                    breakfastorders = await foodListingService.GetEmployFoodOrdersToday(sessionDataModel.UserIdOrZero,
+                                                                    FoodTypeEnum.Breakfast,
+                                                                    cancellationToken
+                                                                    );
+                }
                 myOrderViewDataModel.BreakFastFoodOrders = breakfastorders;
 
                 myOrderViewDataModel.CartItemCount = await foodListingService.GetCartItemCount(

@@ -8,9 +8,8 @@ namespace CanteenManage.CanteenRepository.Models
         [Required]
         public string Message { get; set; }
 
-        [Required]
+
         public string Name { get; set; }
-        [Required, EmailAddress]
         public string Email { get; set; }
 
         public DateTime SubmittedAt { get; set; } = DateTime.Now;

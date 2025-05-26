@@ -51,7 +51,7 @@
             }
             else
             {
-                var firstActiveDay = daysOfWeek.Where(d => d.IsActiveDay).OrderBy(d => d.DateShort).FirstOrDefault();
+                var firstActiveDay = utilityServices.getFirstActiveDate(daysOfWeek);
                 if (firstActiveDay != null)
                 {
                     firstActiveDay.IsSelected = true;

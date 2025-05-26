@@ -3,10 +3,12 @@ using CanteenManage.CanteenRepository.Models;
 using CanteenManage.Models;
 using CanteenManage.Services;
 using CanteenManage.Utility;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CanteenManage.Controllers
 {
+    [Authorize(Roles = "Employee")]
     public class SupportController : Controller
     {
         private readonly FoodListingService foodListingService;
@@ -32,12 +34,12 @@ namespace CanteenManage.Controllers
             employeeFeedbackViewModel.EmployeeFeedbacks = feedbackViewModels;
             return View(employeeFeedbackViewModel);
         }
-        public IActionResult Submit()
+        public IActionResult Submit(bool feedbackSubmitted = false)
         {
             EmployeeFeedbackViewModel employeeFeedbackViewModel = new EmployeeFeedbackViewModel();
-            SessionDataModel sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
-            employeeFeedbackViewModel.UserName = sessionDataModel.UserName;
-            //employeeFeedbackViewModel.UserEmpId = sessionDataModel;
+            //SessionDataModel sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
+            //
+            employeeFeedbackViewModel.FeedbackSubmitted = feedbackSubmitted;
             return View(employeeFeedbackViewModel);
         }
 
@@ -50,11 +52,11 @@ namespace CanteenManage.Controllers
             try
             {
                 SessionDataModel sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
-                //if (!string.IsNullOrEmpty(message))
-                //{
-                //    await foodListingService.SubmitEmployeeFeedbacks(sessionDataModel.UserIdOrZero, message);
-                //    return this.RedirectToAction("Submit");
-                //}
+                if (!string.IsNullOrEmpty(message))
+                {
+                    await foodListingService.SubmitEmployeeFeedbacks(sessionDataModel.UserIdOrZero, message, sessionDataModel.UserName ?? "");
+                    return this.RedirectToAction("Submit", new { feedbackSubmitted = true });
+                }
 
             }
             catch (Exception ex)

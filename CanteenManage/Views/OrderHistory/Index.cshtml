@@ -2,24 +2,16 @@
 @using CanteenManage.Utility;
 
 @{
-	Func<int?, string> GetEmojiFileName = (rating) =>
-	{
-		return rating switch
-		{
-			1 => "Emoji1.png",
-			2 => "Emoji2.png",
-			3 => "Emoji3.png",
-			4 => "Emoji4.png",
-			5 => "Emoji6.png",
-			_ => "default.png"
-		};
-	};
-}
-
-
-@{
 	ViewData["Title"] = "My Orders";
 }
+
+@section HeadSection {
+	<link rel="stylesheet" href="~/css/customStyles.css">
+	<style>
+
+	</style>
+}
+
 <div class=" container-fluid h-100" style="">
 
 	<div class="d-flex justify-content-between">
@@ -34,229 +26,31 @@
 
 	<div class="row row-cols-1 row-cols-md-3">
 
-		<div class="col">
-			<div class="card">
-				<div class="card-header bg-info fw-bold">
-					Breakfast
-				</div>
-				<div class="card-body">
-					<div class="table-responsive">
-						<table class="table table-hover table-responsive-sm">
-							<thead>
-								<tr>
-									<th scope="col">Date</th>
-									<th scope="col">Name</th>
-									<th scope="col">Quantity</th>
-									<th scope="col">Actions</th>
-								</tr>
-							</thead>
-							<tbody>
-								@foreach (var order in Model.BreakFastFoodOrders)
-								{
-									<tr>
-										<td scope="row" style="font-weight:normal">@order.OrderDate.ToString("dd-MM-")@order.OrderDate.DayOfWeek</td>
-										<td>@order.Food.Name</td>
-										<td style="font-weight:normal">@order.Quantity.ToString()</td>
-										<td>
-											@if (order.OrderCompleteStatus != (int)OrderCompleteStatusEnum.Pending)
-											{
-												<span class="badge rounded-pill bg-secondary">Pending</span>
-											}
-											else
-											{
-												@if (string.IsNullOrEmpty(order.Review))
-												{
-													<a href="javascript:void(0);"
-													   data-bs-toggle="modal"
-													   data-bs-target="#exampleModal"
-													   data-bs-orderid="@order.Id"
-													   title="Add Review">
-														<i class="bi bi-chat-left-text-fill fs-5 text-primary"></i>
-													</a>
-												}
+		@(
+				await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderHistoryListPanelView", new MyOrderListPanelViewModel()
+		{
+			PanelTitle = "Breakfast",
+			FoodOrders = Model.BreakFastFoodOrders,
+			FoodType = CanteenManage.Utility.FoodTypeEnum.Breakfast
+		})
+				)
+		@(
+				await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderHistoryListPanelView", new MyOrderListPanelViewModel()
+		{
+			PanelTitle = "Lunch",
+			FoodOrders = Model.LunchFoodOrders,
+			FoodType = CanteenManage.Utility.FoodTypeEnum.Lunch
+		})
+				)
+		@(
+				await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderHistoryListPanelView", new MyOrderListPanelViewModel()
+		{
+			PanelTitle = "Snacks",
+			FoodOrders = Model.SnaksFoodOrders,
+			FoodType = CanteenManage.Utility.FoodTypeEnum.Snacks
+		})
+				)
 
-												@if (order.Rating != null)
-												{
-													<a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#viewReviewModal-@order.Id" title="View Review">
-														<i class="bi bi-eye-fill fs-5 text-success"></i>
-													</a>
-
-													<!-- Modal to View Review -->
-													<div class="modal fade" id="viewReviewModal-@order.Id" tabindex="-1" aria-labelledby="viewReviewModalLabel-@order.Id" aria-hidden="true">
-														<div class="modal-dialog modal-dialog-centered">
-															<div class="modal-content">
-																<div class="modal-header">
-																	<h5 class="modal-title" id="viewReviewModalLabel-@order.Id">Feedback for @order.Food?.Name</h5>
-																	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-																</div>
-																<div class="modal-body">
-																	<p>
-																		<strong>Rating:</strong>
-																		<img src="~/images/emoji/@GetEmojiFileName(order.Rating)" alt="Rating Emoji" style="width: 40px; height: 40px;" />
-																	</p>
-																	<p><strong>Comment:</strong> @order.Review</p>
-																</div>
-																<div class="modal-footer">
-																	<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-																</div>
-															</div>
-														</div>
-													</div>
-												}
-											}
-										</td>
-									</tr>
-								}
-							</tbody>
-						</table>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="col">
-			<div class="card">
-				<div class="card-header bg-info fw-bold">
-					Lunch
-				</div>
-				<div class="card-body">
-					<div class="table-responsive">
-						<table class="table table-hover table-responsive-sm">
-							<thead>
-								<tr>
-									<th scope="col">Date</th>
-									<th scope="col">Name</th>
-									<th scope="col">Quantity</th>
-									<th scope="col">Actions</th>
-								</tr>
-							</thead>
-							<tbody>
-								@foreach (var order in Model.LunchFoodOrders)
-								{
-									<tr>
-										<td scope="row" style="font-weight:normal">@order.OrderDate.ToString("dd-MM-")@order.OrderDate.DayOfWeek</td>
-										<td>@order.Food.Name</td>
-										<td style="font-weight:normal">@order.Quantity.ToString()</td>
-										<td>
-											@if (string.IsNullOrEmpty(order.Review))
-											{
-												<a href="javascript:void(0);"
-												   data-bs-toggle="modal"
-												   data-bs-target="#exampleModal"
-												   data-bs-orderid="@order.Id"
-												   title="Add Review">
-													<i class="bi bi-chat-left-text-fill fs-5 text-primary"></i>
-												</a>
-											}
-											@if (order.Rating != null)
-											{
-												<a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#viewReviewModal-@order.Id" title="View Review">
-													<i class="bi bi-eye-fill fs-5 text-success"></i>
-												</a>
-
-												<!-- Modal to View Review -->
-												<div class="modal fade" id="viewReviewModal-@order.Id" tabindex="-1" aria-labelledby="viewReviewModalLabel-@order.Id" aria-hidden="true">
-													<div class="modal-dialog modal-dialog-centered">
-														<div class="modal-content">
-															<div class="modal-header border-0">
-																<h5 class="modal-title" id="viewReviewModalLabel-@order.Id">Feedback for @order.Food?.Name</h5>
-																<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-															</div>
-															<div class="modal-body">
-																<p>
-																	<strong>Rating:</strong>
-																	<img src="~/images/emoji/@GetEmojiFileName(order.Rating)" alt="Rating Emoji" style="width: 40px; height: 40px;" />
-																</p>
-																<p class="m-0"><strong>Comment:</strong> @order.Review</p>
-															</div>
-															<div class="modal-footer border-0">
-																<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-															</div>
-														</div>
-													</div>
-												</div>
-											}
-
-
-										</td>
-									</tr>
-								}
-							</tbody>
-						</table>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="col">
-			<div class="card">
-				<div class="card-header bg-info fw-bold">
-					Snacks
-				</div>
-				<div class="card-body">
-					<div class="table-responsive">
-						<table class="table table-hover table-responsive-sm">
-							<thead>
-								<tr>
-									<th scope="col">Date</th>
-									<th scope="col">Name</th>
-									<th scope="col">Quantity</th>
-									<th scope="col">Actions</th>
-								</tr>
-							</thead>
-							<tbody>
-								@foreach (var order in Model.SnaksFoodOrders)
-								{
-									<tr>
-										<td scope="row" style="font-weight:normal">@order.OrderDate.ToString("dd-MM-")@order.OrderDate.DayOfWeek</td>
-										<td>@order.Food.Name</td>
-										<td style="font-weight:normal">@order.Quantity.ToString()</td>
-										<td>
-											@if (string.IsNullOrEmpty(order.Review))
-											{
-												<a href="javascript:void(0);"
-												   data-bs-toggle="modal"
-												   data-bs-target="#exampleModal"
-												   data-bs-orderid="@order.Id"
-												   title="Add Review">
-													<i class="bi bi-chat-left-text-fill fs-5 text-primary"></i>
-												</a>
-											}
-											@if (order.Rating != null)
-											{
-												<a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#viewReviewModal-@order.Id" title="View Review">
-													<i class="bi bi-eye-fill fs-5 text-success"></i>
-												</a>
-
-												<!-- Modal to View Review -->
-												<div class="modal fade" id="viewReviewModal-@order.Id" tabindex="-1" aria-labelledby="viewReviewModalLabel-@order.Id" aria-hidden="true">
-													<div class="modal-dialog modal-dialog-centered">
-														<div class="modal-content">
-															<div class="modal-header">
-																<h5 class="modal-title" id="viewReviewModalLabel-@order.Id">Feedback for @order.Food?.Name</h5>
-																<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-															</div>
-															<div class="modal-body">
-																<p>
-																	<strong>Rating:</strong>
-																	<img src="~/images/emoji/@GetEmojiFileName(order.Rating)" alt="Rating Emoji" style="width: 40px; height: 40px;" />
-																</p>
-																<p><strong>Comment:</strong> @order.Review</p>
-															</div>
-															<div class="modal-footer">
-																<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-															</div>
-														</div>
-													</div>
-												</div>
-											}
-										</td>
-									</tr>
-								}
-							</tbody>
-						</table>
-					</div>
-				</div>
-			</div>
-		</div>
 	</div>
 
 	<div class="modal fade " id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -297,7 +91,7 @@
 						<div class="form-check form-check-inline" style="margin:1px;padding:5px">
 							<input type="radio" class="btn-check" name="options" id="option5" value="5" autocomplete="off">
 							<label class="btn btn-outline-info" for="option5">
-								<img src="~/images/emoji/Emoji6.png" alt="Sad" style="width: 30px; height: 30px;" />
+								<img src="~/images/emoji/Emoji5.png" alt="Sad" style="width: 30px; height: 30px;" />
 							</label>
 						</div>
 						<div class="mb-3">
@@ -315,10 +109,65 @@
 		</div>
 	</div>
 
+	<!-- Modal to View Review -->
+	<div class="modal fade" id="viewReviewModal" tabindex="-1" aria-labelledby="viewReviewModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="viewReviewModalLabel">Feedback</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<p>
+						<strong>Rating:</strong>
+						<img src="" id="ratingimg" alt="Rating Emoji" style="width: 40px; height: 40px;" />
+					</p>
+					<p><strong>Comment:</strong> <span id="reviewText"></span></p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
 </div>
 
 @section Scripts {
 	<script src="~/js/reviewModals.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+	<script>
+		$(document).ready(function() {
+			const connection = new signalR.HubConnectionBuilder()
+			.withUrl("/OrderingHub")
+			.build();
 
+		connection.on("ReceiveMessage", function (user, message) {
+			const msg = document.createElement("li");
+			msg.textContent = `${user}: ${message}`;
+			document.getElementById("messagesList").appendChild(msg);
+		});
+
+		connection.start().catch(function (err) {
+			return console.error(err.toString());
+		});
+
+		$("#request_to_conform").click(function(){
+			console.log("sdfasdsd");
+			connection.invoke("SendMessage", "message").catch(function (err) {
+				return console.error(err.toString());
+			});
+		});
+		function sendMessage() {
+			//const user = document.getElementById("userInput").value;
+			//const message = document.getElementById("messageInput").value;
+			connection.invoke("SendMessage", "message").catch(function (err) {
+				return console.error(err.toString());
+			});
+		}
+		});
+
+	</script>
 }
 

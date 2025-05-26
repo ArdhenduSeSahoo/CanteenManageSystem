@@ -1,0 +1,95 @@
+﻿@using CanteenManage.Utility
+@model CanteenManage.Models.MyOrderListPanelViewModel
+
+@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+@{
+
+}
+
+@{
+	//ViewData["Title"] = "My Orders History";
+
+
+}
+
+
+
+<div class="col @(Model.FoodOrders.Count()<=0?"d-none":"") ">
+	<div class="card customCard mt-2">
+		<div class="cardTitle fw-bold">
+			@Model.PanelTitle
+		</div>
+		<div class="card-body custom_card_body">
+			<div class="table-responsive">
+				<table class="table table-hover table-responsive-sm table-borderless customTable">
+					<thead>
+						<tr>
+							<th>Date</th>
+							<th>Name</th>
+							<th>Qnt.</th>
+							<th>Price</th>
+							<th>Status</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach (var order in Model.FoodOrders)
+						{
+
+							<tr>
+								<td>@order.OrderDate.ToString("dd-MM-")@order.OrderDate.ToString("ddd")</td>
+								<td class="customTableBoldCell">@order.Food.Name</td>
+								<td>@order.Quantity.ToString()</td>
+								<td class="" style="text-align:end">@order.TotalEmployeePrice.ToString()</td>
+								<td>
+									@if (@order.OrderCompleteStatus == (int)OrderCompleteStatusEnum.Pending)
+									{
+										<span class="badge rounded-pill bg-secondary">Pending</span>
+									}
+									else
+									{
+										<span class="badge rounded-pill bg-primary">Completed</span>
+									}
+								</td>
+								<td class="align-self-center text-center align-t" style="vertical-align:middle;">
+									@if (order.OrderCompleteStatus == (int)OrderCompleteStatusEnum.Pending)
+									{
+
+									}
+									else
+									{
+										@if (string.IsNullOrEmpty(order.Review))
+										{
+											<a href="javascript:void(0);"
+											   data-bs-toggle="modal"
+											   data-bs-target="#exampleModal"
+											   data-bs-orderid="@order.Id"
+											   title="Add Review">
+												<i class="bi bi-chat-left-text-fill fs-5 text-primary"></i>
+											</a>
+										}
+
+										@if (order.Rating != null)
+										{
+											<a href="javascript:void(0);" data-bs-toggle="modal"
+											   data-bs-target="#viewReviewModal"
+											   title="View Review"
+											   data-bs-rating="@order.Rating"
+											   data-bs-review="@order.Review">
+												<i class="bi bi-eye-fill fs-5 text-success"></i>
+											</a>
+
+										}
+									}
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>

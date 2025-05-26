@@ -2,9 +2,13 @@
 {
     public class CustomDataConstants
     {
-        public static int BreakfastTimeHour = 6;
+        public static int BreakfastTimeHour = 7;
         public static int LunchTimeHour = 10;
         public static int SnacksTimeHour = 15;
+
+        public static int BreakfastTimeHourEnd = 11;
+        public static int LunchTimeHourEnd = 15;
+        public static int SnacksTimeHourEnd = 19;
 
         public static string ProjectFolder = Path.Combine(Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "CMS_Files");
         public static string CustomViewPath = "CustomView";

@@ -7,5 +7,6 @@ namespace CanteenManage.Models
         public List<FoodOrder> BreakFastFoodOrders { get; set; }
         public List<FoodOrder> LunchFoodOrders { get; set; }
         public List<FoodOrder> SnaksFoodOrders { get; set; }
+        public bool ShowAllOrder { get; set; }
     }
 }

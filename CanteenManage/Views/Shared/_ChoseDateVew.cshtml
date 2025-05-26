@@ -23,7 +23,9 @@
 			{
 				if (dayes.IsActiveDay)
 				{
-					<li><a class="dropdown-item ddp_item" asp-action="SelectDaysOfWeek" asp-route-selectedDate="@dayes.DateShort" asp-route-selectedFullDate="@dayes.DateFull">@dayes.DateShort-@dayes.DaysOfWeekName</a></li>
+					<li style="padding-right: 3px;">
+						<a class="dropdown-item ddp_item" asp-action="SelectDaysOfWeek" asp-route-selectedDate="@dayes.DateShort" asp-route-selectedFullDate="@dayes.DateFull">@dayes.DateShort-@dayes.DaysOfWeekName</a>
+					</li>
 				}
 			}
 
