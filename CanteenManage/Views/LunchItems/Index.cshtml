@@ -46,7 +46,7 @@
 			</div>
 			<div class="row">
 				<div class="col">
-					<p>Total for day  @(Model.DayOfWeeks.Where(d => d.IsSelected)?.FirstOrDefault()?.DateTime.ToString("dd-MMM")) is:- <b><span class="food_total_quantity"> @(Model.totalCountForSelectedDay)</span></b></p>
+					<p>Total on  @(Model.DayOfWeeks.Where(d => d.IsSelected)?.FirstOrDefault()?.DateTime.ToString("dd-MMM")): <b><span class="food_total_quantity"> @(Model.totalCountForSelectedDay)</span></b></p>
 				</div>
 			</div>
 		</div>

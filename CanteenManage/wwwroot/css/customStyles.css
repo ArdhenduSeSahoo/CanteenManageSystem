@@ -42,14 +42,14 @@
 
 .date-buttons {
     display: flex;
-    gap: 8px;
+    gap: 2px;
     flex-wrap: wrap;
 }
 
 .date-btn {
     background-color: #f0f0f0;
     border: none;
-    padding: 10px 14px;
+    padding: 0px 0px;
     border-radius: 8px;
     text-align: center;
     font-size: 16px;
