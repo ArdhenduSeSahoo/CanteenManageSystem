@@ -41,7 +41,8 @@ namespace CanteenManage.Controllers
 
             if (sessionDataModel.UserSelectedDay != null && DaySelectOnSamePage == 1)
             {
-                var selectedDate = utilityServices.getFirstActiveDate(daysOfWeek);
+                var selectedDate = daysOfWeek.Where(d => d.DateShort == sessionDataModel.UserSelectedDay).FirstOrDefault();
+                //utilityServices.getFirstActiveDate(daysOfWeek);
                 if (selectedDate != null)
                 {
                     selectedDate.IsSelected = true;
@@ -51,7 +52,8 @@ namespace CanteenManage.Controllers
             }
             else
             {
-                var firstActiveDay = daysOfWeek.Where(d => d.IsActiveDay).OrderBy(d => d.DateShort).FirstOrDefault();
+                var firstActiveDay = utilityServices.getFirstActiveDate(daysOfWeek);
+                // daysOfWeek.Where(d => d.IsActiveDay).OrderBy(d => d.DateShort).FirstOrDefault();
                 if (firstActiveDay != null)
                 {
                     firstActiveDay.IsSelected = true;
