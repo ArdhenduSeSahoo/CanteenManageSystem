@@ -138,6 +138,10 @@ namespace CanteenManage.Controllers.CommitteeMembers
                     {
 
                         string filePath = Path.Combine(ProjectFilePathConstants.getImagePath(), foodFormDataModel.ImageUrl);
+                        if (System.IO.File.Exists(filePath))
+                        {
+                            System.IO.File.Delete(filePath);
+                        }
                         using (var fileStream = new FileStream(filePath, FileMode.Create))
                         {
                             foodFormDataModel.FoodImage.CopyTo(fileStream);
