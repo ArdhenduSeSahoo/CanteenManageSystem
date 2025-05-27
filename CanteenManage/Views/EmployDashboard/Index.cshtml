@@ -25,7 +25,7 @@
 
 <div class="container">
 	<div class="row row-cols-1 row-cols-md-3">
-		<div class="col">
+	@* 	<div class="col">
 			<a asp-action="Index" asp-controller="BreakFastItems">
 				<div class="card card-span h-100 text-white rounded-3">
 					<img class="img-fluid rounded-3" style="height:310px" src="~/images/breakfast1.jpg" alt="...">
@@ -35,25 +35,159 @@
 					</div>
 				</div>
 			</a>
+		</div> *@
+		<div class="col">
+			<a asp-action="Index" asp-controller="BreakFastItems">
+				<div class="card card-span h-100 text-white rounded-3">
+					<div id="breakfastCarousel" class="carousel slide" data-bs-ride="carousel">
+						<div class="carousel-inner rounded-3">
+							<div class="carousel-item active">
+								<img src="~/images/breakfast1.jpg" class="d-block w-100" style="height:310px;" alt="...">
+							</div>
+							<div class="carousel-item">
+								<img src="~/FoodImages/Idli.jpg" class="d-block w-100" style="height:310px;" alt="...">
+							</div>
+							<div class="carousel-item">
+								<img src="~/FoodImages/Aloo Puri.jpg" class="d-block w-100" style="height:310px;" alt="...">
+							</div>
+							<div class="carousel-item">
+								<img src="~/FoodImages/Bread_Omelette.jpg" class="d-block w-100" style="height:310px;" alt="...">
+							</div>
+							<div class="carousel-item">
+								<img src="~/FoodImages/Maggi_Noodles.jpg" class="d-block w-100" style="height:310px;" alt="...">
+							</div>
+						</div>
+						<!-- Optional: Navigation buttons -->
+						<button class="carousel-control-prev" type="button" data-bs-target="#breakfastCarousel" data-bs-slide="prev">
+							<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+							<span class="visually-hidden">Previous</span>
+						</button>
+						<button class="carousel-control-next" type="button" data-bs-target="#breakfastCarousel" data-bs-slide="next">
+							<span class="carousel-control-next-icon" aria-hidden="true"></span>
+							<span class="visually-hidden">Next</span>
+						</button>
+					</div>
+
+					<div class="card-img-overlay ps-0">
+						<span class="badge bg-primary ms-2 me-1 p-2"></span>
+					</div>
+					<div class="card-body ps-0">
+						<span class="badge bg-soft-success p-2">
+							<span class="fw-bold fs-1 text-success">Breakfast</span>
+						</span>
+					</div>
+				</div>
+			</a>
 		</div>
+
 		<div class="col">
 			<a asp-action="Index" asp-controller="LunchItems">
-				<div class="card card-span h-100 text-white rounded-3">
+				@* <div class="card card-span h-100 text-white rounded-3">
 					<img class="img-fluid rounded-3" src="~/images/lunch.jpg" style="height:310px" alt="...">
 					<div class="card-img-overlay ps-0"><span class="badge bg-primary ms-2 me-1 p-2"></span></div>
 					<div class="card-body ps-0">
 						<span class="badge bg-soft-success p-2"><span class="fw-bold fs-1 text-success">Lunch</span></span>
+					</div>
+				</div> *@
+				<div class="card card-span h-100 text-white rounded-3">
+					<div id="lunchCarousel" class="carousel slide" data-bs-ride="carousel">
+						<div class="carousel-inner rounded-3">
+							<div class="carousel-item active">
+								<img src="~/images/lunch.jpg" class="d-block w-100" style="height:310px;" alt="...">
+							</div>
+							<div class="carousel-item">
+								<img src="~/FoodImages/Chicken_Biryani.jpg" class="d-block w-100" style="height:310px;" alt="...">
+							</div>
+							<div class="carousel-item">
+								<img src="~/FoodImages/Chicken_Thali.jpg" class="d-block w-100" style="height:310px;" alt="...">
+							</div>
+							<div class="carousel-item">
+								<img src="~/FoodImages/Fish_Curry_Rice.jpg" class="d-block w-100" style="height:310px;" alt="...">
+							</div>
+							<div class="carousel-item">
+								<img src="~/FoodImages/Egg_Thali.jpg" class="d-block w-100" style="height:310px;" alt="...">
+							</div>
+							<div class="carousel-item">
+								<img src="~/FoodImages/Rajma_Chawal.jpg" class="d-block w-100" style="height:310px;" alt="...">
+							</div>
+							<div class="carousel-item">
+								<img src="~/FoodImages/Chole_Chawal.jpg" class="d-block w-100" style="height:310px;" alt="...">
+							</div>
+						</div>
+						<!-- Optional: Navigation buttons -->
+						<button class="carousel-control-prev" type="button" data-bs-target="#lunchCarousel" data-bs-slide="prev">
+							<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+							<span class="visually-hidden">Previous</span>
+						</button>
+						<button class="carousel-control-next" type="button" data-bs-target="#lunchCarousel" data-bs-slide="next">
+							<span class="carousel-control-next-icon" aria-hidden="true"></span>
+							<span class="visually-hidden">Next</span>
+						</button>
+					</div>
+
+					<div class="card-img-overlay ps-0">
+						<span class="badge bg-primary ms-2 me-1 p-2"></span>
+					</div>
+					<div class="card-body ps-0">
+						<span class="badge bg-soft-success p-2">
+							<span class="fw-bold fs-1 text-success">Lunch</span>
+						</span>
 					</div>
 				</div>
 			</a>
 		</div>
 		<div class="col">
 			<a asp-action="Index" asp-controller="SnacksItemList">
-				<div class="card card-span h-100 text-white rounded-3">
+				@* <div class="card card-span h-100 text-white rounded-3">
 					<img class="img-fluid rounded-3 " style="height:310px" src="~/images/snacks3.jpg" alt="...">
 					<div class="card-img-overlay ps-0"><span class="badge bg-primary ms-2 me-1 p-2"></span></div>
 					<div class="card-body ps-0">
 						<span class="badge bg-soft-success p-2"><span class="fw-bold fs-1 text-success">Evening Snacks</span></span>
+					</div>
+				</div> *@
+				<div class="card card-span h-100 text-white rounded-3">
+					<div id="snacksCarousel" class="carousel slide" data-bs-ride="carousel">
+						<div class="carousel-inner rounded-3">
+							<div class="carousel-item active">
+								<img src="~/images/snacks3.jpg" class="d-block w-100" style="height:310px;" alt="...">
+							</div>
+							<div class="carousel-item">
+								<img src="~/FoodImages/Bread_Pakora.jpg" class="d-block w-100" style="height:310px;" alt="...">
+							</div>
+							<div class="carousel-item">
+								<img src="~/FoodImages/Roll_Veg.jpg" class="d-block w-100" style="height:310px;" alt="...">
+							</div>
+							<div class="carousel-item">
+								<img src="~/FoodImages/Samosa.jpg" class="d-block w-100" style="height:310px;" alt="...">
+							</div>
+							<div class="carousel-item">
+								<img src="~/FoodImages/Chai_Tea.jpg" class="d-block w-100" style="height:310px;" alt="...">
+							</div>
+							<div class="carousel-item">
+								<img src="~/FoodImages/Onion_Pakoda.jpg" class="d-block w-100" style="height:310px;" alt="...">
+							</div>
+							<div class="carousel-item">
+								<img src="~/FoodImages/Aloo_Tikki.jpg" class="d-block w-100" style="height:310px;" alt="...">
+							</div>
+						</div>
+						<!-- Optional: Navigation buttons -->
+						<button class="carousel-control-prev" type="button" data-bs-target="#snacksCarousel" data-bs-slide="prev">
+							<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+							<span class="visually-hidden">Previous</span>
+						</button>
+						<button class="carousel-control-next" type="button" data-bs-target="#snacksCarousel" data-bs-slide="next">
+							<span class="carousel-control-next-icon" aria-hidden="true"></span>
+							<span class="visually-hidden">Next</span>
+						</button>
+					</div>
+
+					<div class="card-img-overlay ps-0">
+						<span class="badge bg-primary ms-2 me-1 p-2"></span>
+					</div>
+					<div class="card-body ps-0">
+						<span class="badge bg-soft-success p-2">
+							<span class="fw-bold fs-1 text-success">Snacks</span>
+						</span>
 					</div>
 				</div>
 			</a>
