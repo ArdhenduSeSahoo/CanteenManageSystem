@@ -19,8 +19,12 @@ namespace CanteenManage.Services
             DateTime today = DateTime.Today;
 
 
-            DayOfWeek firstDayOfWeek = CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek + 1;
-
+            DayOfWeek firstDayOfWeek = CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek;
+            //if(firstDayOfWeek==DayOfWeek.Sunday)
+            //{
+            //    firstDayOfWeek = DayOfWeek.Monday; // Adjust to Monday if Sunday is the first day of the week
+            //}
+            firstDayOfWeek = DayOfWeek.Monday;
 
             int diff = (7 + (today.DayOfWeek - firstDayOfWeek)) % 7;
             DateTime startOfCurrentWeek = today.AddDays(-1 * diff).Date;
@@ -36,6 +40,7 @@ namespace CanteenManage.Services
                 currentWeekDates.Add(startOfCurrentWeek.AddDays(i));
                 nextWeekDates.Add(startOfCurrentWeek.AddDays(i + 7));
             }
+
             TwoWeekdates.AddRange(currentWeekDates);
             TwoWeekdates.AddRange(nextWeekDates);
 
