@@ -2,7 +2,7 @@
 
 namespace CanteenManage.CanteenRepository.Models
 {
-    public class EmployFeedback
+    public class EmployeeFeedback
     {
         public int Id { get; set; }
         [Required]

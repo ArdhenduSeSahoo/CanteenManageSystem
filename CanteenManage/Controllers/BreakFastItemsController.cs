@@ -33,14 +33,14 @@
         /// </summary>
         /// <param name="cancellationToken">The cancellationToken<see cref="CancellationToken"/></param>
         /// <returns>The <see cref="Task{IActionResult}"/></returns>
-        public async Task<IActionResult> Index(CancellationToken cancellationToken, int DaySelectOnSamePage = 0)
+        public async Task<IActionResult> Index(CancellationToken cancellationToken, int Dsosp = 0)
         {
             int FoodType = (int)FoodTypeEnum.Breakfast;
-            List<DaysOfWeekModel> daysOfWeek = utilityServices.GetDaysOfWeek(hourBeforeDisable: 6);
+            List<DaysOfWeekModel> daysOfWeek = utilityServices.GetDaysOfWeek(hourBeforeDisable: CustomDataConstants.BreakfastTimeHour);
             //string? Session_selectedDay = HttpContext.Session.GetString(SessionConstants.UserSelectedDay);
             SessionDataModel sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
 
-            if (sessionDataModel.UserSelectedDay != null && DaySelectOnSamePage == 1)
+            if (sessionDataModel.UserSelectedDay != null && Dsosp == 1)
             {
                 var selectedDate = daysOfWeek.Where(d => d.DateShort == sessionDataModel.UserSelectedDay).FirstOrDefault();
                 if (selectedDate != null)
@@ -56,7 +56,7 @@
                 {
                     firstActiveDay.IsSelected = true;
                     HttpContext.Session.SetString(SessionConstants.UserSelectedDay, firstActiveDay.DateShort);
-                    HttpContext.Session.SetString(SessionConstants.UserSelectedDayFull, firstActiveDay.DateFull);
+                    HttpContext.Session.SetString(SessionConstants.UserSelectedDayFull, utilityServices.DateTimeToString(firstActiveDay.DateTime));
                 }
                 sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
             }
@@ -94,7 +94,7 @@
             //Console.WriteLine(formcollect["selecteddate"]);
             try
             {
-                utilityServices.SetDateTimeToSession(HttpContext.Session,
+                utilityServices.SetDateTimeToSession(CustomDataConstants.BreakfastTimeHour, HttpContext.Session,
                     selectedDate,
                     selectedFullDate
                     );
@@ -104,7 +104,7 @@
 
             }
 
-            return RedirectToAction("Index", new { DaySelectOnSamePage = 1 });
+            return RedirectToAction("Index", new { Dsosp = 1 });
         }
 
         /// <summary>
@@ -118,7 +118,9 @@
             //Console.WriteLine(formcollect["selecteddate"]);
             try
             {
-                utilityServices.SetDateTimeToSession(HttpContext.Session,
+                utilityServices.SetDateTimeToSession(
+                    CustomDataConstants.BreakfastTimeHour,
+                    HttpContext.Session,
                     formcollect["selecteddate"].ToString(),
                     formcollect["selecteddatefull"].ToString());
             }
@@ -127,7 +129,7 @@
 
             }
 
-            return RedirectToAction("Index", new { DaySelectOnSamePage = 1 });
+            return RedirectToAction("Index", new { Dsosp = 1 });
         }
     }
 }

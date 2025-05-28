@@ -44,56 +44,68 @@ namespace CanteenManage.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> testlog(string? empid, string? empname)
         {
-            try
-            {
-                HttpContext.Session.Clear();
-                HttpContext.Response.Cookies.Delete(CustomDataConstants.jwtTokencookieName);
-
-            }
-            catch (Exception ex)
-            {
-
-            }
-
-            if (string.IsNullOrEmpty(empid))
-            {
-                return this.RedirectToAction(actionName: "Index", controllerName: "Error");
-            }
-            else if (!string.IsNullOrEmpty(empid))
-            {
-                var userFound = await loginService.IsValidEmployee(empid, empname);
-                if (userFound != null)
-                {
-                    if (userFound.EmployTypeId == 3)
-                    {
-                        return setEmployeeSessionAndRedirect(userFound.Name, userFound.Id, userFound.EmployID);
-                    }
-                    else if (userFound.EmployTypeId == 4)
-                    {
-                        var claims = new List<Claim>
-                        {
-                            //new Claim(JwtRegisteredClaimNames.Sub, ""),
-                            new Claim(ClaimTypes.Name, userFound.Name),
-                            new Claim(ClaimTypes.Role, CustomDataConstants.RoleEmployee) // Add user role
-                        };
-                        var jwttokens = loginService.GenerateJSONWebToken(claims);
-                        SetJWTCookie(jwttokens);
-                        //HttpContext.Session.SetString(SessionConstants.UserId, userFound.Id.ToString());
-                        //HttpContext.Session.SetString(SessionConstants.UserName, userFound.Name.ToString());
-                        return this.RedirectToAction(actionName: "ChoseModeOfUse", controllerName: "Login", new { eid = userFound.Id, empid = userFound.EmployID, empname = userFound.Name });
-                    }
-
-                }
-                else
-                {
-                    return this.RedirectToAction(actionName: "Index", controllerName: "Error");
-                }
-            }
-
-            return this.RedirectToAction(actionName: "Index", controllerName: "Error");
+            return await loginUserAsync(empid, empname);
         }
         [AllowAnonymous]
         public async Task<IActionResult> emp(string? empid, string? empname)
+        {
+            return await loginUserAsync(empid, empname);
+            //try
+            //{
+            //    HttpContext.Session.Clear();
+            //    HttpContext.Response.Cookies.Delete(CustomDataConstants.jwtTokencookieName);
+
+            //}
+            //catch (Exception ex)
+            //{
+
+            //}
+
+            //var emp = empid;
+            //if (string.IsNullOrEmpty(empid) || string.IsNullOrEmpty(empname))
+            //{
+            //    return this.RedirectToAction(actionName: "Index", controllerName: "Error");
+            //}
+            //else if (!string.IsNullOrEmpty(empid) || !string.IsNullOrEmpty(empname))
+            //{
+            //    var userFound = await loginService.IsValidEmployee(empid, empname);
+            //    if (userFound != null)
+            //    {
+            //        if (userFound.EmployTypeId == 3)
+            //        {
+            //            return setEmployeeSessionAndRedirect(userFound.Name, userFound.Id, userFound.EmployID);
+            //        }
+            //        else if (userFound.EmployTypeId == 4)
+            //        {
+            //            var claims = new List<Claim>
+            //            {
+            //                //new Claim(JwtRegisteredClaimNames.Sub, ""),
+            //                new Claim(ClaimTypes.Name, userFound.Name),
+            //                new Claim(ClaimTypes.Role, CustomDataConstants.RoleEmployee) // Add user role
+            //            };
+            //            var jwttokens = loginService.GenerateJSONWebToken(claims);
+            //            SetJWTCookie(jwttokens);
+            //            //HttpContext.Session.SetString(SessionConstants.UserId, userFound.Id.ToString());
+            //            //HttpContext.Session.SetString(SessionConstants.UserName, userFound.Name.ToString());
+            //            return this.RedirectToAction(actionName: "ChoseModeOfUse", controllerName: "Login", new { eid = userFound.Id, empid = userFound.EmployID, empname = userFound.Name });
+            //        }
+
+            //    }
+            //    else
+            //    {
+            //        return this.RedirectToAction(actionName: "Index", controllerName: "Error");
+            //    }
+            //}
+
+            //return this.RedirectToAction(actionName: "Index", controllerName: "Error");
+        }
+
+        [AllowAnonymous]
+        public async Task<IActionResult> empt(string? empid, string? empname)
+        {
+            return await loginUserAsync(empid, empname);
+        }
+        public async Task<RedirectToActionResult> loginUserAsync(string? empid, string? empname)
         {
             try
             {
@@ -103,7 +115,6 @@ namespace CanteenManage.Controllers
             }
             catch (Exception ex)
             {
-
             }
 
             var emp = empid;
@@ -144,7 +155,6 @@ namespace CanteenManage.Controllers
 
             return this.RedirectToAction(actionName: "Index", controllerName: "Error");
         }
-
         //[Authorize(Roles = "Employee")]
         public IActionResult ChoseModeOfUse(string empid, string empname, string eid)
         {
