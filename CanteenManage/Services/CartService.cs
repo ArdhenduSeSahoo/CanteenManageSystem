@@ -48,6 +48,50 @@ namespace CanteenManage.Services
             {
                 var foodid = int.Parse(selectedFoodId);
                 var user_Id = userid ?? 0;
+
+                if (userSelected_DateTime_null?.Date < DateTime.Now.Date)
+                {
+                    var cart_counts = await foodListingService.GetCartItemCount(user_Id, cancellationToken);
+                    return Results.Ok(new FoodOrderApiReturnMessage()
+                    {
+                        food_quantity = 0,
+                        total_quantity = 0,
+                        total_quantity_cart = cart_counts ?? 0,
+                        message = "Can not order on back date.",
+                    });
+                }
+                if (userSelected_DateTime_null?.Date == DateTime.Now.Date)
+                {
+                    bool cannotplaceorder = false;
+                    string errormessage = "";
+                    if (foodTypeEnum == FoodTypeEnum.Breakfast && userSelected_DateTime.Hour >= CustomDataConstants.BreakfastTimeHour)
+                    {
+                        errormessage = "Breakfast time is over.";
+                        cannotplaceorder = true;
+                    }
+                    else if (foodTypeEnum == FoodTypeEnum.Lunch && userSelected_DateTime.Hour >= CustomDataConstants.LunchTimeHour)
+                    {
+                        errormessage = "Lunch time is over.";
+                        cannotplaceorder = true;
+                    }
+                    else if (foodTypeEnum == FoodTypeEnum.Snacks && userSelected_DateTime.Hour >= CustomDataConstants.SnacksTimeHour)
+                    {
+                        errormessage = "Snacks time is over.";
+                        cannotplaceorder = true;
+                    }
+                    if (cannotplaceorder)
+                    {
+                        var cart_counts = await foodListingService.GetCartItemCount(user_Id, cancellationToken);
+                        return Results.Ok(new FoodOrderApiReturnMessage()
+                        {
+                            food_quantity = 0,
+                            total_quantity = 0,
+                            total_quantity_cart = cart_counts ?? 0,
+                            message = errormessage,
+                        });
+                    }
+                }
+
                 var existingFoodOrder = await Context.EmployeeCarts
                     .Include(fo => fo.Food)
                     .Where(fo => fo.FoodId == foodid)

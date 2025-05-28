@@ -16,7 +16,7 @@ namespace CanteenManage.Services
             List<DateTime> TwoWeekdates = new List<DateTime>();
 
 
-            DateTime today = DateTime.Today;
+            DateTime today = DateTime.Now;
 
 
             DayOfWeek firstDayOfWeek = CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek;
@@ -27,7 +27,7 @@ namespace CanteenManage.Services
             firstDayOfWeek = DayOfWeek.Monday;
 
             int diff = (7 + (today.DayOfWeek - firstDayOfWeek)) % 7;
-            DateTime startOfCurrentWeek = today.AddDays(-1 * diff).Date;
+            DateTime startOfCurrentWeek = today.AddDays(-1 * diff);
 
 
             List<DateTime> currentWeekDates = new List<DateTime>();
@@ -144,31 +144,63 @@ namespace CanteenManage.Services
             return ts;
         }
 
-        public void SetDateTimeToSession(ISession session, string? selectedDay, string? selectedDate)
+        public void SetDateTimeToSession(int DisableHour, ISession session, string? selectedDay, string? selectedDate)
         {
             //var selectedDate = formcollect["selecteddate"].ToString();
             if (string.IsNullOrEmpty(selectedDate))
             {
-                session.SetString(SessionConstants.UserSelectedDay, DateTime.Now.Day.ToString());
-                session.SetString(SessionConstants.UserSelectedDayOnSamePage, "1");
-                session.SetString(SessionConstants.UserSelectedDayFull, DateTime.Now.ToString());
+                SetSessionData(session, DateTime.Now.Day.ToString(), DateTimeToString(DateTime.Now));
             }
             else
             {
                 var selectedDateObj = DateTimeFromString(selectedDate);// Convert.ToInt32(selectedDay);
-                if (selectedDateObj < DateTime.Now)
+                if (selectedDateObj == null)
                 {
-                    session.SetString(SessionConstants.UserSelectedDay, DateTime.Now.Day.ToString());
-                    session.SetString(SessionConstants.UserSelectedDayOnSamePage, "1");
-                    session.SetString(SessionConstants.UserSelectedDayFull, DateTimeToString(DateTime.Now));
+                    var firstactivedate = getFirstActiveDate(GetDaysOfWeek(DisableHour));
+                    if (firstactivedate != null)
+                    {
+                        SetSessionData(session, firstactivedate.DateShort, firstactivedate.DateFull);
+                    }
+                    return;
+                }
+                else if (selectedDateObj.Date < DateTime.Now.Date)
+                {
+                    var firstactivedate = getFirstActiveDate(GetDaysOfWeek(DisableHour));
+                    if (firstactivedate != null)
+                    {
+                        SetSessionData(session, firstactivedate.DateShort, firstactivedate.DateFull);
+                    }
+                    return;
+                }
+                else if (selectedDateObj.Date == DateTime.Now.Date)
+                {
+                    if (int.Parse(DateTime.Now.ToString("HH")) < DisableHour)
+                    {
+                        SetSessionData(session, selectedDay, selectedDate);
+                        return;
+
+                    }
+                    else
+                    {
+                        var firstactivedate = getFirstActiveDate(GetDaysOfWeek(DisableHour));
+                        if (firstactivedate != null)
+                        {
+                            SetSessionData(session, firstactivedate.DateShort, firstactivedate.DateFull);
+                        }
+                        return;
+                    }
                 }
                 else
                 {
-                    session.SetString(SessionConstants.UserSelectedDay, selectedDay ?? "1");
-                    session.SetString(SessionConstants.UserSelectedDayOnSamePage, "1");
-                    session.SetString(SessionConstants.UserSelectedDayFull, selectedDate);
+                    SetSessionData(session, selectedDay, selectedDate);
                 }
             }
+        }
+        private void SetSessionData(ISession session, string? selectedDay, string SelectedDate)
+        {
+            session.SetString(SessionConstants.UserSelectedDay, selectedDay ?? "1");
+            session.SetString(SessionConstants.UserSelectedDayOnSamePage, "1");
+            session.SetString(SessionConstants.UserSelectedDayFull, SelectedDate);
         }
 
         public int? getSessionUserId(ISession session)
