@@ -27,7 +27,7 @@ namespace CanteenManage.Controllers
             this.cartService = cartService;
             this.utilityServices = utilityServices;
         }
-        public async Task<IActionResult> Index(CancellationToken cancellationToken, int DaySelectOnSamePage = 0)
+        public async Task<IActionResult> Index(CancellationToken cancellationToken, int Dsosp = 0)
         {
 
             //if (utilityServices.getSessionUserId(HttpContext.Session) is null)
@@ -35,11 +35,11 @@ namespace CanteenManage.Controllers
             //    return RedirectToAction("Login", "Index");
             //}
             int snaksFoodID = (int)FoodTypeEnum.Snacks;
-            List<DaysOfWeekModel> daysOfWeek = utilityServices.GetDaysOfWeek(hourBeforeDisable: 15);
+            List<DaysOfWeekModel> daysOfWeek = utilityServices.GetDaysOfWeek(hourBeforeDisable: CustomDataConstants.SnacksTimeHour);
             SessionDataModel sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
             int Session_selectedDay_On_SamePage = Convert.ToInt32(HttpContext.Session.GetString(SessionConstants.UserSelectedDayOnSamePage));
 
-            if (sessionDataModel.UserSelectedDay != null && DaySelectOnSamePage == 1)
+            if (sessionDataModel.UserSelectedDay != null && Dsosp == 1)
             {
                 var selectedDate = daysOfWeek.Where(d => d.DateShort == sessionDataModel.UserSelectedDay).FirstOrDefault();
                 //utilityServices.getFirstActiveDate(daysOfWeek);
@@ -98,7 +98,9 @@ namespace CanteenManage.Controllers
             //Console.WriteLine(formcollect["selecteddate"]);
             try
             {
-                utilityServices.SetDateTimeToSession(HttpContext.Session,
+                utilityServices.SetDateTimeToSession(
+                    CustomDataConstants.SnacksTimeHour,
+                    HttpContext.Session,
                     selectedDate,
                     selectedFullDate
                     );
@@ -108,7 +110,7 @@ namespace CanteenManage.Controllers
 
             }
 
-            return RedirectToAction("Index", new { DaySelectOnSamePage = 1 });
+            return RedirectToAction("Index", new { Dsosp = 1 });
         }
 
         [HttpPost]
@@ -117,16 +119,18 @@ namespace CanteenManage.Controllers
             //Console.WriteLine(formcollect["selecteddate"]);
             try
             {
-                utilityServices.SetDateTimeToSession(HttpContext.Session,
-                                  formcollect["selecteddate"].ToString(),
-                                  formcollect["selecteddatefull"].ToString());
+                utilityServices.SetDateTimeToSession(
+                    CustomDataConstants.BreakfastTimeHour,
+                    HttpContext.Session,
+                    formcollect["selecteddate"].ToString(),
+                    formcollect["selecteddatefull"].ToString());
             }
             catch (Exception ex)
             {
 
             }
 
-            return RedirectToAction("Index", new { DaySelectOnSamePage = 1 });
+            return RedirectToAction("Index", new { Dsosp = 1 });
         }
     }
 }

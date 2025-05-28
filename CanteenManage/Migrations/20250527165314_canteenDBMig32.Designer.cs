@@ -4,6 +4,7 @@ using CanteenManage.CanteenRepository.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CanteenManage.Migrations
 {
     [DbContext(typeof(CanteenManageDBContext))]
-    partial class CantenManageContextModelSnapshot : ModelSnapshot
+    [Migration("20250527165314_canteenDBMig32")]
+    partial class canteenDBMig32
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -187,6 +190,9 @@ namespace CanteenManage.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AvailableOnDay")
+                        .HasColumnType("int");
 
                     b.Property<string>("Description")
                         .HasMaxLength(10000)

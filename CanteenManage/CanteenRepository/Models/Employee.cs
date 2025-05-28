@@ -17,7 +17,7 @@ namespace CanteenManage.CanteenRepository.Models
         [DataType(DataType.PhoneNumber)]
         public string? PhoneNumber { get; set; }
         public int EmployTypeId { get; set; }
-        public EmployType EmployType { get; set; }
+        public EmployeeType EmployType { get; set; }
         public bool? IsActive { get; set; } = true;
     }
 }
