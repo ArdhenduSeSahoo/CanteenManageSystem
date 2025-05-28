@@ -25,14 +25,24 @@ namespace CanteenManage.Controllers.CommitteeMembers
             return View(cMDashboardViewDataModel);
         }
 
-        public async Task<IActionResult> FoodList(CancellationToken cancellationToken)
+        public async Task<IActionResult> FoodList(string searchTerm, CancellationToken cancellationToken)
         {
-            var foodlist = await context.Foods
+            var query = context.Foods
                 .Include(f => f.FoodType)
                 .Include(f => f.FoodAvailabilityDays)
-                .ToListAsync(cancellationToken);
-            return View(foodlist);
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                query = query.Where(f => f.Name.Contains(searchTerm));
+            }
+
+            var foodList = await query.ToListAsync(cancellationToken);
+            return View(foodList);
         }
+
+
+
         [HttpPost("DeleteFood")]
         public async Task<IActionResult> DeleteFood(IFormCollection formData)
         {
