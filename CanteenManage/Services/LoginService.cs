@@ -22,7 +22,7 @@ namespace CanteenManage.Services
 
         public Employee IsValidUser(string userId, string password)
         {
-            var userFound = canteenManageContext.Employes
+            var userFound = canteenManageContext.Employees
                 .Where(e =>
                 e.EmployID == userId
                 //&& e.Password == password
@@ -34,7 +34,7 @@ namespace CanteenManage.Services
         public async Task<Employee> IsValidEmployee(string userId, string name)
         {
             Employee? userFound = null;
-            userFound = await canteenManageContext.Employes
+            userFound = await canteenManageContext.Employees
                 .Where(e =>
                 e.EmployID == userId
                 //&& e.Password == password
@@ -51,7 +51,7 @@ namespace CanteenManage.Services
                     Password = "",
 
                 };
-                canteenManageContext.Employes.Add(employee);
+                canteenManageContext.Employees.Add(employee);
                 await canteenManageContext.SaveChangesAsync();
                 userFound = employee;
             }
@@ -60,7 +60,7 @@ namespace CanteenManage.Services
                 if (userFound.Name != name)
                 {
                     userFound.Name = name;
-                    canteenManageContext.Employes.Update(userFound);
+                    canteenManageContext.Employees.Update(userFound);
                     await canteenManageContext.SaveChangesAsync();
 
                 }

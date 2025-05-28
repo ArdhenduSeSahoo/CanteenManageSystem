@@ -4,6 +4,7 @@ using CanteenManage.CanteenRepository.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CanteenManage.Migrations
 {
     [DbContext(typeof(CanteenManageDBContext))]
-    partial class CantenManageContextModelSnapshot : ModelSnapshot
+    [Migration("20250527083450_canteenDBMig30")]
+    partial class canteenDBMig30
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -62,7 +65,7 @@ namespace CanteenManage.Migrations
 
                     b.HasIndex("EmployTypeId");
 
-                    b.ToTable("Employees");
+                    b.ToTable("Employes");
                 });
 
             modelBuilder.Entity("CanteenManage.CanteenRepository.Models.EmployeeCart", b =>
@@ -130,7 +133,7 @@ namespace CanteenManage.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("EmployeeFeedbacks");
+                    b.ToTable("EmployFeedbacks");
                 });
 
             modelBuilder.Entity("CanteenManage.CanteenRepository.Models.EmployeeType", b =>
@@ -151,7 +154,7 @@ namespace CanteenManage.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EmployeeTypes");
+                    b.ToTable("EmployTypes");
 
                     b.HasData(
                         new
@@ -187,6 +190,9 @@ namespace CanteenManage.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AvailableOnDay")
+                        .HasColumnType("int");
 
                     b.Property<string>("Description")
                         .HasMaxLength(10000)

@@ -12,9 +12,11 @@ namespace CanteenManage.Controllers.CommitteeMembers
     {
         private readonly CanteenManageDBContext context;
         //private readonly IWebHostEnvironment env;
-        public CommitteeMemberController(CanteenManageDBContext context)
+        private readonly ILogger<CommitteeMemberController> logger;
+        public CommitteeMemberController(CanteenManageDBContext context, ILogger<CommitteeMemberController> logger)
         {
             this.context = context;
+            this.logger = logger;
             //this.env = env;
         }
 
@@ -54,7 +56,7 @@ namespace CanteenManage.Controllers.CommitteeMembers
                         }
                         catch (Exception ex)
                         {
-
+                            logger.LogError("DeleteFood--" + ex);
                         }
                         context.Foods.Remove(foodtodelete);
                         await context.SaveChangesAsync();
@@ -66,7 +68,7 @@ namespace CanteenManage.Controllers.CommitteeMembers
             }
             catch (Exception ex)
             {
-
+                logger.LogError(ex, "Error deleting food item with ID: {FoodId}", foodId);
             }
 
             return this.RedirectToAction("FoodList");
@@ -92,7 +94,6 @@ namespace CanteenManage.Controllers.CommitteeMembers
                     IsAvailable = f.IsAvailable,
                     ImageUrl = f.ImageUrl,
                     Rating = f.Rating,
-                    AvailableOnDay = f.AvailableOnDay,
 
                     MonDay = f.FoodAvailabilityDays.Where(fa => fa.DayOfWeek == 1).Count() >= 1,
                     TuesDay = f.FoodAvailabilityDays.Where(fa => fa.DayOfWeek == 2).Count() >= 1,
@@ -112,7 +113,7 @@ namespace CanteenManage.Controllers.CommitteeMembers
             }
             catch (Exception ex)
             {
-
+                logger.LogError("FoodEdit---" + ex);
             }
             food.AllFoodType = await context.FoodTypes.ToListAsync(cancellationToken);
             return View(food);
@@ -142,7 +143,7 @@ namespace CanteenManage.Controllers.CommitteeMembers
                         {
                             System.IO.File.Delete(filePath);
                         }
-                        using (var fileStream = new FileStream(filePath, FileMode.Create))
+                        using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None, 1024))
                         {
                             foodFormDataModel.FoodImage.CopyTo(fileStream);
                         }
@@ -150,6 +151,7 @@ namespace CanteenManage.Controllers.CommitteeMembers
                     catch (Exception ex)
                     {
                         foodFormDataModel.ImageUrl = "DefaultFood.png";
+                        logger.LogError(ex, "Error in File upload");
                     }
                 }
                 if (string.IsNullOrEmpty(foodFormDataModel.ImageUrl))
@@ -169,7 +171,6 @@ namespace CanteenManage.Controllers.CommitteeMembers
                     IsAvailable = foodFormDataModel.IsAvailable,
                     ImageUrl = foodFormDataModel.ImageUrl,
                     Rating = foodFormDataModel.Rating,
-                    AvailableOnDay = foodFormDataModel.AvailableOnDay,
                 };
 
                 context.Foods.Update(food_to_update);
@@ -212,7 +213,7 @@ namespace CanteenManage.Controllers.CommitteeMembers
             }
             catch (Exception ex)
             {
-
+                logger.LogError(ex, "FoodEdit");
             }
             return this.RedirectToAction("FoodList");
         }
@@ -239,11 +240,13 @@ namespace CanteenManage.Controllers.CommitteeMembers
                         string filePath = Path.Combine(ProjectFilePathConstants.getImagePath(), foodFormDataModel.ImageUrl);
                         using (var fileStream = new FileStream(filePath, FileMode.Create))
                         {
+                            logger.LogError("Error fetching in action CreateFood ");
                             foodFormDataModel.FoodImage.CopyTo(fileStream);
                         }
                     }
                     catch (Exception ex)
                     {
+                        logger.LogError("Error fetching in action CreateFood ");
                         foodFormDataModel.ImageUrl = "DefaultFood.png";
                     }
                 }
@@ -294,6 +297,7 @@ namespace CanteenManage.Controllers.CommitteeMembers
             catch (Exception ex)
             {
                 Console.Write(ex.Message);
+                logger.LogError(ex, "Error fetching in action CreateFood ");
             }
             return View(foodFormDataModel);
         }

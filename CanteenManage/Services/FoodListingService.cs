@@ -304,9 +304,9 @@ namespace CanteenManage.Services
             return FoodNameList;
         }
 
-        public async Task<List<EmployFeedback>> GetAllEmployeeFeedbacks()
+        public async Task<List<EmployeeFeedback>> GetAllEmployeeFeedbacks()
         {
-            return await Context.EmployFeedbacks
+            return await Context.EmployeeFeedbacks
                 .OrderByDescending(m => m.SubmittedAt)
                 .ToListAsync();
         }
@@ -314,7 +314,7 @@ namespace CanteenManage.Services
         public async Task SubmitEmployeeFeedbacks(int employeeID, string message, string employeeName)
         {
 
-            Context.EmployFeedbacks.Add(new EmployFeedback
+            Context.EmployeeFeedbacks.Add(new EmployeeFeedback
             {
                 EmployeeId = employeeID,
                 Message = message,

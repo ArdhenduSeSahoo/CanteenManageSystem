@@ -11,11 +11,11 @@ namespace CanteenManage.CanteenRepository.Contexts
         public DbSet<Food> Foods { get; set; }
         public DbSet<FoodType> FoodTypes { get; set; }
         public DbSet<FoodOrder> FoodOrders { get; set; }
-        public DbSet<Employee> Employes { get; set; }
-        public DbSet<EmployType> EmployTypes { get; set; }
+        public DbSet<Employee> Employees { get; set; }
+        public DbSet<EmployeeType> EmployeeTypes { get; set; }
         public DbSet<FoodReviewDetails> FoodReviewDetails { get; set; }
         public DbSet<FoodAvailabilityDay> FoodAvailabilityDays { get; set; }
-        public DbSet<EmployFeedback> EmployFeedbacks { get; set; }
+        public DbSet<EmployeeFeedback> EmployeeFeedbacks { get; set; }
         public DbSet<EmployeeCart> EmployeeCarts { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -46,27 +46,27 @@ namespace CanteenManage.CanteenRepository.Contexts
                 }
                 );
             });
-            modelBuilder.Entity<EmployType>(et =>
+            modelBuilder.Entity<EmployeeType>(et =>
             {
-                et.HasData(new EmployType
+                et.HasData(new EmployeeType
                 {
                     Id = 1,
                     Name = "Admin",
                     Description = "Admin"
                 },
-                new EmployType
+                new EmployeeType
                 {
                     Id = 2,
                     Name = "CanteenStaf",
                     Description = "CanteenStaf"
                 },
-                new EmployType
+                new EmployeeType
                 {
                     Id = 3,
                     Name = "Employee",
                     Description = "Employee"
                 },
-                new EmployType
+                new EmployeeType
                 {
                     Id = 4,
                     Name = "Committee Members",
