@@ -129,22 +129,49 @@ namespace CanteenManage.Services
         {
             var foodOrders = await Context.FoodOrders
                 .Include(f => f.Food)
-                .Include(f => f.Employee)
-                .Where(fo => fo.EmployeeId == employeeId
-                && fo.Food.FoodTypeId == (int)foodTypeEnum
-                && fo.OrderDate.Date == DateTime.Now.Date
+                //.Include(f => f.Employee)
+                .Include(f =>
+                f.FoodOrderFoodDetails
+                .Where(fd =>
+                fd.FoodTypeId == (int)foodTypeEnum
+                && !fd.IsCanceled
+                && fd.OrderDateCustom.Date == DateTime.Now.Date
                 )
+                )
+                .Where(fo => fo.EmployeeId == employeeId
+                && !fo.IsCanceled
+                && fo.FoodOrderFoodDetails.Any(fd =>
+                !fd.IsCanceled
+                && fd.FoodTypeId == (int)foodTypeEnum
+                && fd.OrderDateCustom.Date == DateTime.Now.Date
+                )
+                //&& fo.FoodOrderFoodDetails.Count() > 0
+                )
+                .OrderBy(fo => fo.OrderDate)
                 .ToListAsync(cancellationToken);
             return foodOrders;
         }
         public async Task<List<FoodOrder>> GetEmployFoodOrdersAll(int employeeId, FoodTypeEnum foodTypeEnum, CancellationToken cancellationToken)
         {
             var foodOrders = await Context.FoodOrders
-                .Include(f => f.Food)
-                .Include(f => f.Employee)
+               .Include(f => f.Food)
+                //.Include(f => f.Employee)
+                .Include(f =>
+                f.FoodOrderFoodDetails
+                .Where(fd =>
+                fd.FoodTypeId == (int)foodTypeEnum
+                && !fd.IsCanceled
+                && fd.OrderDateCustom.Date >= DateTime.Now.Date
+                )
+                )
                 .Where(fo => fo.EmployeeId == employeeId
-                && fo.Food.FoodTypeId == (int)foodTypeEnum
-                && fo.OrderDate.Date >= DateTime.Now.Date
+                && !fo.IsCanceled
+                && fo.FoodOrderFoodDetails.Any(fd =>
+                !fd.IsCanceled
+                && fd.FoodTypeId == (int)foodTypeEnum
+                && fd.OrderDateCustom.Date >= DateTime.Now.Date
+                )
+                //&& fo.FoodOrderFoodDetails.Count() > 0
                 )
                 .OrderBy(fo => fo.OrderDate)
                 .ToListAsync(cancellationToken);

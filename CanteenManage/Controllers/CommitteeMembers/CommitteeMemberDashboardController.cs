@@ -238,7 +238,7 @@ namespace CanteenManage.Controllers.CommitteeMembers
                     try
                     {
                         string filePath = Path.Combine(ProjectFilePathConstants.getImagePath(), foodFormDataModel.ImageUrl);
-                        using (var fileStream = new FileStream(filePath, FileMode.Create))
+                        using (var fileStream = new FileStream(filePath, FileMode.Append, FileAccess.Write, FileShare.None))
                         {
                             logger.LogError("Error fetching in action CreateFood ");
                             foodFormDataModel.FoodImage.CopyTo(fileStream);

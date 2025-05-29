@@ -23,6 +23,7 @@
 					<thead>
 						<tr>
 							<th>Date</th>
+							<th>OrdNum</th>
 							<th>Name</th>
 							<th>Qnt.</th>
 							<th>Price</th>
@@ -35,11 +36,11 @@
 						{
 
 							bool orderShouldDelete = false;
-							if (order.OrderDate.Date < DateTime.Now.Date)
+							if (order.OrderDateCustom.Date < DateTime.Now.Date)
 							{
 								orderShouldDelete = false;
 							}
-							else if (order.OrderDate.Date == DateTime.Now.Date)
+							else if (order.OrderDateCustom.Date == DateTime.Now.Date)
 							{
 								if (Model.FoodType == CanteenManage.Utility.FoodTypeEnum.Breakfast
 								&& int.Parse(DateTime.Now.ToString("HH")) < CustomDataConstants.BreakfastTimeHour)
@@ -58,12 +59,12 @@
 								}
 
 							}
-							else if (order.OrderDate.Date > DateTime.Now.Date)
+							else if (order.OrderDateCustom.Date > DateTime.Now.Date)
 							{
 								orderShouldDelete = true;
 							}
 							var shouldSendRequest = false;
-							if (order.OrderCompleteStatus == (int)OrderCompleteStatusEnum.Pending && !orderShouldDelete)
+							if (!(order.IsCompleted ?? false) && !orderShouldDelete)
 							{
 								if (Model.FoodType == CanteenManage.Utility.FoodTypeEnum.Breakfast
 								&& int.Parse(DateTime.Now.ToString("HH")) < CustomDataConstants.BreakfastTimeHourEnd)
@@ -83,12 +84,13 @@
 							}
 
 							<tr>
-								<td>@order.OrderDate.ToString("dd-MM-")@order.OrderDate.ToString("ddd")</td>
-								<td class="customTableBoldCell">@order.Food?.Name</td>
+								<td>@order.OrderDateCustom.ToString("dd-MM-")@order.OrderDateCustom.ToString("ddd")</td>
+								<td>@order.FoodOrder_OrderID</td>
+								<td class="customTableBoldCell">@order.FoodName</td>
 								<td>@order.Quantity.ToString()</td>
 								<td class="" style="text-align:end">@order.TotalEmployeePrice.ToString()</td>
 								<td>
-									@if (@order.OrderCompleteStatus == (int)OrderCompleteStatusEnum.Pending)
+									@if (!(@order.IsCompleted ?? false))
 									{
 										<span class="badge bg-warning text-dark rounded-pill px-3 py-2 shadow-sm d-inline-flex align-items-center">
 											<i class="bi bi-hourglass-split"></i>
@@ -102,13 +104,16 @@
 									}
 								</td>
 								<td class="align-self-center text-center" style="vertical-align:middle;">
-									@if (order.OrderCompleteStatus == (int)OrderCompleteStatusEnum.Pending)
+									@if (!(order.IsCompleted ?? false))
 									{
 										@if (orderShouldDelete)
 										{
 											<form asp-action="removeOrder" method="post">
-												<input type="hidden" name="orderId" value="@order.Id" />
-												<button type="submit" class="btn btn-outline-danger btn-sm">
+												<input type="hidden" name="orderId" value="@order.FoodOrder_OrderID" />
+												<input type="hidden" name="foodId" value="@order.Id" />
+												<button type="submit" class="btn btn-outline-danger btn-sm" data-bs-toggle="tooltip" data-bs-placement="top"
+														data-bs-custom-class="custom-tooltip"
+														data-bs-title="Order Pending">
 													<i class="fa fa-trash" aria-hidden="true"></i>
 												</button>
 											</form>

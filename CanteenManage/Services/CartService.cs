@@ -307,7 +307,7 @@ namespace CanteenManage.Services
                     fo.Food.FoodTypeId == (int)foodTypeEnum
                     )
                     .Where(fo =>
-                    (fo.OrderDate.Date.Day < DateTime.Now.Date.Day) || (fo.OrderDate.Date.Day == DateTime.Now.Day && fo.OrderDate.Hour >= houreValue)
+                    (fo.OrderDate.Date < DateTime.Now.Date) || (fo.OrderDate.Date == DateTime.Now && fo.OrderDate.Hour >= houreValue)
                     )
                     .Where(fo => fo.OutDateStatus == (int)CartFoodOutDateEnum.InOrder)
 
@@ -381,81 +381,210 @@ namespace CanteenManage.Services
                 .Where(f => f.EmployeeId == sessionData.UserId)
 
                 .ToListAsync(cancellationToken);
-            ///////////add breakfast orders
-            ///
-            TimeSpan ts = utilityServices.GetSpecificTimeSpan(FoodTypeEnum.Breakfast);
-            var breakfastFoodItems = employeeCarts.Where(f => f.Food.FoodTypeId == (int)FoodTypeEnum.Breakfast && f.OutDateStatus == (int)CartFoodOutDateEnum.InOrder);
-            foreach (EmployeeCart item in breakfastFoodItems)
+            if (sessionData.UserIdOrZero == 0 || sessionData.UserEmpIdOrNull == null)
+            {
+                return;
+            }
+            if (employeeCarts.Count <= 0)
+            {
+                return;
+            }
+            var getOrdersNotCanceled = employeeCarts.Where(f => f.OutDateStatus == (int)CartFoodOutDateEnum.InOrder).ToList();
+            if (getOrdersNotCanceled.Count > 0)
             {
 
+                ///////////get food order object
+                FoodOrder foodOrder = await GetFoodOrderObjAsync(Context, cancellationToken, sessionData.UserIdOrZero);
 
-                FoodOrder foodOrder = new FoodOrder();
-                foodOrder.FoodId = item.Food.Id;
-                foodOrder.FoodName = item.Food.Name;
-                foodOrder.EmployeeId = sessionData.UserIdOrZero;
-                foodOrder.OrderDate = item.OrderDate.Date + ts;
-                foodOrder.OrderUpdateDate = DateTime.Now;
-                foodOrder.Quantity = item.Quantity;
-                foodOrder.OrderCompleteStatus = (int)OrderCompleteStatusEnum.Pending;
-                foodOrder.TotalPrice = foodOrder.Quantity * item.Food.Price;
-                foodOrder.TotalEmployeePrice = foodOrder.Quantity * item.Food.EmployeePrice;
-                foodOrder.TotalSubsidyPrice = foodOrder.Quantity * item.Food.SubsidyPrice;
+                ///////////add breakfast orders
+                ///
+                TimeSpan ts = utilityServices.GetSpecificTimeSpan(FoodTypeEnum.Breakfast);
+                var breakfastFoodItems = employeeCarts.Where(f => f.Food.FoodTypeId == (int)FoodTypeEnum.Breakfast && f.OutDateStatus == (int)CartFoodOutDateEnum.InOrder);
+                List<FoodOrderFoodDetail> foodOrderFoodDetails_breakfast = new List<FoodOrderFoodDetail>();
+                foreach (EmployeeCart item in breakfastFoodItems)
+                {
+                    var foodOrderFoodDetail = await GetFoodOrderFoodDetail(foodOrder, item, ts, sessionData.UserIdOrZero, sessionData.UserEmpIdOrNull, cancellationToken);
+                    foodOrderFoodDetails_breakfast.Add(foodOrderFoodDetail);
+                    //var last_serialNo = await Context.FoodOrders.MaxAsync(f => f.OrderSerialNumber, cancellationToken);
+                    //var datetimenow = DateTime.Now;
+                    //var orderid = "ORD" + datetimenow.ToString("ddMMyy") + (last_serialNo + 1).ToString();
+                    //FoodOrder food = new FoodOrder()
+                    //{
+                    //    OrderID = orderid,
+                    //    FoodId = item.Food.Id,
+                    //    FoodName = item.Food.Name,
+                    //    EmployeeId = sessionData.UserIdOrZero,
+                    //    OrderDate = item.OrderDate.Date + ts,
+                    //    OrderUpdateDate = DateTime.Now,
+                    //    Quantity = item.Quantity,
+                    //    OrderCompleteStatus = (int)OrderCompleteStatusEnum.Pending,
+                    //    TotalPrice = item.Quantity * item.Food.Price,
+                    //    TotalEmployeePrice = item.Quantity * item.Food.EmployeePrice,
+                    //    TotalSubsidyPrice = item.Quantity * item.Food.SubsidyPrice
+                    //};
+                    //FoodOrder foodOrder = new FoodOrder();
+                    //foodOrder.FoodId = item.Food.Id;
+                    //foodOrder.OrderID = orderid;
+                    //foodOrder.FoodName = item.Food.Name;
+                    //foodOrder.EmployeeId = sessionData.UserIdOrZero;
+                    //foodOrder.OrderDate = item.OrderDate.Date + ts;
+                    //foodOrder.OrderUpdateDate = DateTime.Now;
+                    //foodOrder.Quantity = item.Quantity;
+                    //foodOrder.OrderCompleteStatus = (int)OrderCompleteStatusEnum.Pending;
+                    //foodOrder.TotalPrice = foodOrder.Quantity * item.Food.Price;
+                    //foodOrder.TotalEmployeePrice = foodOrder.Quantity * item.Food.EmployeePrice;
+                    //foodOrder.TotalSubsidyPrice = foodOrder.Quantity * item.Food.SubsidyPrice;
 
-                Context.FoodOrders.Add(foodOrder);
+
+                }
+                foreach (var foodOrderFoodDetail in foodOrderFoodDetails_breakfast)
+                {
+                    foodOrder.FoodOrderFoodDetails?.Add(foodOrderFoodDetail);
+                }
+                //Context.EmployeeCarts.RemoveRange(breakfastFoodItems);
+                ////////////////////lunch orders
+                ///
+                ts = utilityServices.GetSpecificTimeSpan(FoodTypeEnum.Lunch);
+                var LunchFoodItems = employeeCarts.Where(f => f.Food.FoodTypeId == (int)FoodTypeEnum.Lunch && f.OutDateStatus == (int)CartFoodOutDateEnum.InOrder);
+                List<FoodOrderFoodDetail> foodOrderFoodDetails_lunch = new List<FoodOrderFoodDetail>();
+                foreach (EmployeeCart item in LunchFoodItems)
+                {
+                    var foodOrderFoodDetail = await GetFoodOrderFoodDetail(foodOrder, item, ts, sessionData.UserIdOrZero, sessionData.UserEmpIdOrNull, cancellationToken);
+                    foodOrderFoodDetails_lunch.Add(foodOrderFoodDetail);
+                    //FoodOrder foodOrder = await GetFoodOrderObjAsync(Context, item, cancellationToken, sessionData.UserIdOrZero, ts);
+                    //var last_serialNo = await Context.FoodOrders.MaxAsync(f => f.OrderSerialNumber, cancellationToken);
+                    //var datetimenow = DateTime.Now;
+                    //var orderid = "ORD" + datetimenow.ToString("ddMMyy") + (last_serialNo + 1).ToString();
+                    //FoodOrder food = new FoodOrder()
+                    //{
+                    //    OrderID = orderid,
+                    //    FoodId = item.Food.Id,
+                    //    FoodName = item.Food.Name,
+                    //    EmployeeId = sessionData.UserIdOrZero,
+                    //    OrderDate = item.OrderDate.Date + ts,
+                    //    OrderUpdateDate = DateTime.Now,
+                    //    Quantity = item.Quantity,
+                    //    OrderCompleteStatus = (int)OrderCompleteStatusEnum.Pending,
+                    //    TotalPrice = item.Quantity * item.Food.Price,
+                    //    TotalEmployeePrice = item.Quantity * item.Food.EmployeePrice,
+                    //    TotalSubsidyPrice = item.Quantity * item.Food.SubsidyPrice
+                    //};
+                    //FoodOrder foodOrder = new FoodOrder();
+                    //foodOrder.FoodId = item.Food.Id;
+
+                    //foodOrder.FoodName = item.Food.Name;
+                    //foodOrder.EmployeeId = sessionData.UserIdOrZero;
+                    //foodOrder.OrderDate = item.OrderDate.Date + ts;
+                    //foodOrder.OrderUpdateDate = DateTime.Now;
+                    //foodOrder.Quantity = item.Quantity;
+
+                    //foodOrder.TotalPrice = foodOrder.Quantity * item.Food.Price;
+                    //foodOrder.TotalEmployeePrice = foodOrder.Quantity * item.Food.EmployeePrice;
+                    //foodOrder.TotalSubsidyPrice = foodOrder.Quantity * item.Food.SubsidyPrice;
+
+                    //Context.FoodOrders.Add(foodOrder);
+                }
+                foreach (var foodOrderFoodDetail in foodOrderFoodDetails_lunch)
+                {
+                    foodOrder.FoodOrderFoodDetails?.Add(foodOrderFoodDetail);
+                }
+                //Context.EmployeeCarts.RemoveRange(LunchFoodItems);
+                ////// snacks orders
+                ts = utilityServices.GetSpecificTimeSpan(FoodTypeEnum.Snacks);
+                var SnacksFoodItems = employeeCarts.Where(f => f.Food.FoodTypeId == (int)FoodTypeEnum.Snacks && f.OutDateStatus == (int)CartFoodOutDateEnum.InOrder);
+                List<FoodOrderFoodDetail> foodOrderFoodDetails_snacks = new List<FoodOrderFoodDetail>();
+                foreach (EmployeeCart item in SnacksFoodItems)
+                {
+                    var foodOrderFoodDetail = await GetFoodOrderFoodDetail(foodOrder, item, ts, sessionData.UserIdOrZero, sessionData.UserEmpIdOrNull, cancellationToken);
+                    foodOrderFoodDetails_snacks.Add(foodOrderFoodDetail);
+                    //FoodOrder foodOrder = await GetFoodOrderObjAsync(Context, item, cancellationToken, sessionData.UserIdOrZero);
+                    //FoodOrder foodOrder = new FoodOrder();
+                    //foodOrder.FoodId = item.Food.Id;
+                    //foodOrder.FoodName = item.Food.Name;
+                    //foodOrder.EmployeeId = sessionData.UserIdOrZero;
+                    //foodOrder.OrderDate = item.OrderDate.Date + ts;
+                    //foodOrder.OrderUpdateDate = DateTime.Now;
+                    //foodOrder.Quantity = item.Quantity;
+
+                    //foodOrder.TotalPrice = foodOrder.Quantity * item.Food.Price;
+                    //foodOrder.TotalEmployeePrice = foodOrder.Quantity * item.Food.EmployeePrice;
+                    //foodOrder.TotalSubsidyPrice = foodOrder.Quantity * item.Food.SubsidyPrice;
+
+                    //Context.FoodOrders.Add(foodOrder);
+                }
+                //Context.EmployeeCarts.RemoveRange(SnacksFoodItems);
+                foreach (var foodOrderFoodDetail in foodOrderFoodDetails_snacks)
+                {
+                    foodOrder.FoodOrderFoodDetails?.Add(foodOrderFoodDetail);
+                }
+
+                var totalPrice = foodOrder.FoodOrderFoodDetails?.Sum(f => f.TotalPrice);
+                var totalEmployeePrice = foodOrder.FoodOrderFoodDetails?.Sum(f => f.TotalEmployeePrice);
+                var totalSubsidyPrice = foodOrder.FoodOrderFoodDetails?.Sum(f => f.TotalSubsidyPrice);
+                var totalQuantity = foodOrder.FoodOrderFoodDetails?.Sum(_ => _.Quantity);
+                foodOrder.TotalPrice = totalPrice ?? 0;
+                foodOrder.TotalEmployeePrice = totalEmployeePrice ?? 0;
+                foodOrder.TotalSubsidyPrice = totalSubsidyPrice ?? 0;
+                foodOrder.Quantity = totalQuantity ?? 0;
+                if (foodOrder.FoodOrderFoodDetails?.Count > 0)
+                {
+                    Context.FoodOrders.Add(foodOrder);
+                }
             }
-            Context.EmployeeCarts.RemoveRange(breakfastFoodItems);
-            ////////////////////lunch orders
-            ///
-            ts = utilityServices.GetSpecificTimeSpan(FoodTypeEnum.Lunch);
-            var LunchFoodItems = employeeCarts.Where(f => f.Food.FoodTypeId == (int)FoodTypeEnum.Lunch && f.OutDateStatus == (int)CartFoodOutDateEnum.InOrder);
-            foreach (EmployeeCart item in LunchFoodItems)
-            {
-
-
-                FoodOrder foodOrder = new FoodOrder();
-                foodOrder.FoodId = item.Food.Id;
-                foodOrder.FoodName = item.Food.Name;
-                foodOrder.EmployeeId = sessionData.UserIdOrZero;
-                foodOrder.OrderDate = item.OrderDate.Date + ts;
-                foodOrder.OrderUpdateDate = DateTime.Now;
-                foodOrder.Quantity = item.Quantity;
-
-                foodOrder.TotalPrice = foodOrder.Quantity * item.Food.Price;
-                foodOrder.TotalEmployeePrice = foodOrder.Quantity * item.Food.EmployeePrice;
-                foodOrder.TotalSubsidyPrice = foodOrder.Quantity * item.Food.SubsidyPrice;
-
-                Context.FoodOrders.Add(foodOrder);
-            }
-            Context.EmployeeCarts.RemoveRange(LunchFoodItems);
-            ////// snacks orders
-            ts = utilityServices.GetSpecificTimeSpan(FoodTypeEnum.Snacks);
-            var SnacksFoodItems = employeeCarts.Where(f => f.Food.FoodTypeId == (int)FoodTypeEnum.Snacks && f.OutDateStatus == (int)CartFoodOutDateEnum.InOrder);
-            foreach (EmployeeCart item in SnacksFoodItems)
-            {
-
-
-                FoodOrder foodOrder = new FoodOrder();
-                foodOrder.FoodId = item.Food.Id;
-                foodOrder.FoodName = item.Food.Name;
-                foodOrder.EmployeeId = sessionData.UserIdOrZero;
-                foodOrder.OrderDate = item.OrderDate.Date + ts;
-                foodOrder.OrderUpdateDate = DateTime.Now;
-                foodOrder.Quantity = item.Quantity;
-
-                foodOrder.TotalPrice = foodOrder.Quantity * item.Food.Price;
-                foodOrder.TotalEmployeePrice = foodOrder.Quantity * item.Food.EmployeePrice;
-                foodOrder.TotalSubsidyPrice = foodOrder.Quantity * item.Food.SubsidyPrice;
-
-                Context.FoodOrders.Add(foodOrder);
-            }
-            Context.EmployeeCarts.RemoveRange(SnacksFoodItems);
-
             Context.EmployeeCarts.RemoveRange(employeeCarts);
 
             await Context.SaveChangesAsync();
         }
 
+        private async Task<FoodOrder> GetFoodOrderObjAsync(CanteenManageDBContext canteenManageDB, CancellationToken cancellationToken, int userID)
+        {
+            var last_serialNo = await canteenManageDB.FoodOrders.Select(fo => fo.OrderSerialNumber).DefaultIfEmpty().MaxAsync();
+            var datetimenow = DateTime.Now;
+            var orderid = "ORD" + datetimenow.ToString("ddMMyy") + (last_serialNo + 1).ToString();
+            FoodOrder foodOrder = new FoodOrder()
+            {
+                OrderID = orderid,
+                FoodId = 32,
+                EmployeeId = userID,
+                OrderDate = DateTime.Now,
+                OrderUpdateDate = DateTime.Now,
+                //Quantity = item.Quantity,
+                //OrderCompleteStatus = (int)OrderCompleteStatusEnum.Pending,
+                //TotalPrice = item.Quantity * item.Food.Price,
+                //TotalEmployeePrice = item.Quantity * item.Food.EmployeePrice,
+                //TotalSubsidyPrice = item.Quantity * item.Food.SubsidyPrice,
+                OrderSerialNumber = last_serialNo + 1,
+                IsCanceled = false,
+                IsCompleted = false,
+            };
+            return foodOrder;
+        }
+        private async Task<FoodOrderFoodDetail> GetFoodOrderFoodDetail(FoodOrder foodOrder, EmployeeCart CartItem, TimeSpan ts, int employId, string employEid, CancellationToken cancellationToken)
+        {
+            FoodOrderFoodDetail foodOrderFoodDetail = new FoodOrderFoodDetail()
+            {
+                FoodOrder = foodOrder,
+                FoodOrder_OrderID = foodOrder.OrderID,
+                FoodId = CartItem.Food.Id,
+                FoodName = CartItem.Food.Name,
+                FoodTypeId = CartItem.Food.FoodTypeId,
+                EmployeeId = employId,
+                EmployeeEId = employEid,
+                Quantity = CartItem.Quantity,
+                TotalPrice = CartItem.Quantity * CartItem.Food.Price,
+                TotalEmployeePrice = CartItem.Quantity * CartItem.Food.EmployeePrice,
+                TotalSubsidyPrice = CartItem.Quantity * CartItem.Food.SubsidyPrice,
+                IsCompleted = false,
+                CompletedAt = null,
+                IsCanceled = false,
+                CanceledAt = null,
+                OrderDateCustom = CartItem.OrderDate.Date + ts,
+                OrderDate = DateTime.Now,
+                OrderUpdateDate = DateTime.Now
+            };
+            return foodOrderFoodDetail;
 
+        }
 
     }
 }

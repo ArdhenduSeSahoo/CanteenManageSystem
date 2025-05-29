@@ -87,12 +87,7 @@ try
     builder.Services.AddControllersWithViews();
     builder.Services.AddDistributedMemoryCache();
 
-    builder.Services.AddSession(options =>
-    {
-        options.IdleTimeout = TimeSpan.FromMinutes(120);
-        options.Cookie.HttpOnly = true;
-        options.Cookie.IsEssential = true;
-    });
+
 
     //builder.Services.AddAuthentication(options =>
     //{
@@ -154,7 +149,12 @@ try
     builder.Services.AddScoped<CartService>();
 
     builder.Services.AddHttpContextAccessor();
-    builder.Services.AddSession();
+    builder.Services.AddSession(options =>
+    {
+        options.IdleTimeout = TimeSpan.FromMinutes(120);
+        options.Cookie.HttpOnly = true;
+        options.Cookie.IsEssential = true;
+    });
 
     var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
     builder.Services.AddCors(options =>
@@ -209,17 +209,13 @@ try
     //app.UseAuthorization();
     app.UseRouting();
 
-    app.UseAuthorization();
     app.UseSession();
-    //app.Use(async (context, next) =>
-    //{
-    //    if (context.Session.GetString("UserId") == null)
-    //    {
-    //        context.Response.Redirect("/");
-    //        return;
-    //    }
-    //    await next();
-    //});
+
+
+    //app.UseAuthentication();
+    app.UseAuthorization();
+
+    app.UseMiddleware<SessionValidateMiddleWare>();
 
     app.MapHub<OrderingHub>("/OrderingHub");
     app.MapControllers();

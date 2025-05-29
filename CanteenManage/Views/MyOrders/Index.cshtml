@@ -44,7 +44,7 @@
 				await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderListPanelView", new MyOrderListPanelViewModel()
 		{
 			PanelTitle = "Breakfast",
-			FoodOrders = Model.BreakFastFoodOrders,
+			FoodOrders = Model.BreakFastFoodOrders.SelectMany(s => s.FoodOrderFoodDetails).ToList(),
 			FoodType = CanteenManage.Utility.FoodTypeEnum.Breakfast,
 		})
 				)
@@ -53,7 +53,7 @@
 				await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderListPanelView", new MyOrderListPanelViewModel()
 		{
 			PanelTitle = "Lunch",
-			FoodOrders = Model.LunchFoodOrders,
+			FoodOrders = Model.LunchFoodOrders.SelectMany(s => s.FoodOrderFoodDetails).ToList(),
 			FoodType = CanteenManage.Utility.FoodTypeEnum.Lunch,
 
 		})
@@ -63,7 +63,7 @@
 				await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderListPanelView", new MyOrderListPanelViewModel()
 		{
 			PanelTitle = "Snacks",
-			FoodOrders = Model.SnaksFoodOrders,
+			FoodOrders = Model.SnaksFoodOrders.SelectMany(s => s.FoodOrderFoodDetails).ToList(),
 			FoodType = CanteenManage.Utility.FoodTypeEnum.Snacks,
 		})
 				)

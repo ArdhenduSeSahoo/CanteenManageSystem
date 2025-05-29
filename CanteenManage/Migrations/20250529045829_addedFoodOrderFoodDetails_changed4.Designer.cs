@@ -4,6 +4,7 @@ using CanteenManage.CanteenRepository.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CanteenManage.Migrations
 {
     [DbContext(typeof(CanteenManageDBContext))]
-    partial class CantenManageContextModelSnapshot : ModelSnapshot
+    [Migration("20250529045829_addedFoodOrderFoodDetails_changed4")]
+    partial class addedFoodOrderFoodDetails_changed4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -426,7 +429,7 @@ namespace CanteenManage.Migrations
 
                     b.HasIndex("FoodTypeId");
 
-                    b.ToTable("FoodOrderFoodDetails");
+                    b.ToTable("FoodOrderFoodDetail");
                 });
 
             modelBuilder.Entity("CanteenManage.CanteenRepository.Models.FoodReviewDetails", b =>

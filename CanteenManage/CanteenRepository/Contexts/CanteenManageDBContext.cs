@@ -17,6 +17,7 @@ namespace CanteenManage.CanteenRepository.Contexts
         public DbSet<FoodAvailabilityDay> FoodAvailabilityDays { get; set; }
         public DbSet<EmployeeFeedback> EmployeeFeedbacks { get; set; }
         public DbSet<EmployeeCart> EmployeeCarts { get; set; }
+        public DbSet<FoodOrderFoodDetail> FoodOrderFoodDetails { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             //base.OnModelCreating(modelBuilder);

@@ -6,6 +6,7 @@ namespace CanteenManage.CanteenRepository.Models
     {
         public int Id { get; set; }
         [Required]
+        [StringLength(5000)]
         public string Message { get; set; }
 
 

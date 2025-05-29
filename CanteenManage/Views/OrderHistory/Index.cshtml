@@ -30,7 +30,7 @@
 				await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderHistoryListPanelView", new MyOrderListPanelViewModel()
 		{
 			PanelTitle = "Breakfast",
-			FoodOrders = Model.BreakFastFoodOrders,
+			FoodOrders = Model.BreakFastFoodOrders.SelectMany(s => s.FoodOrderFoodDetails).ToList(),
 			FoodType = CanteenManage.Utility.FoodTypeEnum.Breakfast
 		})
 				)
@@ -38,7 +38,7 @@
 				await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderHistoryListPanelView", new MyOrderListPanelViewModel()
 		{
 			PanelTitle = "Lunch",
-			FoodOrders = Model.LunchFoodOrders,
+			FoodOrders = Model.LunchFoodOrders.SelectMany(s => s.FoodOrderFoodDetails).ToList(),
 			FoodType = CanteenManage.Utility.FoodTypeEnum.Lunch
 		})
 				)
@@ -46,7 +46,7 @@
 				await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderHistoryListPanelView", new MyOrderListPanelViewModel()
 		{
 			PanelTitle = "Snacks",
-			FoodOrders = Model.SnaksFoodOrders,
+			FoodOrders = Model.SnaksFoodOrders.SelectMany(s => s.FoodOrderFoodDetails).ToList(),
 			FoodType = CanteenManage.Utility.FoodTypeEnum.Snacks
 		})
 				)
@@ -154,7 +154,7 @@
 		});
 
 		$("#request_to_conform").click(function(){
-			console.log("sdfasdsd");
+			//console.log("sdfasdsd");
 			connection.invoke("SendMessage", "message").catch(function (err) {
 				return console.error(err.toString());
 			});

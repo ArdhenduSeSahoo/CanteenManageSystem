@@ -13,14 +13,16 @@ namespace CanteenManage.Controllers
     //[Authorize(Roles = "Employee")]
     public class MyOrdersController : Controller
     {
-        private readonly CanteenManageDBContext canteenManageContext;
+        //private readonly CanteenManageDBContext canteenManageContext;
         private readonly UtilityServices utilityServices;
         private readonly FoodListingService foodListingService;
-        public MyOrdersController(CanteenManageDBContext canteenManageContext, UtilityServices utility, FoodListingService foodListingService)
+        private readonly OrderingService orderingService;
+        public MyOrdersController(UtilityServices utility, FoodListingService foodListingService, OrderingService orderingService)
         {
-            this.canteenManageContext = canteenManageContext;
+            //this.canteenManageContext = canteenManageContext;
             this.utilityServices = utility;
             this.foodListingService = foodListingService;
+            this.orderingService = orderingService;
         }
         public async Task<IActionResult> Index(CancellationToken cancellationToken, bool ShowAllOrder = false)
         {
@@ -103,20 +105,29 @@ namespace CanteenManage.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> removeOrder(IFormCollection formcollect)
+        public async Task<IActionResult> removeOrder(IFormCollection formcollect, CancellationToken cancellationToken)
         {
             //if (utilityServices.getSessionUserId(HttpContext.Session) is null)
             //{
             //    return RedirectToAction("Login", "Index");
             //}
+            var foodid = formcollect["foodId"].ToString();
+            var foodorderid = formcollect["orderId"].ToString();
+            SessionDataModel sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
             try
             {
-                var foodstoremove = canteenManageContext.FoodOrders.Where(fo => fo.Id == int.Parse(formcollect["orderId"])).FirstOrDefault();
-                if (foodstoremove != null)
-                {
-                    canteenManageContext.FoodOrders.Remove(foodstoremove);
-                    await canteenManageContext.SaveChangesAsync();
-                }
+                await orderingService.RemoveFoodOrder(
+                    foodid,
+                    foodorderid,
+                    sessionDataModel,
+                    cancellationToken
+                    );
+                //var foodstoremove = canteenManageContext.FoodOrders.Where(fo => fo.Id == int.Parse(formcollect["orderId"])).FirstOrDefault();
+                //if (foodstoremove != null)
+                //{
+                //    canteenManageContext.FoodOrders.Remove(foodstoremove);
+                //    await canteenManageContext.SaveChangesAsync();
+                //}
             }
             catch (Exception ex)
             {
