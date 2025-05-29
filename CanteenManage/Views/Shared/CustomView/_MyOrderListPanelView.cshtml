@@ -108,6 +108,8 @@
 										{
 											<form asp-action="removeOrder" method="post">
 												<input type="hidden" name="orderId" value="@order.Id" />
+												@* <input type="hidden" name="showAllOrder" value="@ViewBag.ShowAllOrder" /> *@
+												<input type="hidden" name="showAllOrder" value="@(Model.ShowAllOrder.ToString().ToLower())" />
 												<button type="submit" class="btn btn-outline-danger btn-sm">
 													<i class="fa fa-trash" aria-hidden="true"></i>
 												</button>

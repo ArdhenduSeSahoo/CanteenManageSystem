@@ -5,6 +5,12 @@
     List<int> dayesOfWeek = new List<int>();
     List<int> WeeksOfMonth = new List<int>();
 }
+<style>
+    th {
+    white-space: nowrap;
+    }
+</style>
+
 
 
 
@@ -45,8 +51,8 @@
                         <th scope="col">Employee Price</th>
                         <th scope="col">Subsidy Price</th>
                         <th scope="col">Rating</th>
-                        <th scope="col">Image URL</th>
-                        <th scope="col">IsActive</th>
+                        <th scope="col">Image</th>
+                        <th scope="col">Availability</th>
                         <th scope="col">AvailableOnDay</th>
                         <th scope="col">Action</th>
                     </tr>
@@ -63,8 +69,35 @@
                             <td>@food.EmployeePrice</td>
                             <td>@food.SubsidyPrice</td>
                             <td>@food.Rating</td>
-                            <td>@food.ImageUrl</td>
-                            <td>@food.IsAvailable</td>
+                            @* <td>@food.ImageUrl</td> *@
+                          @*   <td>
+                                <img src="@Url.Content("~/Foodimages/" + food.ImageUrl)" alt="@food.Name" style="width:50px; height:50px;" />
+                            </td> *@
+                            <td>
+                                @foreach (var image in food.ImageUrl.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                                {
+                                    <img src="@Url.Content("~/Foodimages/" + image.Trim())" alt="@food.Name" style="width:50px; height:50px; margin-right:5px;" />
+                                }
+                            </td>
+
+
+                         
+                            @* <td>@food.IsAvailable</td> *@
+                            <td>
+                                @if (food.IsAvailable)
+                                {
+                                    <button class="btn btn-success btn-sm" disabled>
+                                        <i class="fa fa-check"></i> Yes
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button class="btn btn-danger btn-sm" disabled>
+                                        <i class="fa fa-times"></i> No
+                                    </button>
+                                }
+                            </td>
+
                             <td>
                                 @if (food.FoodAvailabilityDays.Count() > 0)
                                 {

@@ -34,10 +34,20 @@ namespace CanteenManage.Controllers
             employeeFeedbackViewModel.EmployeeFeedbacks = feedbackViewModels;
             return View(employeeFeedbackViewModel);
         }
-        public IActionResult Submit(bool feedbackSubmitted = false)
+        public async Task<IActionResult> Submit(bool feedbackSubmitted = false)
         {
             EmployeeFeedbackViewModel employeeFeedbackViewModel = new EmployeeFeedbackViewModel();
-            //SessionDataModel sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
+            SessionDataModel sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
+
+            var userId = sessionDataModel.UserId;
+
+            var employeeId = await foodListingService.GetEmployeeIdByUserIdAsync(userId.ToString());
+
+            if (employeeId == null)
+                return NotFound("Employee not found.");
+
+            employeeFeedbackViewModel.UserName = sessionDataModel.UserName;
+            employeeFeedbackViewModel.EmployeeNameId = employeeId;
             //
             employeeFeedbackViewModel.FeedbackSubmitted = feedbackSubmitted;
             return View(employeeFeedbackViewModel);
