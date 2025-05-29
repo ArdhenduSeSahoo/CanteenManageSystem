@@ -8,5 +8,6 @@ namespace CanteenManage.Models
         public string PanelTitle { get; set; }
         public List<FoodOrder> FoodOrders { get; set; }
         public FoodTypeEnum FoodType { get; set; }
+        public bool ShowAllOrder { get; set; }
     }
 }

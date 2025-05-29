@@ -8,6 +8,7 @@ namespace CanteenManage.Models
         public List<EmployeeFeedbacks> EmployeeFeedbacks { get; set; }
         public EmployeeFeedbacks EmployeeFeedback { get; set; } = new EmployeeFeedbacks();
         public bool FeedbackSubmitted { get; set; } = false;
+        public string EmployeeNameId { get; set; }
     }
     public class EmployeeFeedbacks
     {

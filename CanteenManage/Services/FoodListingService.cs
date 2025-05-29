@@ -335,6 +335,18 @@ namespace CanteenManage.Services
                 )
                 .ToListAsync();
         }
+        public async Task<string?> GetEmployeeIdByUserIdAsync(string userId)
+        {
+            if (!int.TryParse(userId, out int id))
+                return null;
+
+            var employee = await Context.Employees
+                .FirstOrDefaultAsync(ue => ue.Id == id);
+
+            return employee?.EmployID;
+        }
+
+
 
     }
 }

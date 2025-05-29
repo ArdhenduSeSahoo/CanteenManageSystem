@@ -22,7 +22,8 @@ namespace CanteenManage.Controllers
             this.utilityServices = utility;
             this.foodListingService = foodListingService;
         }
-        public async Task<IActionResult> Index(CancellationToken cancellationToken, bool ShowAllOrder = false)
+
+        public async Task<IActionResult> Index(CancellationToken cancellationToken, bool ShowAllOrder=false)
         {
 
             MyOrderViewDataModel myOrderViewDataModel = new MyOrderViewDataModel();
@@ -103,15 +104,12 @@ namespace CanteenManage.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> removeOrder(IFormCollection formcollect)
+        public async Task<IActionResult> removeOrder(int orderId, bool showAllOrder)
         {
-            //if (utilityServices.getSessionUserId(HttpContext.Session) is null)
-            //{
-            //    return RedirectToAction("Login", "Index");
-            //}
             try
             {
-                var foodstoremove = canteenManageContext.FoodOrders.Where(fo => fo.Id == int.Parse(formcollect["orderId"])).FirstOrDefault();
+                var foodstoremove = canteenManageContext.FoodOrders
+                                    .FirstOrDefault(fo => fo.Id == orderId);
                 if (foodstoremove != null)
                 {
                     canteenManageContext.FoodOrders.Remove(foodstoremove);
@@ -120,10 +118,11 @@ namespace CanteenManage.Controllers
             }
             catch (Exception ex)
             {
-
+                // Log exception if needed
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", new { ShowAllOrder = showAllOrder });
         }
+
     }
 }

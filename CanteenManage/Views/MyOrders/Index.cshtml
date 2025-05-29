@@ -5,6 +5,11 @@
 	ViewData["Title"] = "My Orders";
 }
 
+@{
+	ViewBag.ShowAllOrder = Model.ShowAllOrder;
+}
+
+
 
 @section HeadSection {
 	<link rel="stylesheet" href="~/css/customStyles.css">
@@ -33,10 +38,27 @@
 			<h6>Today's</h6>
 		}
 
-		<div class="">
+		@* <div class="">
 			<input class="form-check-input" type="checkbox" @(Model.ShowAllOrder ? "checked" : "") id="ShowAllOrder" name="ShowAllOrder">
 			<a asp-action="Index" asp-controller="MyOrders" asp-route-ShowAllOrder="@(!Model.ShowAllOrder)">Show All</a>
-		</div>
+		</div> *@
+
+		<a asp-action="Index"
+		   asp-controller="MyOrders"
+		   asp-route-ShowAllOrder="@(!Model.ShowAllOrder)"
+		   class="btn btn-outline-primary btn-sm">
+			@if (Model.ShowAllOrder)
+			{
+				<text><i class="fa fa-eye-slash"></i> Hide All</text>
+			}
+			else
+			{
+				<text><i class="fa fa-eye"></i> Show All</text>
+			}
+		</a>
+
+	
+
 	</div>
 
 	<div class="row row-cols-1 row-cols-md-3">
@@ -46,6 +68,7 @@
 			PanelTitle = "Breakfast",
 			FoodOrders = Model.BreakFastFoodOrders,
 			FoodType = CanteenManage.Utility.FoodTypeEnum.Breakfast,
+			ShowAllOrder = Model.ShowAllOrder
 		})
 				)
 
@@ -55,6 +78,7 @@
 			PanelTitle = "Lunch",
 			FoodOrders = Model.LunchFoodOrders,
 			FoodType = CanteenManage.Utility.FoodTypeEnum.Lunch,
+			ShowAllOrder = Model.ShowAllOrder
 
 		})
 				)
@@ -65,6 +89,7 @@
 			PanelTitle = "Snacks",
 			FoodOrders = Model.SnaksFoodOrders,
 			FoodType = CanteenManage.Utility.FoodTypeEnum.Snacks,
+			ShowAllOrder = Model.ShowAllOrder
 		})
 				)
 
