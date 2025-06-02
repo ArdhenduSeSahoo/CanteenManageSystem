@@ -30,14 +30,14 @@ namespace CanteenManage.Controllers.CanteenControllers
                     {
                         searchTerm = searchTerm.Trim().ToLower();
 
-                        foodOrders = await foodListingService.GetFoodOrdersOld(cancellationToken, searchTerm);
+                        foodOrders = await foodListingService.GetFoodOrdersOld_CU(cancellationToken, searchTerm);
                     }
                     else
                     {
                         foodType = (FoodTypeEnum)foodtype_qp;
                         searchTerm = searchTerm.Trim().ToLower();
 
-                        foodOrders = await foodListingService.GetFoodOrdersToday(foodType, cancellationToken, searchTerm);
+                        foodOrders = await foodListingService.GetFoodOrdersToday_CU(foodType, cancellationToken, searchTerm);
                     }
                 }
             }
@@ -58,7 +58,8 @@ namespace CanteenManage.Controllers.CanteenControllers
             {
                 screenTitle = screenTile,
                 FoodOrders = foodOrders,
-                FoodType = (int)foodType
+                FoodType = (int)foodType,
+                SearchValue = searchTerm
             };
 
             return View(model);

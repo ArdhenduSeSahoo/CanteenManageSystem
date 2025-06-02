@@ -31,17 +31,17 @@ namespace CanteenManage.Controllers
             try
             {
 
-                myOrderViewDataModel.SnaksFoodOrders = await orderingService.getOrderList(3,
+                myOrderViewDataModel.SnaksFoodOrders = await orderingService.getOrderHistoryList(3,
                     utilityServices.getSessionUserId(HttpContext.Session)
                     );
                 ////////////////////////////////////////////////////////////
 
-                myOrderViewDataModel.LunchFoodOrders = await orderingService.getOrderList(2,
+                myOrderViewDataModel.LunchFoodOrders = await orderingService.getOrderHistoryList(2,
                     utilityServices.getSessionUserId(HttpContext.Session)
                     );
                 ////////////////////////////////////////////////////////////
 
-                myOrderViewDataModel.BreakFastFoodOrders = await orderingService.getOrderList(1,
+                myOrderViewDataModel.BreakFastFoodOrders = await orderingService.getOrderHistoryList(1,
                     utilityServices.getSessionUserId(HttpContext.Session)
                     );
             }
@@ -61,40 +61,12 @@ namespace CanteenManage.Controllers
                 var review = formcollect["review_text"];
                 var orderId = formcollect["order_id"];
                 var reviewdata = formcollect["review_text"];
-                //!string.IsNullOrEmpty(review) &&
-                if (!string.IsNullOrEmpty(options) && !string.IsNullOrEmpty(orderId))
+                if (!string.IsNullOrEmpty(options) || !string.IsNullOrEmpty(review) || !string.IsNullOrEmpty(orderId))
                 {
-                    var foodOrder = await canteenManageContext.FoodOrders
-                        .Where(fo => fo.Id == Convert.ToInt32(orderId))
-                        .Include(fo => fo.Food)
-                        .FirstOrDefaultAsync();
-                    var foodid = foodOrder?.FoodId;
-                    var foodReviewDetails = await canteenManageContext.FoodReviewDetails
-                        .Where(fo => fo.FoodId == foodid)
-                        .FirstOrDefaultAsync();
-                    if (foodReviewDetails == null)
-                    {
-                        foodReviewDetails = new FoodReviewDetails()
-                        {
-                            FoodId = foodOrder?.FoodId,
-                            TotalRating = Convert.ToInt32(options),
-                            TotalUserCount = 1
-                        };
-                        canteenManageContext.FoodReviewDetails.Add(foodReviewDetails);
-                    }
-                    else
-                    {
-                        foodReviewDetails.TotalRating += Convert.ToInt32(options);
-                        foodReviewDetails.TotalUserCount += 1;
-                        canteenManageContext.FoodReviewDetails.Update(foodReviewDetails);
-                    }
-                    foodOrder.Rating = Convert.ToInt32(options);
-                    foodOrder.Review = reviewdata;
-                    foodOrder.RatingCreatedAt = DateTime.Now;
-                    foodOrder.Food.Rating = (foodReviewDetails.TotalRating / foodReviewDetails.TotalUserCount);
-                    canteenManageContext.FoodOrders.Update(foodOrder);
-                    await canteenManageContext.SaveChangesAsync();
+                    SessionDataModel sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
+                    await orderingService.addReview(sessionDataModel, int.Parse(orderId), int.Parse(options), review);
                 }
+
             }
             catch (Exception ex)
             {

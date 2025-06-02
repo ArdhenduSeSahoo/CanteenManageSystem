@@ -3,6 +3,7 @@ using CanteenManage.CanteenRepository.Contexts;
 using CanteenManage.CanteenRepository.Models;
 using CanteenManage.Utility;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace CanteenManage.Services
 {
@@ -194,7 +195,6 @@ namespace CanteenManage.Services
         //        });
         //    }
         //}
-
         public async Task RemoveFoodOrder(string foodId, string foodOrderID, SessionDataModel sessionData, CancellationToken cancellationToken)
         {
             if (!string.IsNullOrEmpty(foodOrderID) && !string.IsNullOrEmpty(foodOrderID))
@@ -205,48 +205,34 @@ namespace CanteenManage.Services
                 {
 
 
-                    var fooditeminOrder = await canteenManageContext.FoodOrderFoodDetails.Where(fd => fd.Id == foodID
-                    && fd.FoodOrder_OrderID == foodOrderID
-                    && fd.EmployeeId == sessionData.UserIdOrZero
-                    && !fd.IsCanceled
-                    ).FirstOrDefaultAsync(cancellationToken);
-                    if (fooditeminOrder != null)
-                    {
-                        fooditeminOrder.IsCanceled = true;
-                        fooditeminOrder.CanceledAt = DateTime.Now;
-                        canteenManageContext.FoodOrderFoodDetails.Update(fooditeminOrder);
-                        await canteenManageContext.SaveChangesAsync(cancellationToken);
-                    }
-
-                    var FoodDetails_Uncancled = await canteenManageContext.FoodOrderFoodDetails.Where(fd =>
-                    fd.FoodOrder_OrderID == foodOrderID
-                    && fd.EmployeeId == sessionData.UserIdOrZero
-                    && !fd.IsCanceled
-                    ).ToListAsync(cancellationToken);
-
                     var foodOrder = await canteenManageContext.FoodOrders
-                            .Where(fo => fo.OrderID == foodOrderID).FirstOrDefaultAsync(cancellationToken);
+                            .Include(fo => fo.Food)
+                            .Where(fo => fo.OrderID == foodOrderID &&
+                            fo.EmployeeId == sessionData.UserIdOrZero
+                            && fo.Id == foodID
+                            && !fo.IsCanceled
+                            ).FirstOrDefaultAsync(cancellationToken);
                     if (foodOrder != null)
                     {
 
-                        if (FoodDetails_Uncancled.Count() > 0)
+                        //if (foodOrder.Quantity > 1)
+                        //{
+                        //    foodOrder.Quantity -= 1;
+                        //    foodOrder.TotalPrice = foodOrder.Quantity*foodOrder.Food.Price;
+                        //    //foodOrder.TotalPrice = totalPrice;
+                        //    foodOrder.TotalEmployeePrice = FoodDetails_Uncancled.Sum(fd => fd.TotalEmployeePrice);
+                        //    foodOrder.TotalSubsidyPrice = FoodDetails_Uncancled.Sum(fd => fd.TotalSubsidyPrice);
+                        //    foodOrder.Quantity = FoodDetails_Uncancled.Sum(fd => fd.Quantity);
+                        //    foodOrder.OrderUpdateDate = DateTime.Now;
+                        //    canteenManageContext.FoodOrders.Update(foodOrder);
+                        //    await canteenManageContext.SaveChangesAsync();
+                        //}
+                        //else
                         {
-
-                            foodOrder.TotalPrice = FoodDetails_Uncancled.Sum(fd => fd.TotalPrice);
-                            //foodOrder.TotalPrice = totalPrice;
-                            foodOrder.TotalEmployeePrice = FoodDetails_Uncancled.Sum(fd => fd.TotalEmployeePrice);
-                            foodOrder.TotalSubsidyPrice = FoodDetails_Uncancled.Sum(fd => fd.TotalSubsidyPrice);
-                            foodOrder.Quantity = FoodDetails_Uncancled.Sum(fd => fd.Quantity);
-                            foodOrder.OrderUpdateDate = DateTime.Now;
-                            canteenManageContext.FoodOrders.Update(foodOrder);
-                            await canteenManageContext.SaveChangesAsync();
-                        }
-                        else
-                        {
-                            foodOrder.TotalPrice = 0;
-                            foodOrder.TotalEmployeePrice = 0;
-                            foodOrder.TotalSubsidyPrice = 0;
-                            foodOrder.Quantity = 0;
+                            //foodOrder.TotalPrice = 0;
+                            //foodOrder.TotalEmployeePrice = 0;
+                            //foodOrder.TotalSubsidyPrice = 0;
+                            //foodOrder.Quantity = 0;
                             foodOrder.IsCanceled = true;
                             foodOrder.CanceledAt = DateTime.Now;
                             canteenManageContext.FoodOrders.Update(foodOrder);
@@ -256,16 +242,97 @@ namespace CanteenManage.Services
                     }
                     else
                     {
-                        await transaction.RollbackAsync();
+                        //await transaction.RollbackAsync();
+                        throw new Exception("Order not found");
                     }
                 }
                 catch (Exception ex)
                 {
                     await transaction.RollbackAsync();
+                    throw new Exception(ex.Message);
                 }
             }
+            else
+            {
+                throw new Exception("Values are null");
+            }
         }
-        public async Task<List<FoodOrder>> getOrderList(int foodTypeId, int? employeId)
+
+        //public async Task RemoveFoodOrdernew(string foodId, string foodOrderID, SessionDataModel sessionData, CancellationToken cancellationToken)
+        //{
+        //    if (!string.IsNullOrEmpty(foodOrderID) && !string.IsNullOrEmpty(foodOrderID))
+        //    {
+        //        var foodID = int.Parse(foodId);
+        //        using var transaction = await canteenManageContext.Database.BeginTransactionAsync(cancellationToken);
+        //        try
+        //        {
+        //            var fooditeminOrder = await canteenManageContext.FoodOrderFoodDetails.Where(fd => fd.Id == foodID
+        //            && fd.FoodOrder_OrderID == foodOrderID
+        //            && fd.EmployeeId == sessionData.UserIdOrZero
+        //            && !fd.IsCanceled
+        //            ).FirstOrDefaultAsync(cancellationToken);
+        //            if (fooditeminOrder != null)
+        //            {
+        //                fooditeminOrder.IsCanceled = true;
+        //                fooditeminOrder.CanceledAt = DateTime.Now;
+        //                canteenManageContext.FoodOrderFoodDetails.Update(fooditeminOrder);
+        //                await canteenManageContext.SaveChangesAsync(cancellationToken);
+        //            }
+
+        //            var FoodDetails_Uncancled = await canteenManageContext.FoodOrderFoodDetails.Where(fd =>
+        //            fd.FoodOrder_OrderID == foodOrderID
+        //            && fd.EmployeeId == sessionData.UserIdOrZero
+        //            && !fd.IsCanceled
+        //            ).ToListAsync(cancellationToken);
+
+        //            var foodOrder = await canteenManageContext.FoodOrders
+        //                    .Where(fo => fo.OrderID == foodOrderID && fo.EmployeeId == sessionData.UserIdOrZero).FirstOrDefaultAsync(cancellationToken);
+        //            if (foodOrder != null)
+        //            {
+
+        //                if (FoodDetails_Uncancled.Count() > 0)
+        //                {
+
+        //                    foodOrder.TotalPrice = FoodDetails_Uncancled.Sum(fd => fd.TotalPrice);
+        //                    //foodOrder.TotalPrice = totalPrice;
+        //                    foodOrder.TotalEmployeePrice = FoodDetails_Uncancled.Sum(fd => fd.TotalEmployeePrice);
+        //                    foodOrder.TotalSubsidyPrice = FoodDetails_Uncancled.Sum(fd => fd.TotalSubsidyPrice);
+        //                    foodOrder.Quantity = FoodDetails_Uncancled.Sum(fd => fd.Quantity);
+        //                    foodOrder.OrderUpdateDate = DateTime.Now;
+        //                    canteenManageContext.FoodOrders.Update(foodOrder);
+        //                    await canteenManageContext.SaveChangesAsync();
+        //                }
+        //                else
+        //                {
+        //                    foodOrder.TotalPrice = 0;
+        //                    foodOrder.TotalEmployeePrice = 0;
+        //                    foodOrder.TotalSubsidyPrice = 0;
+        //                    foodOrder.Quantity = 0;
+        //                    foodOrder.IsCanceled = true;
+        //                    foodOrder.CanceledAt = DateTime.Now;
+        //                    canteenManageContext.FoodOrders.Update(foodOrder);
+        //                    await canteenManageContext.SaveChangesAsync();
+        //                }
+        //                await transaction.CommitAsync();
+        //            }
+        //            else
+        //            {
+        //                //await transaction.RollbackAsync();
+        //                throw new Exception("Order not found");
+        //            }
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            await transaction.RollbackAsync();
+        //            throw new Exception(ex.Message);
+        //        }
+        //    }
+        //    else
+        //    {
+        //        throw new Exception("Values are null");
+        //    }
+        //}
+        public async Task<List<FoodOrder>> getOrderHistoryList(int foodTypeId, int? employeId)
         {
             var orderList = await canteenManageContext.FoodOrders
                     .Include(f => f.Food)
@@ -273,7 +340,7 @@ namespace CanteenManage.Services
                     .Where(
                     fo => fo.Food.FoodTypeId == foodTypeId
                     && fo.EmployeeId == employeId
-                    && fo.OrderDate.Date > DateTime.Now.AddDays(-30).Date && fo.OrderDate.Date < DateTime.Now.Date
+                    && fo.OrderDateCustom.Date > DateTime.Now.AddDays(-30).Date && fo.OrderDateCustom.Date < DateTime.Now.Date
                     //&& daysOfWeek_for_snaks.Select(s => s.DateTime.Date).Contains(fo.OrderDate.Date)
                     )
                     .ToListAsync();
@@ -319,6 +386,46 @@ namespace CanteenManage.Services
             }
 
             return order;
+        }
+        public async Task addReview(SessionDataModel sessionData, int orderID, int rating, string review)
+        {
+            if (sessionData.UserIdOrZero == 0)
+            {
+                return;
+            }
+            var foodOrder = await canteenManageContext.FoodOrders
+                .Include(review => review.Food)
+                .Where(fo => fo.Id == orderID && fo.EmployeeId == sessionData.UserIdOrZero)
+                .FirstOrDefaultAsync();
+            if (foodOrder != null)
+            {
+                var foodid = foodOrder?.FoodId;
+                var foodReviewDetails = await canteenManageContext.FoodReviewDetails
+                    .Where(fo => fo.FoodId == foodid)
+                    .FirstOrDefaultAsync();
+                if (foodReviewDetails == null)
+                {
+                    foodReviewDetails = new FoodReviewDetails()
+                    {
+                        FoodId = foodOrder?.FoodId,
+                        TotalRating = rating,
+                        TotalUserCount = 1
+                    };
+                    canteenManageContext.FoodReviewDetails.Add(foodReviewDetails);
+                }
+                else
+                {
+                    foodReviewDetails.TotalRating += Convert.ToInt32(rating);
+                    foodReviewDetails.TotalUserCount += 1;
+                    canteenManageContext.FoodReviewDetails.Update(foodReviewDetails);
+                }
+                foodOrder.Rating = rating;
+                foodOrder.Review = review;
+                foodOrder.RatingCreatedAt = DateTime.Now;
+                foodOrder.Food.Rating = (foodReviewDetails.TotalRating / foodReviewDetails.TotalUserCount);
+                canteenManageContext.FoodOrders.Update(foodOrder);
+                await canteenManageContext.SaveChangesAsync();
+            }
         }
     }
 }

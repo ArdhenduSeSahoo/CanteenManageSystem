@@ -18,7 +18,7 @@
 						</div>
 						<div class="col-3">
 							<span class="badge customBage bg-secondary">Status</span>
-							@if (item.OrderCompleteStatus == 0)
+							@if (item.IsCompleted)
 							{
 								<span>Pending</span>
 							}
@@ -46,10 +46,10 @@
 							<span>@item.TotalPrice</span>
 						</div>
 						<div class="col-3 text-end">
-							@if (item.OrderCompleteStatus == 0)
+							@if (!item.IsCompleted)
 							{
 								<form method="post" asp-action="CompleteFoodOrder" asp-controller="OrdersByEmploy">
-									<input type="hidden" value="@item.FoodOrderId" name="foodId" />
+									<input type="hidden" value="@item.FoodId" name="foodId" />
 									<input type="hidden" value="@item.FoodType" name="foodtype" />
 									<button type="submit" class="btn btn-primary btn-sm">Complete</button>
 								</form>

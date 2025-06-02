@@ -5,6 +5,11 @@
 	ViewData["Title"] = "My Orders";
 }
 
+@{
+	ViewBag.ShowAllOrder = Model.ShowAllOrder;
+}
+
+
 
 @section HeadSection {
 	<link rel="stylesheet" href="~/css/customStyles.css">
@@ -14,28 +19,53 @@
 }
 <div class=" container-fluid h-100" style="">
 
-	<div class="d-flex justify-content-between">
-		<div class="row">
-			<div class="col">
-				<h3>My Orders</h3>
+	<div class="card customCard">
+		<div class="card-body">
+			<div class="d-flex justify-content-between">
+				<div class="row">
+					<div class="col d-inline-flex">
+						<img src="~/images/package.png" class="img-fluid" alt="My Orders" style="width: 50px; height: 50px;">
+						<h3 class="mt-2">My Orders</h3>
+					</div>
+				</div>
+				<a asp-action="Index" asp-controller="OrderHistory" class="btn btn-outline-info" style="height:40px">History</a>
 			</div>
-		</div>
-		<a asp-action="Index" asp-controller="OrderHistory" class="btn btn-outline-info">History</a>
-	</div>
-	<br />
-	<div class="d-flex text-center justify-content-between">
-		@if (Model.ShowAllOrder)
-		{
-			<h6>All</h6>
-		}
-		else
-		{
-			<h6>Today's</h6>
-		}
+			<br />
+			<div class="d-flex text-center justify-content-between">
+				@if (Model.ShowAllOrder ?? false)
+				{
+					<h6>All</h6>
+				}
+				else
+				{
+					<h6>Today's</h6>
+				}
 
-		<div class="">
+				@* <div class="">
 			<input class="form-check-input" type="checkbox" @(Model.ShowAllOrder ? "checked" : "") id="ShowAllOrder" name="ShowAllOrder">
 			<a asp-action="Index" asp-controller="MyOrders" asp-route-ShowAllOrder="@(!Model.ShowAllOrder)">Show All</a>
+		</div> *@
+
+				<div class="d-inline-flex gap-1">
+					<a asp-action="Index"
+					   asp-controller="MyOrders"
+					   asp-route-ShowAllOrder="@(!Model.ShowAllOrder)"
+					   class="btn btn-outline-primary btn-sm">
+						@if (Model.ShowAllOrder ?? false)
+						{
+							<text><i class="fa fa-eye-slash"></i> Hide All</text>
+						}
+						else
+						{
+							<text><i class="fa fa-eye"></i> Show All</text>
+						}
+					</a>
+				</div>
+
+
+
+
+			</div>
 		</div>
 	</div>
 
@@ -44,8 +74,9 @@
 				await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderListPanelView", new MyOrderListPanelViewModel()
 		{
 			PanelTitle = "Breakfast",
-			FoodOrders = Model.BreakFastFoodOrders.SelectMany(s => s.FoodOrderFoodDetails).ToList(),
+			FoodOrders = Model.BreakFastFoodOrders.ToList(),
 			FoodType = CanteenManage.Utility.FoodTypeEnum.Breakfast,
+			ShowAllOrder = Model.ShowAllOrder ?? false
 		})
 				)
 
@@ -53,8 +84,9 @@
 				await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderListPanelView", new MyOrderListPanelViewModel()
 		{
 			PanelTitle = "Lunch",
-			FoodOrders = Model.LunchFoodOrders.SelectMany(s => s.FoodOrderFoodDetails).ToList(),
+			FoodOrders = Model.LunchFoodOrders.ToList(),
 			FoodType = CanteenManage.Utility.FoodTypeEnum.Lunch,
+			ShowAllOrder = Model.ShowAllOrder ?? false
 
 		})
 				)
@@ -63,8 +95,9 @@
 				await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderListPanelView", new MyOrderListPanelViewModel()
 		{
 			PanelTitle = "Snacks",
-			FoodOrders = Model.SnaksFoodOrders.SelectMany(s => s.FoodOrderFoodDetails).ToList(),
+			FoodOrders = Model.SnaksFoodOrders.ToList(),
 			FoodType = CanteenManage.Utility.FoodTypeEnum.Snacks,
+			ShowAllOrder = Model.ShowAllOrder ?? false
 		})
 				)
 
@@ -113,6 +146,52 @@
 
 		const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
 		const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+
+		$(".btn_Cancle_Item").click(function(e){
+
+			const button = e.currentTarget
+			var orderid = button.getAttribute('data-bs-orderid');
+			var foodorderid = button.getAttribute('data-bs-foodorderid');
+			sendRequestForCancel(button,orderid,foodorderid);
+
+		});
+
+		function sendRequestForCancel(btn, orderid,foodorderid) {
+			//debugger;
+			var foodid = $(e.currentTarget).data("foodid");
+			//console.log("Add Item button clicked---"+foodid);
+			try {
+				const foodOrderdata = {
+					"orderid":orderid.toString(),
+					"foodOrderId": foodorderid.toString()
+				};
+				// Send the POST request using fetch
+				fetch("MyOrders/cancelOrder", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json"
+					},
+					body: JSON.stringify(foodOrderdata)
+				})
+					.then((response) => response.json())
+					.then((data) => {
+						//debugger;
+						//console.log("Success:", data);
+						if(data.isDeleted==="ok")
+						{
+							$('tr[data-orderid="'+foodorderid.toString()+'"]').remove();
+							//btn.closest('tr').remove();
+						}
+						//
+
+					})
+					.catch((error) => console.error("Error:", error));
+
+			}
+			catch (error) {
+				console.log(error);
+			}
+		}
 
 		});
 

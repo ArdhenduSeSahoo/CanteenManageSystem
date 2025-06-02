@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CanteenManage.Migrations
 {
     [DbContext(typeof(CanteenManageDBContext))]
-    [Migration("20250528231656_addedFoodOrderFoodDetails_changedtwo")]
-    partial class addedFoodOrderFoodDetails_changedtwo
+    [Migration("20250602052040_canteenFoodOrderchanged7")]
+    partial class canteenFoodOrderchanged7
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -266,13 +266,13 @@ namespace CanteenManage.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CanceledAt")
+                    b.Property<DateTime?>("CanceledAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("CompletedAt")
+                    b.Property<DateTime?>("CompletedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("EmployeeId")
+                    b.Property<int?>("EmployeeId")
                         .HasColumnType("int");
 
                     b.Property<int?>("FoodId")
@@ -288,16 +288,20 @@ namespace CanteenManage.Migrations
                     b.Property<bool>("IsCompleted")
                         .HasColumnType("bit");
 
-                    b.Property<int>("OrderCompleteStatus")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("OrderDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("OrderDateCustom")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("OrderID")
                         .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("OrderPlacedID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("OrderSerialNumber")
                         .HasColumnType("int");
@@ -338,98 +342,6 @@ namespace CanteenManage.Migrations
                     b.HasIndex("FoodId");
 
                     b.ToTable("FoodOrders");
-                });
-
-            modelBuilder.Entity("CanteenManage.CanteenRepository.Models.FoodOrderFoodDetail", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ActionTaken")
-                        .HasMaxLength(20000)
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CanceledAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("CompletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("EmployeeEId")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<int?>("EmployeeId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("FoodId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("FoodName")
-                        .HasMaxLength(5000)
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("FoodOrderId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("FoodOrder_OrderID")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<int?>("FoodTypeId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsCanceled")
-                        .HasColumnType("bit");
-
-                    b.Property<bool?>("IsCompleted")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("OrderDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("OrderDateCustom")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("OrderUpdateDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("Rating")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("RatingCreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Review")
-                        .HasMaxLength(5000)
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("TotalEmployeePrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("TotalPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("TotalSubsidyPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmployeeId");
-
-                    b.HasIndex("FoodId");
-
-                    b.HasIndex("FoodOrderId");
-
-                    b.HasIndex("FoodTypeId");
-
-                    b.ToTable("FoodOrderFoodDetail");
                 });
 
             modelBuilder.Entity("CanteenManage.CanteenRepository.Models.FoodReviewDetails", b =>
@@ -562,9 +474,7 @@ namespace CanteenManage.Migrations
                 {
                     b.HasOne("CanteenManage.CanteenRepository.Models.Employee", "Employee")
                         .WithMany()
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("EmployeeId");
 
                     b.HasOne("CanteenManage.CanteenRepository.Models.Food", "Food")
                         .WithMany("FoodOrders")
@@ -573,33 +483,6 @@ namespace CanteenManage.Migrations
                     b.Navigation("Employee");
 
                     b.Navigation("Food");
-                });
-
-            modelBuilder.Entity("CanteenManage.CanteenRepository.Models.FoodOrderFoodDetail", b =>
-                {
-                    b.HasOne("CanteenManage.CanteenRepository.Models.Employee", "Employee")
-                        .WithMany()
-                        .HasForeignKey("EmployeeId");
-
-                    b.HasOne("CanteenManage.CanteenRepository.Models.Food", "Food")
-                        .WithMany()
-                        .HasForeignKey("FoodId");
-
-                    b.HasOne("CanteenManage.CanteenRepository.Models.FoodOrder", "FoodOrder")
-                        .WithMany("FoodOrderFoodDetails")
-                        .HasForeignKey("FoodOrderId");
-
-                    b.HasOne("CanteenManage.CanteenRepository.Models.FoodType", "FoodType")
-                        .WithMany()
-                        .HasForeignKey("FoodTypeId");
-
-                    b.Navigation("Employee");
-
-                    b.Navigation("Food");
-
-                    b.Navigation("FoodOrder");
-
-                    b.Navigation("FoodType");
                 });
 
             modelBuilder.Entity("CanteenManage.CanteenRepository.Models.FoodReviewDetails", b =>
@@ -623,11 +506,6 @@ namespace CanteenManage.Migrations
                     b.Navigation("FoodAvailabilityDays");
 
                     b.Navigation("FoodOrders");
-                });
-
-            modelBuilder.Entity("CanteenManage.CanteenRepository.Models.FoodOrder", b =>
-                {
-                    b.Navigation("FoodOrderFoodDetails");
                 });
 
             modelBuilder.Entity("CanteenManage.CanteenRepository.Models.FoodType", b =>

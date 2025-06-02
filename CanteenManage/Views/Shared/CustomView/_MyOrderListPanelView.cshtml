@@ -25,9 +25,9 @@
 							<th>Date</th>
 							<th>OrdNum</th>
 							<th>Name</th>
-							<th>Qnt.</th>
-							<th>Price</th>
-							<th>Status</th>
+							<th>.</th>
+							<th></th>
+							<th></th>
 							<th></th>
 						</tr>
 					</thead>
@@ -64,7 +64,7 @@
 								orderShouldDelete = true;
 							}
 							var shouldSendRequest = false;
-							if (!(order.IsCompleted ?? false) && !orderShouldDelete)
+							if (!(order.IsCompleted) && !orderShouldDelete)
 							{
 								if (Model.FoodType == CanteenManage.Utility.FoodTypeEnum.Breakfast
 								&& int.Parse(DateTime.Now.ToString("HH")) < CustomDataConstants.BreakfastTimeHourEnd)
@@ -83,58 +83,72 @@
 								}
 							}
 
-							<tr>
+							<tr data-orderid="@order.OrderID">
 								<td>@order.OrderDateCustom.ToString("dd-MM-")@order.OrderDateCustom.ToString("ddd")</td>
-								<td>@order.FoodOrder_OrderID</td>
-								<td class="customTableBoldCell">@order.FoodName</td>
-								<td>@order.Quantity.ToString()</td>
-								<td class="" style="text-align:end">@order.TotalEmployeePrice.ToString()</td>
-								<td>
-									@if (!(@order.IsCompleted ?? false))
-									{
-										<span class="badge bg-warning text-dark rounded-pill px-3 py-2 shadow-sm d-inline-flex align-items-center">
-											<i class="bi bi-hourglass-split"></i>
-										</span>
-									}
-									else
-									{
-										<span class="badge bg-success rounded-pill px-3 py-2 shadow-sm d-inline-flex align-items-center">
-											<i class="bi bi-check-circle"></i>
-										</span>
-									}
+								<td>@order.OrderID</td>
+								<td class="customTableBoldCell" colspan="4">
+
+									<table class="table table-borderless">
+										<tr>
+											<td colspan="4">@order.FoodName</td>
+										</tr>
+										<tr>
+											<td><span style="font-weight:400">Qnt:</span> @order.Quantity.ToString()</td>
+											<td class="" style="text-align:end"><span>&#8377;</span> @order.TotalEmployeePrice.ToString()</td>
+											<td class="align-self-center text-center">
+												@if (!(@order.IsCompleted))
+												{
+													<span class="badge bg-warning text-dark rounded-pill px-3 py-2 shadow-sm d-inline-flex align-items-center">
+														<i class="bi bi-hourglass-split"></i>
+													</span>
+												}
+												else
+												{
+													<span class="badge bg-success rounded-pill px-3 py-2 shadow-sm d-inline-flex align-items-center">
+														<i class="bi bi-check-circle"></i>
+													</span>
+												}
+											</td>
+											<td class="align-self-center text-center" style="vertical-align:middle;">
+												@if (!(order.IsCompleted))
+												{
+
+													@if (orderShouldDelete)
+													{
+														@* <form asp-action="removeOrder" method="post">
+										<input type="hidden" name="orderId" value="@order.FoodOrder_OrderID" />
+										<input type="hidden" name="foodId" value="@order.Id" />
+										<button type="submit" class="btn btn-outline-danger btn-sm">
+											<i class="fa fa-trash" aria-hidden="true"></i>
+										</button>
+									</form> *@
+														<button type="button" class="btn btn-outline-danger btn-sm btn_Cancle_Item"
+																data-bs-orderid="@order.Id" data-bs-foodorderid="@order.OrderID">
+															<i class="fa fa-trash" aria-hidden="true"></i>
+														</button>
+
+													}
+													else if (shouldSendRequest)
+													{
+														<button type="submit" data-bs-orderid="@order.Id" data-bs-orderqnt="@order.Quantity" data-bs-ordername="@order.Food?.Name" data-bs-userempid="@userempId" data-bs-username="@username" class="btn btn-outline-success btn-sm btn_request_to_conform" data-bs-toggle="tooltip" data-bs-placement="top"
+																data-bs-custom-class="custom-tooltip"
+																data-bs-title="Send request for conformation of order.">
+															<i class="fa fa-paper-plane" aria-hidden="true"></i>
+														</button>
+
+													}
+
+												}
+												else
+												{
+
+												}
+
+											</td>
+										</tr>
+									</table>
 								</td>
-								<td class="align-self-center text-center" style="vertical-align:middle;">
-									@if (!(order.IsCompleted ?? false))
-									{
-										@if (orderShouldDelete)
-										{
-											<form asp-action="removeOrder" method="post">
-												<input type="hidden" name="orderId" value="@order.FoodOrder_OrderID" />
-												<input type="hidden" name="foodId" value="@order.Id" />
-												<button type="submit" class="btn btn-outline-danger btn-sm" data-bs-toggle="tooltip" data-bs-placement="top"
-														data-bs-custom-class="custom-tooltip"
-														data-bs-title="Order Pending">
-													<i class="fa fa-trash" aria-hidden="true"></i>
-												</button>
-											</form>
-										}
-										else if (shouldSendRequest)
-										{
-											<button type="submit" data-bs-orderid="@order.Id" data-bs-orderqnt="@order.Quantity" data-bs-ordername="@order.Food?.Name" data-bs-userempid="@userempId" data-bs-username="@username" class="btn btn-outline-success btn-sm btn_request_to_conform" data-bs-toggle="tooltip" data-bs-placement="top"
-													data-bs-custom-class="custom-tooltip"
-													data-bs-title="Send request for conformation of order.">
-												<i class="fa fa-paper-plane" aria-hidden="true"></i>
-											</button>
 
-										}
-
-									}
-									else
-									{
-
-									}
-
-								</td>
 							</tr>
 						}
 					</tbody>
