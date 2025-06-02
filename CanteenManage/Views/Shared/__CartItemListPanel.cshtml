@@ -23,7 +23,7 @@
 						@foreach (var order in Model.employeeCarts)
 						{
 							<tr>
-								<td>@order.OrderDate.ToString("dd-MM-")@order.OrderDate.ToString("ddd")</td>
+								<td>@order.OrderDate.ToString("dd-MM-ddd")</td>
 								<td class="customTableBoldCell">@order.Food.Name</td>
 								<td>@order.Quantity.ToString()</td>
 								<td class="" style="text-align:end">@order.TotalPrice.ToString()</td>

@@ -102,6 +102,7 @@
 
 .customTable tbody tr td {
     vertical-align: middle;
+    padding: 1px
 }
 
 .customTableBoldCell {

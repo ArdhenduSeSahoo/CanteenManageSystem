@@ -5,6 +5,7 @@
         public string screenTitle { get; set; } = string.Empty;
         public List<EmployeeFoodOrdersTableDataModel> FoodOrders { get; set; } = new List<EmployeeFoodOrdersTableDataModel>();
         public int FoodType { get; set; } = 1;
+        public string SearchValue { get; set; } = string.Empty;
 
     }
 }

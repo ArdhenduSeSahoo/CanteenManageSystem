@@ -1,6 +1,4 @@
-﻿
-
-$(document).ready(function () {
+﻿$(document).ready(function () {
 
     const exampleModal = document.getElementById('exampleModal')
     if (exampleModal) {
@@ -11,17 +9,16 @@ $(document).ready(function () {
             // Extract info from data-bs-* attributes
             var orderId = button.getAttribute('data-bs-orderid');
             //console.log(orderId);
+            debugger;
             var modalOrderID_Hidden = exampleModal.querySelector('#order_id');
             modalOrderID_Hidden.value = orderId;
 
         })
     }
+    const viewReviewModal = document.getElementById('viewReviewModal')
 
-
-    const exampleModal = document.getElementById('viewReviewModal')
-
-    if (exampleModal) {
-        exampleModal.addEventListener('show.bs.modal', event => {
+    if (viewReviewModal) {
+        viewReviewModal.addEventListener('show.bs.modal', event => {
             // Button that triggered the modal
             //console.log("enentfire");
 
@@ -33,8 +30,8 @@ $(document).ready(function () {
             var rating = button.getAttribute('data-bs-rating');
             //console.log(rating);
 
-            var modalreviewTextSpan = exampleModal.querySelector('#reviewText');
-            var modaltatingImgTag = exampleModal.querySelector('#ratingimg');
+            var modalreviewTextSpan = viewReviewModal.querySelector('#reviewText');
+            var modaltatingImgTag = viewReviewModal.querySelector('#ratingimg');
             if (rating == 1) {
                 modaltatingImgTag.src = "images/emoji/Emoji1.png";
             }
@@ -58,4 +55,3 @@ $(document).ready(function () {
         })
     }
 });
-

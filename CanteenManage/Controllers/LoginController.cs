@@ -27,7 +27,7 @@ namespace CanteenManage.Controllers
         [AllowAnonymous]
         public IActionResult Index()
         {
-            logger.LogInformation("Login accessed");
+            //logger.LogInformation("Login accessed");
             try
             {
                 HttpContext.Session.Clear();
@@ -44,6 +44,7 @@ namespace CanteenManage.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> testlog(string? empid, string? empname)
         {
+
             return await loginUserAsync(empid, empname);
         }
         [AllowAnonymous]
@@ -141,8 +142,9 @@ namespace CanteenManage.Controllers
                         };
                         var jwttokens = loginService.GenerateJSONWebToken(claims);
                         SetJWTCookie(jwttokens);
-                        //HttpContext.Session.SetString(SessionConstants.UserId, userFound.Id.ToString());
-                        //HttpContext.Session.SetString(SessionConstants.UserName, userFound.Name.ToString());
+                        HttpContext.Session.SetString(SessionConstants.UserId, userFound.Id.ToString());
+                        HttpContext.Session.SetString(SessionConstants.UserEmpId, userFound.EmployID.ToString());
+                        HttpContext.Session.SetString(SessionConstants.UserName, userFound.Name.ToString());
                         return this.RedirectToAction(actionName: "ChoseModeOfUse", controllerName: "Login", new { eid = userFound.Id, empid = userFound.EmployID, empname = userFound.Name });
                     }
 
@@ -258,6 +260,7 @@ namespace CanteenManage.Controllers
                     SetJWTCookie(jwttokens);
 
                     HttpContext.Session.SetString(SessionConstants.UserId, userFound.Id.ToString());
+                    HttpContext.Session.SetString(SessionConstants.UserEmpId, userFound.EmployID.ToString());
                     HttpContext.Session.SetString(SessionConstants.UserName, userFound.Name.ToString());
                     return this.RedirectToAction(actionName: "Index", controllerName: "CanteenEmploy");
                 }

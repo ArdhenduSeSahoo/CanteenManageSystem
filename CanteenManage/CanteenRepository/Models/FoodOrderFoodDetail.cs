@@ -19,6 +19,9 @@ namespace CanteenManage.CanteenRepository.Models
         public Employee? Employee { get; set; }
         [StringLength(1000)]
         public string? EmployeeEId { get; set; } = string.Empty;
+        public DateTime OrderDate { get; set; }
+        public DateTime OrderUpdateDate { get; set; }
+        public DateTime OrderDateCustom { get; set; }
         public int Quantity { get; set; }
         public decimal TotalPrice { get; set; }
         public decimal TotalEmployeePrice { get; set; }
@@ -27,9 +30,7 @@ namespace CanteenManage.CanteenRepository.Models
         public DateTime? CompletedAt { get; set; }
         public bool IsCanceled { get; set; } = false;
         public DateTime? CanceledAt { get; set; }
-        public DateTime OrderDate { get; set; }
-        public DateTime OrderUpdateDate { get; set; }
-        public DateTime OrderDateCustom { get; set; }
+
         public int? Rating { get; set; }
         public DateTime? RatingCreatedAt { get; set; }
         [StringLength(5000)]

@@ -30,7 +30,7 @@
 				await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderHistoryListPanelView", new MyOrderListPanelViewModel()
 		{
 			PanelTitle = "Breakfast",
-			FoodOrders = Model.BreakFastFoodOrders.SelectMany(s => s.FoodOrderFoodDetails).ToList(),
+			FoodOrders = Model.BreakFastFoodOrders,
 			FoodType = CanteenManage.Utility.FoodTypeEnum.Breakfast
 		})
 				)
@@ -38,7 +38,7 @@
 				await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderHistoryListPanelView", new MyOrderListPanelViewModel()
 		{
 			PanelTitle = "Lunch",
-			FoodOrders = Model.LunchFoodOrders.SelectMany(s => s.FoodOrderFoodDetails).ToList(),
+			FoodOrders = Model.LunchFoodOrders,
 			FoodType = CanteenManage.Utility.FoodTypeEnum.Lunch
 		})
 				)
@@ -46,7 +46,7 @@
 				await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderHistoryListPanelView", new MyOrderListPanelViewModel()
 		{
 			PanelTitle = "Snacks",
-			FoodOrders = Model.SnaksFoodOrders.SelectMany(s => s.FoodOrderFoodDetails).ToList(),
+			FoodOrders = Model.SnaksFoodOrders,
 			FoodType = CanteenManage.Utility.FoodTypeEnum.Snacks
 		})
 				)
@@ -135,38 +135,8 @@
 </div>
 
 @section Scripts {
-	<script src="~/js/reviewModals.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+	<script src="~/js/reviewModals_Min.js"></script>
 	<script>
-		$(document).ready(function() {
-			const connection = new signalR.HubConnectionBuilder()
-			.withUrl("/OrderingHub")
-			.build();
-
-		connection.on("ReceiveMessage", function (user, message) {
-			const msg = document.createElement("li");
-			msg.textContent = `${user}: ${message}`;
-			document.getElementById("messagesList").appendChild(msg);
-		});
-
-		connection.start().catch(function (err) {
-			return console.error(err.toString());
-		});
-
-		$("#request_to_conform").click(function(){
-			//console.log("sdfasdsd");
-			connection.invoke("SendMessage", "message").catch(function (err) {
-				return console.error(err.toString());
-			});
-		});
-		function sendMessage() {
-			//const user = document.getElementById("userInput").value;
-			//const message = document.getElementById("messageInput").value;
-			connection.invoke("SendMessage", "message").catch(function (err) {
-				return console.error(err.toString());
-			});
-		}
-		});
 
 	</script>
 }

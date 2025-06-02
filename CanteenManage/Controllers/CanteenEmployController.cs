@@ -20,10 +20,10 @@ namespace CanteenManage.Controllers
         public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
 
-            var snackesFoodlist = await foodListingService.getFoodOrderGroupList(3, cancellationToken);
+            var snackesFoodlist = await foodListingService.getCanteenUserFoodOrderGroupList(3, cancellationToken);
 
-            var lunchFoodlist = await foodListingService.getFoodOrderGroupList(2, cancellationToken);
-            var breakfastFoodlist = await foodListingService.getFoodOrderGroupList(1, cancellationToken);
+            var lunchFoodlist = await foodListingService.getCanteenUserFoodOrderGroupList(2, cancellationToken);
+            var breakfastFoodlist = await foodListingService.getCanteenUserFoodOrderGroupList(1, cancellationToken);
 
             CanteenEmployPageDataModel canteenEmployPageDataModel = new CanteenEmployPageDataModel();
             canteenEmployPageDataModel.SnaksFoodOrders = snackesFoodlist;
