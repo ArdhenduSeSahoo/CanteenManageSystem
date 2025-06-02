@@ -29,24 +29,25 @@ namespace CanteenManage.Controllers
             {
                 SessionDataModel sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
                 var breakfastCart = await cartService.getCartList((int)FoodTypeEnum.Breakfast,
-                    sessionDataModel.UserId,
+                    sessionDataModel.UserIdOrZero,
                     cancellationToken
                     );
                 var lunchCart = await cartService.getCartList((int)FoodTypeEnum.Lunch,
-                    sessionDataModel.UserId,
+                    sessionDataModel.UserIdOrZero,
                     cancellationToken
                     );
                 var snaksCart = await cartService.getCartList((int)FoodTypeEnum.Snacks,
-                    sessionDataModel.UserId,
+                    sessionDataModel.UserIdOrZero,
                     cancellationToken
                     );
-                var outofDateList = await cartService.getCartOutDateList(sessionDataModel.UserId, cancellationToken);
-
+                var outofDateList = await cartService.getCartOutDateList(sessionDataModel.UserIdOrZero, cancellationToken);
+                var existingorders = await cartService.getCartItemInOrderList(sessionDataModel.UserIdOrZero, cancellationToken);
 
                 cartViewDataModel.BreakFastFoodOrders = breakfastCart;
                 cartViewDataModel.LunchFoodOrders = lunchCart;
                 cartViewDataModel.SnaksFoodOrders = snaksCart;
                 cartViewDataModel.OutOfStockOrders = outofDateList;
+                cartViewDataModel.CartItemInOrders = existingorders;
             }
             catch (Exception ex)
             {
@@ -85,10 +86,17 @@ namespace CanteenManage.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> PlaceOrder(CancellationToken cancellationToken)//IFormCollection formcollect,
+        public IActionResult PlaceOrder(CancellationToken cancellationToken)//IFormCollection formcollect,
         {
             SessionDataModel SessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
-            await cartService.PlaceOrder(sessionData: SessionDataModel, cancellationToken: cancellationToken);
+            try
+            {
+                cartService.PlaceOrder(sessionData: SessionDataModel, cancellationToken: cancellationToken);
+            }
+            catch (Exception ex)
+            {
+
+            }
             return RedirectToAction("Index", "MyOrders"); //this.RedirectToAction("CartIndex");
         }
     }

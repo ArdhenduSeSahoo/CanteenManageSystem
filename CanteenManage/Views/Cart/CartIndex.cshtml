@@ -93,6 +93,17 @@
 							</form>
 						</div>
 					</div>
+					@if (Model.CartItemInOrders.Count > 0)
+					{
+						<div class="card border-warning mb-1 mt-2" style="">
+							<div class="card-body p-2">
+								@foreach (var item in Model.CartItemInOrders)
+								{
+									<p class="card-text m-0">Item <strong>@item.ItemName</strong> for Date <strong>@item.OrderDate.ToString("dd/MM-ddd")</strong> already exist in your Order.</p>
+								}
+							</div>
+						</div>
+					}
 				</div>
 			</div>
 		</div>

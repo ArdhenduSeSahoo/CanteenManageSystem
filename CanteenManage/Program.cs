@@ -13,14 +13,16 @@ using CanteenManage.Utility;
 using System.Configuration;
 using Serilog;
 using CanteenManage.Controllers;
+using Serilog.Events;
+using Microsoft.CodeAnalysis.Elfie.Serialization;
 
 
 
 var projectFolder = CustomDataConstants.ProjectFolder;
-//Log.Logger = new LoggerConfiguration()
-//    //.WriteTo.Console()
-//    .WriteTo.File(projectFolder + "\\Logs" + "\\log-.txt", rollingInterval: RollingInterval.Day)
-//    .CreateLogger();
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    //.WriteTo.File(projectFolder + "\\Logs" + "\\log-.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
 
 try
 {
@@ -29,22 +31,32 @@ try
 
     var builder = WebApplication.CreateBuilder(args);
 
-
-    builder.Host.UseSerilog((context, loggerConfiguration) =>
-    {
-        //loggerConfiguration.WriteTo.Console();
-        loggerConfiguration.ReadFrom.Configuration(context.Configuration);
-    });
-
     if (builder.Environment.IsProduction())
     {
         projectFolder = builder.Environment.ContentRootPath + "\\CMS_Files";
         CustomDataConstants.ProjectFolder = builder.Environment.ContentRootPath + "\\CMS_Files";
     }
-    Log.Logger = new LoggerConfiguration()
-        //.WriteTo.Console()
-        .WriteTo.File(projectFolder + "\\Logs" + "\\log-.txt", rollingInterval: RollingInterval.Day)
-        .CreateLogger();
+
+    builder.Host.UseSerilog((context, loggerConfiguration) =>
+    {
+        loggerConfiguration.WriteTo.Console();
+        //loggerConfiguration.MinimumLevel.Information();
+        loggerConfiguration.MinimumLevel.Information()
+                            .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+                            .MinimumLevel.Override("System", LogEventLevel.Warning);
+        loggerConfiguration.WriteTo.Console(restrictedToMinimumLevel: LogEventLevel.Information);
+        loggerConfiguration.WriteTo.File(projectFolder + "\\Logs" + "\\log-.txt",
+            rollingInterval: RollingInterval.Day,
+            restrictedToMinimumLevel: LogEventLevel.Error
+            );
+        //loggerConfiguration.ReadFrom.Configuration(context.Configuration);
+    });
+
+
+    //Log.Logger = new LoggerConfiguration()
+    //    //.WriteTo.Console()
+    //    .WriteTo.File(projectFolder + "\\Logs" + "\\log-.txt", rollingInterval: RollingInterval.Day)
+    //    .CreateLogger();
 
     AppConfigs appConfigs = new AppConfigs();
 
@@ -68,7 +80,6 @@ try
         appConfigs = System.Text.Json.JsonSerializer.Deserialize<AppConfigs>(appConfigJson) ?? new AppConfigs();
         builder.Environment.EnvironmentName = appConfigs.getAppEnvironment();
         var con = appConfigs.getConnectionString();
-        //Log.Information("Config read form file");
         //AppConfigs appconff = appConfigs.getEncryptedObject();
         //var appConfigJson2 = System.Text.Json.JsonSerializer.Serialize(appconff);
 
@@ -87,12 +98,7 @@ try
     builder.Services.AddControllersWithViews();
     builder.Services.AddDistributedMemoryCache();
 
-    builder.Services.AddSession(options =>
-    {
-        options.IdleTimeout = TimeSpan.FromMinutes(120);
-        options.Cookie.HttpOnly = true;
-        options.Cookie.IsEssential = true;
-    });
+
 
     //builder.Services.AddAuthentication(options =>
     //{
@@ -143,7 +149,7 @@ try
         e.EnableDetailedErrors = true;
         e.MaximumReceiveMessageSize = 1024000; // Set maximum message size to 1 MB
     });
-    builder.Services.AddHostedService<SignalRBackgroundService>();
+    //builder.Services.AddHostedService<SignalRBackgroundService>();
     builder.Services.AddScoped<CanteenManageContextFactory>();
     builder.Services.AddScoped(sp => sp.GetRequiredService<CanteenManageContextFactory>().CreateDbContext());
     builder.Services.AddScoped<AppConfigProvider>();
@@ -154,7 +160,12 @@ try
     builder.Services.AddScoped<CartService>();
 
     builder.Services.AddHttpContextAccessor();
-    builder.Services.AddSession();
+    builder.Services.AddSession(options =>
+    {
+        options.IdleTimeout = TimeSpan.FromMinutes(120);
+        options.Cookie.HttpOnly = true;
+        options.Cookie.IsEssential = true;
+    });
 
     var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
     builder.Services.AddCors(options =>
@@ -183,7 +194,7 @@ try
     }
     app.UseHttpsRedirection();
 
-    app.UseMiddleware<ErrorHandlerMiddleware>();
+    app.UseMiddleware<ErrorHandlerMiddleWare>();
     app.UseCors(MyAllowSpecificOrigins);
     //Path.Combine(Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\CanteenManagementSystem"
     app.UseStaticFiles(
@@ -209,17 +220,13 @@ try
     //app.UseAuthorization();
     app.UseRouting();
 
-    app.UseAuthorization();
     app.UseSession();
-    //app.Use(async (context, next) =>
-    //{
-    //    if (context.Session.GetString("UserId") == null)
-    //    {
-    //        context.Response.Redirect("/");
-    //        return;
-    //    }
-    //    await next();
-    //});
+
+
+    //app.UseAuthentication();
+    app.UseAuthorization();
+
+    app.UseMiddleware<SessionValidateMiddleWare>();
 
     app.MapHub<OrderingHub>("/OrderingHub");
     app.MapControllers();

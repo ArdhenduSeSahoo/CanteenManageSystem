@@ -7,40 +7,44 @@ using Microsoft.EntityFrameworkCore;
 using CanteenManage.Services;
 using Microsoft.AspNetCore.Authorization;
 using CanteenManage.CanteenRepository.Models;
+using System.Threading;
 
 namespace CanteenManage.Controllers
 {
     //[Authorize(Roles = "Employee")]
     public class MyOrdersController : Controller
     {
-        private readonly CanteenManageDBContext canteenManageContext;
+        //private readonly CanteenManageDBContext canteenManageContext;
         private readonly UtilityServices utilityServices;
         private readonly FoodListingService foodListingService;
-        public MyOrdersController(CanteenManageDBContext canteenManageContext, UtilityServices utility, FoodListingService foodListingService)
+        private readonly OrderingService orderingService;
+
+        public MyOrdersController(UtilityServices utility, FoodListingService foodListingService, OrderingService orderingService)
         {
-            this.canteenManageContext = canteenManageContext;
+            //this.canteenManageContext = canteenManageContext;
             this.utilityServices = utility;
             this.foodListingService = foodListingService;
+            this.orderingService = orderingService;
         }
 
-        public async Task<IActionResult> Index(CancellationToken cancellationToken, bool ShowAllOrder=false)
+        public async Task<IActionResult> Index(CancellationToken cancellationToken, bool ShowAllOrder = false)
         {
 
             MyOrderViewDataModel myOrderViewDataModel = new MyOrderViewDataModel();
-            myOrderViewDataModel.ShowAllOrder = ShowAllOrder;
+            //myOrderViewDataModel.ShowAllOrder = ShowAllOrder;
             try
             {
 
                 SessionDataModel sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
-                DateTime snacks_dateTime = DateTime.Now.Date;
+                //DateTime snacks_dateTime = DateTime.Now.Date;
 
-                List<FoodOrder> snacksorders = new List<FoodOrder>();
-                List<FoodOrder> lunchorders = new List<FoodOrder>();
-                List<FoodOrder> breakfastorders = new List<FoodOrder>();
+                List<FoodOrder> _snacksorders = new List<FoodOrder>();
 
+                List<FoodOrder> _lunchorders = new List<FoodOrder>();
+                List<FoodOrder> _breakfastorders = new List<FoodOrder>();
                 if (ShowAllOrder)
                 {
-                    snacksorders = await foodListingService.GetEmployFoodOrdersAll(sessionDataModel.UserIdOrZero,
+                    _snacksorders = await foodListingService.GetFoodOrdersAll(sessionDataModel.UserIdOrZero,
                                                                 FoodTypeEnum.Snacks,
                                                                 cancellationToken
                                                                 );
@@ -48,17 +52,18 @@ namespace CanteenManage.Controllers
                 else
                 {
 
-                    snacksorders = await foodListingService.GetEmployFoodOrdersToday(sessionDataModel.UserIdOrZero,
+                    _snacksorders = await foodListingService.GetFoodOrdersToday(sessionDataModel.UserIdOrZero,
                                                                     FoodTypeEnum.Snacks,
                                                                     cancellationToken
                                                                     );
+
                 }
-                myOrderViewDataModel.SnaksFoodOrders = snacksorders;
-                ////////////////////////////////////////////////////////////
+
+                //////////////////////////////////////////////////////////////
 
                 if (ShowAllOrder)
                 {
-                    lunchorders = await foodListingService.GetEmployFoodOrdersAll(sessionDataModel.UserIdOrZero,
+                    _lunchorders = await foodListingService.GetFoodOrdersAll(sessionDataModel.UserIdOrZero,
                                                                 FoodTypeEnum.Lunch,
                                                                 cancellationToken
                                                                 );
@@ -66,16 +71,16 @@ namespace CanteenManage.Controllers
                 else
                 {
 
-                    lunchorders = await foodListingService.GetEmployFoodOrdersToday(sessionDataModel.UserIdOrZero,
+                    _lunchorders = await foodListingService.GetFoodOrdersToday(sessionDataModel.UserIdOrZero,
                                                                     FoodTypeEnum.Lunch,
                                                                     cancellationToken
                                                                     );
                 }
-                myOrderViewDataModel.LunchFoodOrders = lunchorders;
+
                 ////////////////////////////////////////////////////////////
                 if (ShowAllOrder)
                 {
-                    breakfastorders = await foodListingService.GetEmployFoodOrdersAll(sessionDataModel.UserIdOrZero,
+                    _breakfastorders = await foodListingService.GetFoodOrdersAll(sessionDataModel.UserIdOrZero,
                                                                 FoodTypeEnum.Breakfast,
                                                                 cancellationToken
                                                                 );
@@ -83,17 +88,37 @@ namespace CanteenManage.Controllers
                 else
                 {
 
-                    breakfastorders = await foodListingService.GetEmployFoodOrdersToday(sessionDataModel.UserIdOrZero,
+                    _breakfastorders = await foodListingService.GetFoodOrdersToday(sessionDataModel.UserIdOrZero,
                                                                     FoodTypeEnum.Breakfast,
                                                                     cancellationToken
                                                                     );
                 }
-                myOrderViewDataModel.BreakFastFoodOrders = breakfastorders;
-
+                //if today order are not available then get all orders
+                //if ((_snacksorders.Count == 0 || _breakfastorders.Count == 0 || _lunchorders.Count == 0) && !ShowAllOrder)
+                //{
+                //    _snacksorders = await foodListingService.GetFoodOrdersAll(sessionDataModel.UserIdOrZero,
+                //                                                    FoodTypeEnum.Snacks,
+                //                                                    cancellationToken
+                //                                                    );
+                //    _lunchorders = await foodListingService.GetFoodOrdersAll(sessionDataModel.UserIdOrZero,
+                //                                                FoodTypeEnum.Lunch,
+                //                                                cancellationToken
+                //                                                );
+                //    _breakfastorders = await foodListingService.GetFoodOrdersAll(sessionDataModel.UserIdOrZero,
+                //                                                FoodTypeEnum.Breakfast,
+                //                                                cancellationToken
+                //                                                );
+                //    ShowAllOrder = true;
+                //}
+                myOrderViewDataModel.ShowAllOrder = ShowAllOrder;
+                myOrderViewDataModel.BreakFastFoodOrders = _breakfastorders;
+                myOrderViewDataModel.SnaksFoodOrders = _snacksorders;
+                myOrderViewDataModel.LunchFoodOrders = _lunchorders;
                 myOrderViewDataModel.CartItemCount = await foodListingService.GetCartItemCount(
                                                            utilityServices.getSessionUserId(HttpContext.Session) ?? 0,
                                                            cancellationToken
                                                            );
+
             }
             catch (Exception ex)
             {
@@ -103,25 +128,62 @@ namespace CanteenManage.Controllers
             return View(myOrderViewDataModel);
         }
 
+
         [HttpPost]
-        public async Task<IActionResult> removeOrder(int orderId, bool showAllOrder)
+        public async Task<IResult> cancelOrder([FromBody] MyOrderApiDTO myOrderApiDTO, CancellationToken cancellationToken)
         {
+            //var req = await HttpContext.Request.Bod();
+            var result = new { isDeleted = "no" };
             try
             {
-                var foodstoremove = canteenManageContext.FoodOrders
-                                    .FirstOrDefault(fo => fo.Id == orderId);
-                if (foodstoremove != null)
-                {
-                    canteenManageContext.FoodOrders.Remove(foodstoremove);
-                    await canteenManageContext.SaveChangesAsync();
-                }
+                SessionDataModel sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
+                await orderingService.RemoveFoodOrder(
+                   myOrderApiDTO.orderid,
+                   myOrderApiDTO.foodOrderId,
+                sessionDataModel,
+                   cancellationToken
+                   );
+                result = new { isDeleted = "ok" };
+            }
+            catch (Exception ex)
+            {
+                result = new { isDeleted = "no" };
+            }
+
+
+            return Results.Ok(result);
+        }
+        [HttpPost]
+        public async Task<IActionResult> removeOrder(IFormCollection formcollect, CancellationToken cancellationToken)
+        {
+            //if (utilityServices.getSessionUserId(HttpContext.Session) is null)
+            //{
+            //    return RedirectToAction("Login", "Index");
+            //}
+            var foodid = formcollect["foodId"].ToString();
+            var foodorderid = formcollect["orderId"].ToString();
+            SessionDataModel sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
+            try
+            {
+                await orderingService.RemoveFoodOrder(
+                    foodid,
+                    foodorderid,
+                    sessionDataModel,
+                    cancellationToken
+                    );
+                //var foodstoremove = canteenManageContext.FoodOrders.Where(fo => fo.Id == int.Parse(formcollect["orderId"])).FirstOrDefault();
+                //if (foodstoremove != null)
+                //{
+                //    canteenManageContext.FoodOrders.Remove(foodstoremove);
+                //    await canteenManageContext.SaveChangesAsync();
+                //}
             }
             catch (Exception ex)
             {
                 // Log exception if needed
             }
 
-            return RedirectToAction("Index", new { ShowAllOrder = showAllOrder });
+            return RedirectToAction("Index", new { ShowAllOrder = true });
         }
 
     }

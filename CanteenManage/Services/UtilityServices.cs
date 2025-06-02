@@ -218,7 +218,7 @@ namespace CanteenManage.Services
                 0 : int.Parse(session.GetString(SessionConstants.UserId) ?? "0");
             sessionDataModel.UserName = session.GetString(SessionConstants.UserName);
             sessionDataModel.UserSelectedDay = session.GetString(SessionConstants.UserSelectedDay);
-
+            sessionDataModel.UserEmpIdOrNull = session.GetString(SessionConstants.UserEmpId);
             sessionDataModel.UserSelectedDate = string.IsNullOrEmpty(userSelectedDatetime_string) ? null :
                 DateTimeFromString(userSelectedDatetime_string)
                 ;

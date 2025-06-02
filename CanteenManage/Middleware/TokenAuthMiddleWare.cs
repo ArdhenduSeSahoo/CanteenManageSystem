@@ -25,7 +25,8 @@ namespace CanteenManage.CanteenMiddleWare
                 if (requestPath == "/")
                 {
                     //context.Response.StatusCode = 401; // Unauthorized
-                    context.Response.Redirect("/login/index");
+                    //context.Response.Redirect("/login/index");
+                    await _next(context);
                     return;
                 }
                 else if (
