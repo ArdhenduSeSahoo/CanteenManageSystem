@@ -55,14 +55,48 @@ namespace CanteenManage.Controllers
             }
             return View(cartViewDataModel);
         }
+
+        [HttpPost]
+        public async Task<IResult> RemoveItem([FromBody] CartRemoveItemApiDTO cartRemoveItemApiDTO, CancellationToken cancellationToken)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(cartRemoveItemApiDTO.OrderId))
+                {
+                    SessionDataModel sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
+                    //if (!string.IsNullOrEmpty(orderType))
+                    //{
+                    //    await cartService.ClearCart(sessionDataModel, int.Parse(orderId), cancellationToken, int.Parse(orderType));
+                    //}
+                    //else
+                    {
+                        var retval = await cartService.RemoveCartItem(sessionDataModel, int.Parse(cartRemoveItemApiDTO.OrderId), cancellationToken);
+                        if (retval)
+                        {
+                            return Results.Ok(new { isDeleted = "ok" });
+                        }
+                        else
+                        {
+                            return Results.Ok(new { isDeleted = "no" });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return Results.Ok(new { isDeleted = "no" });
+            }
+
+
+            return Results.Ok(new { isDeleted = "no" });
+        }
         public async Task<IActionResult> RemoveOrder(IFormCollection formcollect, CancellationToken cancellationToken)
         {
             var orderId = formcollect["orderId"];
             var orderType = formcollect["orderType"];
             try
             {
-
-
                 if (!string.IsNullOrEmpty(orderId))
                 {
                     SessionDataModel sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);

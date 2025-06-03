@@ -20,17 +20,17 @@ namespace CanteenManage.Services
             while (!stoppingToken.IsCancellationRequested)
             {
                 // Check if there are any orders in the list and if they are older than 5 seconds
-                //if (signalRDataHolder.GetOrderList().Count > 0)
-                //{
-                //    foreach (var order in signalRDataHolder.GetOrderList())
-                //    {
+                if (signalRDataHolder.GetOrderList().Count > 0)
+                {
+                    foreach (var order in signalRDataHolder.GetOrderList())
+                    {
 
-                //        if (DateTime.Now.Subtract(order.RequestDateTime).Seconds > 5)
-                //        {
-                //            signalRDataHolder.RemoveOrderRequest(order);
-                //        }
-                //    }
-                //}
+                        if (DateTime.Now.Subtract(order.RequestDateTime).Seconds > 5)
+                        {
+                            signalRDataHolder.RemoveOrderRequest(order);
+                        }
+                    }
+                }
 
                 if (signalRDataHolder.GetCanteenEmployeeList().Count > 0)
                 {

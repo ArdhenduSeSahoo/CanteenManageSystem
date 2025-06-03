@@ -33,6 +33,7 @@
 							<th>Qnt.</th>
 							<th>Price</th>
 							<th>Status</th>
+							<th>Review</th>
 							<th></th>
 						</tr>
 					</thead>
@@ -41,17 +42,22 @@
 						{
 							<tr>
 								<td>@order.OrderDateCustom.ToString("dd-MM-")@order.OrderDateCustom.ToString("ddd")</td>
+								<td>@order.OrderID</td>
 								<td class="customTableBoldCell">@order.FoodName</td>
 								<td>@order.Quantity.ToString()</td>
 								<td class="" style="text-align:end">@order.TotalEmployeePrice.ToString()</td>
 								<td>
 									@if (!@order.IsCompleted)
 									{
-										<span class="badge rounded-pill bg-secondary">Pending</span>
+										<span class="badge bg-warning text-dark rounded-pill px-3 py-2 shadow-sm d-inline-flex align-items-center">
+											<i class="bi bi-hourglass-split"></i>
+										</span>
 									}
 									else
 									{
-										<span class="badge rounded-pill bg-primary">Completed</span>
+										<span class="badge bg-success rounded-pill px-3 py-2 shadow-sm d-inline-flex align-items-center">
+											<i class="bi bi-check-circle"></i>
+										</span>
 									}
 								</td>
 								<td class="align-self-center text-center align-t" style="vertical-align:middle;">

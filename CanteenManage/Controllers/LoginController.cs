@@ -221,22 +221,18 @@ namespace CanteenManage.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public IActionResult LoginUser(IFormCollection formcollect)
+        public async Task<IActionResult> LoginUser(string userId, string username, string userPassword)//IFormCollection formcollect
         {
             //HttpContext.Session.SetString("UserName", Request.Form["username"]);
-            string userId = "", password = "";
-            try
-            {
-                userId = formcollect["userId"].ToString();
-                password = formcollect["userPassword"].ToString();
-            }
-            catch (Exception ex)
-            {
+            //string userId = "";
+            string password = "";
 
-            }
             try
             {
-                //userId = "EMP003";password = "sadf";
+                if (!string.IsNullOrEmpty(userId) && !string.IsNullOrEmpty(username) && string.IsNullOrEmpty(password))
+                {
+                    return await loginUserAsync(userId, username);
+                }
                 if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(password))
                 {
                     return this.RedirectToAction(actionName: "Index", controllerName: "Login");

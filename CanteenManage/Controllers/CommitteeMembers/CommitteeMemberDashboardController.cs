@@ -109,7 +109,7 @@ namespace CanteenManage.Controllers.CommitteeMembers
                     TuesDay = f.FoodAvailabilityDays.Where(fa => fa.DayOfWeek == 2).Count() >= 1,
                     WednesDay = f.FoodAvailabilityDays.Where(fa => fa.DayOfWeek == 3).Count() >= 1,
                     ThusDay = f.FoodAvailabilityDays.Where(fa => fa.DayOfWeek == 4).Count() >= 1,
-                    FryDay = f.FoodAvailabilityDays.Where(fa => fa.DayOfWeek == 5).Count() >= 1,
+                    FriDay = f.FoodAvailabilityDays.Where(fa => fa.DayOfWeek == 5).Count() >= 1,
 
                     WeekOneAndFive = f.FoodAvailabilityDays.Where(fa => fa.WeekOfMonth == 1 || fa.WeekOfMonth == 5).Count() >= 1,
                     WeekTwo = f.FoodAvailabilityDays.Where(fa => fa.WeekOfMonth == 2).Count() >= 1,
@@ -351,7 +351,7 @@ namespace CanteenManage.Controllers.CommitteeMembers
                     FoodId = foodId
                 });
             }
-            if (foodFormDataModel.FryDay)
+            if (foodFormDataModel.FriDay)
             {
                 foodAvailabilityDays.Add(new FoodAvailabilityDay()
                 {

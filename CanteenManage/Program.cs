@@ -149,7 +149,7 @@ try
         e.EnableDetailedErrors = true;
         e.MaximumReceiveMessageSize = 1024000; // Set maximum message size to 1 MB
     });
-    //builder.Services.AddHostedService<SignalRBackgroundService>();
+    builder.Services.AddHostedService<SignalRBackgroundService>();
     builder.Services.AddScoped<CanteenManageContextFactory>();
     builder.Services.AddScoped(sp => sp.GetRequiredService<CanteenManageContextFactory>().CreateDbContext());
     builder.Services.AddScoped<AppConfigProvider>();

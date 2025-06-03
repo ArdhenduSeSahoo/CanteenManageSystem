@@ -357,6 +357,20 @@ namespace CanteenManage.Services
                     .ToListAsync(cancellationToken);
             return foodOrderByUseridlist;
         }
+        public async Task<bool> RemoveCartItem(SessionDataModel sessionData, int foodId, CancellationToken cancellationToken)
+        {
+            bool itemFoundandRemoved = false;
+            var fooditem = await contextDB.EmployeeCarts
+                .Where(ec => ec.Id == foodId && ec.EmployeeId == sessionData.UserIdOrZero)
+                .FirstOrDefaultAsync(cancellationToken);
+            if (fooditem != null)
+            {
+                itemFoundandRemoved = fooditem != null;
+                contextDB.EmployeeCarts.Remove(fooditem);
+                await contextDB.SaveChangesAsync();
+            }
+            return itemFoundandRemoved;
+        }
 
         public async Task<IResult> ClearCart(SessionDataModel sessionData, int foodId, CancellationToken cancellationToken, int? foodTypeEnum = null)
         {

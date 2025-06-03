@@ -1,144 +1,144 @@
 ﻿@model IEnumerable<CanteenManage.CanteenRepository.Models.Food>
 
 @{
-    ViewData["Title"] = "FoodList";
-    List<int> dayesOfWeek = new List<int>();
-    List<int> WeeksOfMonth = new List<int>();
+	ViewData["Title"] = "FoodList";
+	List<int> dayesOfWeek = new List<int>();
+	List<int> WeeksOfMonth = new List<int>();
 }
 <style>
-    th {
-    white-space: nowrap;
-    }
+	th {
+		white-space: nowrap;
+	}
 </style>
 
 
 
 
 <div class="card">
-    <div class="card-header">
-        <h4>FoodList</h4>
-    </div>
-    <div class="card-body">
-        <form method="get" asp-action="FoodList" class="row g-3 align-items-center">
-            <input type="hidden" name="FoodType" value="" />
+	<div class="card-header">
+		<h4>FoodList</h4>
+	</div>
+	<div class="card-body">
+		<form method="get" asp-action="FoodList" class="row g-3 align-items-center">
+			<input type="hidden" name="FoodType" value="" />
 
-            <div class="col-auto">
-                <input type="text" class="form-control" id="empName" name="searchTerm" placeholder="Search food name..." value="@Context.Request.Query["searchTerm"]" />
-            </div>
+			<div class="col-auto">
+				<input type="text" class="form-control" id="empName" name="searchTerm" placeholder="Search food name..." value="@Context.Request.Query["searchTerm"]" />
+			</div>
 
-            <div class="col-auto">
-                <button type="submit" class="btn btn-outline-primary d-flex align-items-center">
-                    <i class="bi bi-search me-2"></i> Search
-                </button>
-            </div>
-        </form>
-        <div class="d-flex justify-content-end mb-3">
-            <a asp-action="CreateFood" class="btn btn-success btn-sm shadow-sm rounded-pill px-4" style="margin-top: -30px;">
-                <i class="bi bi-plus-lg me-2"></i> Create New
-            </a>
-        </div>
+			<div class="col-auto">
+				<button type="submit" class="btn btn-outline-primary d-flex align-items-center">
+					<i class="bi bi-search me-2"></i> Search
+				</button>
+			</div>
+		</form>
+		<div class="d-flex justify-content-end mb-3">
+			<a asp-action="CreateFood" class="btn btn-success btn-sm shadow-sm rounded-pill px-4" style="margin-top: -30px;">
+				<i class="bi bi-plus-lg me-2"></i> Create New
+			</a>
+		</div>
 
 
-        <div class="table-responsive">
-            <table class="table table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th scope="col" hidden>Id</th>
-                        <th scope="col">Name</th>
-                        <th scope="col">Description</th>
-                        <th scope="col">Food Type</th>
-                        <th scope="col">Total Price</th>
-                        <th scope="col">Employee Price</th>
-                        <th scope="col">Subsidy Price</th>
-                        <th scope="col">Rating</th>
-                        <th scope="col">Image</th>
-                        <th scope="col">Availability</th>
-                        <th scope="col">AvailableOnDay</th>
-                        <th scope="col">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var food in Model)
-                    {
-                        <tr>
-                            <td hidden>@food.Id</td>
-                            <td>@food.Name</td>
-                            <td>@food.Description</td>
-                            <td>@food.FoodType.Name</td>
-                            <td>@food.Price</td>
-                            <td>@food.EmployeePrice</td>
-                            <td>@food.SubsidyPrice</td>
-                            <td>@food.Rating</td>
-                            @* <td>@food.ImageUrl</td> *@
-                          @*   <td>
+		<div class="table-responsive">
+			<table class="table table-striped table-hover">
+				<thead>
+					<tr>
+						<th scope="col" hidden>Id</th>
+						<th scope="col">Name</th>
+						<th scope="col">Description</th>
+						<th scope="col">Food Type</th>
+						<th scope="col">Total Price</th>
+						<th scope="col">Employee Price</th>
+						<th scope="col">Subsidy Price</th>
+						<th scope="col">Rating</th>
+						<th scope="col">Image</th>
+						<th scope="col">Availability</th>
+						<th scope="col">AvailableOnDay</th>
+						<th scope="col">Action</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var food in Model)
+					{
+						<tr>
+							<td hidden>@food.Id</td>
+							<td>@food.Name</td>
+							<td>@food.Description</td>
+							<td>@food.FoodType.Name</td>
+							<td>@food.Price</td>
+							<td>@food.EmployeePrice</td>
+							<td>@food.SubsidyPrice</td>
+							<td>@food.Rating</td>
+							@* <td>@food.ImageUrl</td> *@
+							@*   <td>
                                 <img src="@Url.Content("~/Foodimages/" + food.ImageUrl)" alt="@food.Name" style="width:50px; height:50px;" />
                             </td> *@
-                            <td>
-                                @foreach (var image in food.ImageUrl.Split(',', StringSplitOptions.RemoveEmptyEntries))
-                                {
-                                    <img src="@Url.Content("~/Foodimages/" + image.Trim())" alt="@food.Name" style="width:50px; height:50px; margin-right:5px;" />
-                                }
-                            </td>
-
-
-                         
-                            @* <td>@food.IsAvailable</td> *@
-                            <td>
-                                @if (food.IsAvailable)
-                                {
-                                    <button class="btn btn-success btn-sm" disabled>
-                                        <i class="fa fa-check"></i> Yes
-                                    </button>
-                                }
-                                else
-                                {
-                                    <button class="btn btn-danger btn-sm" disabled>
-                                        <i class="fa fa-times"></i> No
-                                    </button>
-                                }
-                            </td>
-
-                            <td>
-                                @if (food.FoodAvailabilityDays.Count() > 0)
-                                {
-
-                                    {
-                                        dayesOfWeek = food.FoodAvailabilityDays.Select(fo => fo.DayOfWeek).ToList();
-                                        WeeksOfMonth = food.FoodAvailabilityDays.Select(fo => fo.WeekOfMonth).ToList();
-                                    }
-
-                                    <div>Day--@(dayesOfWeek.Contains(1) ? "Mon," : "")@(dayesOfWeek.Contains(2) ? "Tue," : "")@(dayesOfWeek.Contains(3) ? "Wed," : "")@(dayesOfWeek.Contains(4) ? "Tue," : "")@(dayesOfWeek.Contains(5) ? "Fry," : "")</div>
-                                    <div>Weeks--@(WeeksOfMonth.Contains(1) ? "1,5," : "")@(WeeksOfMonth.Contains(2) ? "2," : "")@(WeeksOfMonth.Contains(3) ? "3," : "")@(WeeksOfMonth.Contains(4) ? "4," : "")</div>
-                                }
-                            </td>
 							<td>
-                                <div class="d-inline-flex gap-2">
-                                    <div>
-                                        @* <a class="btn btn-primary btn-sm" asp-controller="CommitteeMember" asp-action="FoodEdit" asp-route-foodid="@food.Id">Edit</a> *@
-                                        <a class="btn btn-primary btn-sm" asp-controller="CommitteeMember" asp-action="FoodEdit" asp-route-foodid="@food.Id">
-                                            <i class="fa fa-pencil-alt me-1"></i>
-                                        </a>
+								@foreach (var image in food.ImageUrl.Split(',', StringSplitOptions.RemoveEmptyEntries))
+								{
+									<img src="@Url.Content("~/Foodimages/" + image.Trim())" alt="@food.Name" style="width:50px; height:50px; margin-right:5px;" />
+								}
+							</td>
 
 
-                                    </div>
-                                    <div>
-                                        <form method="post" asp-controller="CommitteeMember" asp-action="DeleteFood">
-                                            <input type="hidden" name="foodid" value="@food.Id" />
-                                            <button type="submit" class="btn btn-danger btn-sm">
-                                                <i class="fa fa-trash" aria-hidden="true"></i>
-                                            </button>
-                                        </form>
-                                    </div>
 
-                                </div>
+							@* <td>@food.IsAvailable</td> *@
+							<td>
+								@if (food.IsAvailable)
+								{
+									<button class="btn btn-success btn-sm" disabled>
+										<i class="fa fa-check"></i> Yes
+									</button>
+								}
+								else
+								{
+									<button class="btn btn-danger btn-sm" disabled>
+										<i class="fa fa-times"></i> No
+									</button>
+								}
+							</td>
+
+							<td>
+								@if (food.FoodAvailabilityDays.Count() > 0)
+								{
+
+									{
+										dayesOfWeek = food.FoodAvailabilityDays.Select(fo => fo.DayOfWeek).ToList();
+										WeeksOfMonth = food.FoodAvailabilityDays.Select(fo => fo.WeekOfMonth).ToList();
+									}
+
+									<div>Day--@(dayesOfWeek.Contains(1) ? "Mon," : "")@(dayesOfWeek.Contains(2) ? "Tue," : "")@(dayesOfWeek.Contains(3) ? "Wed," : "")@(dayesOfWeek.Contains(4) ? "Thu," : "")@(dayesOfWeek.Contains(5) ? "Fri," : "")</div>
+									<div>Weeks--@(WeeksOfMonth.Contains(1) ? "1,5," : "")@(WeeksOfMonth.Contains(2) ? "2," : "")@(WeeksOfMonth.Contains(3) ? "3," : "")@(WeeksOfMonth.Contains(4) ? "4," : "")</div>
+								}
+							</td>
+							<td>
+								<div class="d-inline-flex gap-2">
+									<div>
+										@* <a class="btn btn-primary btn-sm" asp-controller="CommitteeMember" asp-action="FoodEdit" asp-route-foodid="@food.Id">Edit</a> *@
+										<a class="btn btn-primary btn-sm" asp-controller="CommitteeMember" asp-action="FoodEdit" asp-route-foodid="@food.Id">
+											<i class="fa fa-pencil-alt me-1"></i>
+										</a>
+
+
+									</div>
+									<div>
+										<form method="post" asp-controller="CommitteeMember" asp-action="DeleteFood">
+											<input type="hidden" name="foodid" value="@food.Id" />
+											<button type="submit" class="btn btn-danger btn-sm">
+												<i class="fa fa-trash" aria-hidden="true"></i>
+											</button>
+										</form>
+									</div>
+
+								</div>
 
 
 							</td>
 						</tr>
 					}
-                    
-                </tbody>
-            </table>
-        </div>
-    </div>
+
+				</tbody>
+			</table>
+		</div>
+	</div>
 </div>
