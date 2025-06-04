@@ -39,6 +39,18 @@ namespace CanteenManage.Controllers.CanteenControllers
             return View(canteenOrderReportViewDataModel);
         }
 
+        public async Task<IActionResult> CanteenOrderReportDetails(DateTime orderDate, CancellationToken cancellationToken)
+        {
+            var data = await foodListingService.GetCanteenOrderReportDataByDateRange(orderDate, cancellationToken);
+            return View(data);
+        }
+            [HttpGet]
+        public async Task<IActionResult> Report(DateTime orderDate, CancellationToken cancellationToken)
+        {   
+            var data = await foodListingService.GetCanteenOrderReportDataByDateRange(orderDate, cancellationToken);
+            return View(data);
+        }
+
         [HttpPost]
         public async Task<IActionResult> GetCanteenOrderReportData(IFormCollection formcollect, CancellationToken cancellationToken)
         {

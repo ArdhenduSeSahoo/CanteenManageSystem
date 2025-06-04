@@ -1,0 +1,37 @@
+﻿@* @model CanteenManage.Models.FoodReportViewModel
+
+@{
+    ViewData["Title"] = "Orders for Date";
+}
+
+ <h2>Orders Details</h2>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Employee</th>
+                <th>Food Item</th>
+                <th>Quantity</th>
+                <th>Total Price</th>
+                <th>Total Employee Price</th>
+                <th>Total Subsidy</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in Model.FoodOrders)
+            {
+                <tr>
+                    <td>@order.Id</td>
+                    <td>@order.Employee?.Name</td> 
+                    <td>@order.Food?.Name</td>
+                    <td>@order.Quantity</td>
+                    <td>@order.TotalPrice.ToString("C")</td>
+                    <td>@order.TotalEmployeePrice.ToString("C")</td>
+                    <td>@order.TotalSubsidyPrice.ToString("C")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+ *@
