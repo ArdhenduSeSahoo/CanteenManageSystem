@@ -17,6 +17,7 @@
 
 	</style>
 }
+
 <div class=" container-fluid h-100" style="">
 
 	<div class="card customCard">
@@ -69,37 +70,39 @@
 		</div>
 	</div>
 
-	<div class="row row-cols-1 row-cols-md-3">
-		@(
-				await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderListPanelView", new MyOrderListPanelViewModel()
-		{
-			PanelTitle = "Breakfast",
-			FoodOrders = Model.BreakFastFoodOrders.ToList(),
-			FoodType = CanteenManage.Utility.FoodTypeEnum.Breakfast,
-			ShowAllOrder = Model.ShowAllOrder ?? false
-		})
-				)
+	@if (Model.BreakFastFoodOrders.Count > 0 || Model.LunchFoodOrders.Count > 0 || Model.SnaksFoodOrders.Count > 0)
+	{
+		<div class="row row-cols-1 row-cols-md-3">
+			@(
+					await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderListPanelView", new MyOrderListPanelViewModel()
+												{
+													PanelTitle = "Breakfast",
+													FoodOrders = Model.BreakFastFoodOrders.ToList(),
+													FoodType = CanteenManage.Utility.FoodTypeEnum.Breakfast,
+													ShowAllOrder = Model.ShowAllOrder ?? false
+												})
+															)
 
-		@(
-				await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderListPanelView", new MyOrderListPanelViewModel()
-		{
-			PanelTitle = "Lunch",
-			FoodOrders = Model.LunchFoodOrders.ToList(),
-			FoodType = CanteenManage.Utility.FoodTypeEnum.Lunch,
-			ShowAllOrder = Model.ShowAllOrder ?? false
+			@(
+					await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderListPanelView", new MyOrderListPanelViewModel()
+												{
+													PanelTitle = "Lunch",
+													FoodOrders = Model.LunchFoodOrders.ToList(),
+													FoodType = CanteenManage.Utility.FoodTypeEnum.Lunch,
+													ShowAllOrder = Model.ShowAllOrder ?? false
 
-		})
-				)
+												})
+															)
 
-		@(
-				await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderListPanelView", new MyOrderListPanelViewModel()
-		{
-			PanelTitle = "Snacks",
-			FoodOrders = Model.SnaksFoodOrders.ToList(),
-			FoodType = CanteenManage.Utility.FoodTypeEnum.Snacks,
-			ShowAllOrder = Model.ShowAllOrder ?? false
-		})
-				)
+			@(
+					await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderListPanelView", new MyOrderListPanelViewModel()
+												{
+													PanelTitle = "Snacks",
+													FoodOrders = Model.SnaksFoodOrders.ToList(),
+													FoodType = CanteenManage.Utility.FoodTypeEnum.Snacks,
+													ShowAllOrder = Model.ShowAllOrder ?? false
+												})
+															)
 
 	</div>
 	<!-- Modal -->

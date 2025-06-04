@@ -14,8 +14,19 @@
 	</div>
 	<div class="card-body pt-2 pb-2">
 		<div class="d-flex justify-content-between">
-			<h5 class="card-title text-wrap">@food.Name</h5>
-			<h6>@food.EmployeePrice </h6>
+			@* <h5 class="card-title text-wrap">@food.Name</h5> *@
+			<h5 class="card-title text-wrap">
+				@(!string.IsNullOrWhiteSpace(food?.Name)
+								? string.Join(" ", food.Name
+								.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+								.Select(w => char.ToUpper(w[0]) + w.Substring(1).ToLower()))
+								: "")
+			</h5>
+
+
+			@* <h6 style="color:red">@food.EmployeePrice </h6> *@
+			<h6 class="text-danger fw-bold">₹@food.EmployeePrice.ToString("0.00")</h6>
+
 		</div>
 
 		<div class="d-flex mb-2">

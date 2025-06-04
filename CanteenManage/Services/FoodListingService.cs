@@ -344,6 +344,20 @@ namespace CanteenManage.Services
             return reportlist;
         }
 
+        //Abinash
+        public async Task<FoodReportViewModel> GetCanteenOrderReportDataByDateRange(DateTime date, CancellationToken cancellationToken)
+        {
+            var orders = await contextCM.FoodOrders
+                .Include(f => f.Food)
+                .AsNoTracking()
+                .Where(o => o.OrderDateCustom.Date == date.Date && o.IsCanceled == false)
+                .ToListAsync(cancellationToken);
+
+            return new FoodReportViewModel { FoodOrders = orders };
+        }
+
+
+
         public async Task<List<string>> GetTodayFoodNames(int foodType, CancellationToken cancellationToken)
         {
             var dayOfWeek = (int)DateTime.Now.DayOfWeek;
