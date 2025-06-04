@@ -17,6 +17,7 @@
 
 	</style>
 }
+
 <div class=" container-fluid h-100" style="">
 
 	<div class="card customCard">
@@ -48,9 +49,9 @@
 
 				<div class="d-inline-flex gap-1">
 					<a asp-action="Index"
-					   asp-controller="MyOrders"
-					   asp-route-ShowAllOrder="@(!Model.ShowAllOrder)"
-					   class="btn btn-outline-primary btn-sm">
+					asp-controller="MyOrders"
+					asp-route-ShowAllOrder="@(!Model.ShowAllOrder)"
+					class="btn btn-outline-primary btn-sm">
 						@if (Model.ShowAllOrder ?? false)
 						{
 							<text><i class="fa fa-eye-slash"></i> Hide All</text>
@@ -69,40 +70,58 @@
 		</div>
 	</div>
 
-	<div class="row row-cols-1 row-cols-md-3">
-		@(
-				await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderListPanelView", new MyOrderListPanelViewModel()
-		{
-			PanelTitle = "Breakfast",
-			FoodOrders = Model.BreakFastFoodOrders.ToList(),
-			FoodType = CanteenManage.Utility.FoodTypeEnum.Breakfast,
-			ShowAllOrder = Model.ShowAllOrder ?? false
-		})
-				)
+	@if (Model.BreakFastFoodOrders.Count > 0 || Model.LunchFoodOrders.Count > 0 || Model.SnaksFoodOrders.Count > 0)
+	{
+		<div class="row row-cols-1 row-cols-md-3">
+			@(
+					await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderListPanelView", new MyOrderListPanelViewModel()
+												{
+													PanelTitle = "Breakfast",
+													FoodOrders = Model.BreakFastFoodOrders.ToList(),
+													FoodType = CanteenManage.Utility.FoodTypeEnum.Breakfast,
+													ShowAllOrder = Model.ShowAllOrder ?? false
+												})
+															)
 
-		@(
-				await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderListPanelView", new MyOrderListPanelViewModel()
-		{
-			PanelTitle = "Lunch",
-			FoodOrders = Model.LunchFoodOrders.ToList(),
-			FoodType = CanteenManage.Utility.FoodTypeEnum.Lunch,
-			ShowAllOrder = Model.ShowAllOrder ?? false
+			@(
+					await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderListPanelView", new MyOrderListPanelViewModel()
+												{
+													PanelTitle = "Lunch",
+													FoodOrders = Model.LunchFoodOrders.ToList(),
+													FoodType = CanteenManage.Utility.FoodTypeEnum.Lunch,
+													ShowAllOrder = Model.ShowAllOrder ?? false
 
-		})
-				)
+												})
+															)
 
-		@(
-				await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderListPanelView", new MyOrderListPanelViewModel()
-		{
-			PanelTitle = "Snacks",
-			FoodOrders = Model.SnaksFoodOrders.ToList(),
-			FoodType = CanteenManage.Utility.FoodTypeEnum.Snacks,
-			ShowAllOrder = Model.ShowAllOrder ?? false
-		})
-				)
+			@(
+					await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderListPanelView", new MyOrderListPanelViewModel()
+												{
+													PanelTitle = "Snacks",
+													FoodOrders = Model.SnaksFoodOrders.ToList(),
+													FoodType = CanteenManage.Utility.FoodTypeEnum.Snacks,
+													ShowAllOrder = Model.ShowAllOrder ?? false
+												})
+															)
 
-	</div>
+		</div>
+	}
+	else
+	{
+		<div class="card mt-lg-4 text-center py-4" style="min-height: 300px;">
+			<div class="card-body">
+				<img src="~/FoodImages/no-food.png" alt="No Orders" style="width: 100px; height: 100px;" class="mb-3" />
+				<h5 class="card-title text-danger">No Orders</h5>
+				<p class="card-text fw-bold">You have no orders for the day.</p>
+			</div>
+		</div>
+
+
+
+	}
 </div>
+
+
 
 
 @section Scripts {

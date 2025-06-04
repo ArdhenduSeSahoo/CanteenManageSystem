@@ -94,7 +94,7 @@
 										</tr>
 										<tr>
 											<td><span style="font-weight:400">Qnt:</span> @order.Quantity.ToString()</td>
-											<td class="" style="text-align:end"><span>&#8377;</span> @order.TotalEmployeePrice.ToString()</td>
+											<td class="" style="text-align:end;color:red"><span>&#8377;</span> @order.TotalEmployeePrice.ToString()</td>
 											<td class="align-self-center text-center">
 												@if (!(@order.IsCompleted))
 												{
@@ -126,6 +126,8 @@
 																data-bs-orderid="@order.Id" data-bs-foodorderid="@order.OrderID">
 															<i class="fa fa-trash" aria-hidden="true"></i>
 														</button>
+													
+													
 
 													}
 													else if (shouldSendRequest)
@@ -157,3 +159,7 @@
 		</div>
 	</div>
 </div>
+
+
+
+
