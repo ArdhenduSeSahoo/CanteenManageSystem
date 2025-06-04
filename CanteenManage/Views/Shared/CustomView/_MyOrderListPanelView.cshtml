@@ -110,15 +110,10 @@
 													</span>
 												}
 											</td>
-											<td class="align-self-center text-center" style="vertical-align:middle;">
+											<td class="align-self-center text-center" data-orderid="@order.OrderID" style="vertical-align:middle;">
+
 												@if (!(order.IsCompleted))
 												{
-													<button type="button" class="btn btn-outline-danger btn-sm"
-															data-bs-orderid="@order.Id" data-bs-foodorderid="@order.OrderID" data-bs-paneltitle="@Model.PanelTitle" data-bs-foodordername="@order.FoodName"
-															data-bs-toggle="modal" data-bs-target="#removeOrderDialog">
-														<i class="fa fa-trash" aria-hidden="true"></i>
-													</button>
-
 													@if (orderShouldDelete)
 													{
 														@* <form asp-action="removeOrder" method="post">
@@ -133,11 +128,16 @@
 																data-bs-toggle="modal" data-bs-target="#removeOrderDialog">
 															<i class="fa fa-trash" aria-hidden="true"></i>
 														</button> *@
+														<button type="button" class="btn btn-outline-danger btn-sm"
+																data-bs-orderid="@order.Id" data-bs-foodorderid="@order.OrderID" data-bs-paneltitle="@Model.PanelTitle" data-bs-foodordername="@order.FoodName"
+																data-bs-toggle="modal" data-bs-target="#removeOrderDialog">
+															<i class="fa fa-trash" aria-hidden="true"></i>
+														</button>
 
 													}
 													else if (shouldSendRequest) //
 													{
-														<button type="submit" data-bs-orderid="@order.Id" data-bs-orderqnt="@order.Quantity" data-bs-ordername="@order.Food?.Name" data-bs-userempid="@userempId" data-bs-username="@username" class="btn btn-outline-success btn-sm btn_request_to_conform" data-bs-toggle="tooltip" data-bs-placement="top"
+														<button type="submit" data-bs-orderqnt="@order.Quantity" data-bs-ordername="@order.FoodName" data-bs-foodorderid="@order.OrderID" data-bs-username="@username" class="btn btn-outline-success btn-sm btn_request_to_conform" data-bs-toggle="tooltip" data-bs-placement="top"
 																data-bs-custom-class="custom-tooltip"
 																data-bs-title="Send request for conformation of order.">
 															<i class="fa fa-paper-plane" aria-hidden="true"></i>

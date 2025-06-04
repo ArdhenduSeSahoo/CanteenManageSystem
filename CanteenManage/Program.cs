@@ -21,7 +21,6 @@ using Microsoft.CodeAnalysis.Elfie.Serialization;
 var projectFolder = CustomDataConstants.ProjectFolder;
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
-    //.WriteTo.File(projectFolder + "\\Logs" + "\\log-.txt", rollingInterval: RollingInterval.Day)
     .CreateLogger();
 
 try
@@ -40,7 +39,7 @@ try
     builder.Host.UseSerilog((context, loggerConfiguration) =>
     {
         loggerConfiguration.WriteTo.Console();
-        //loggerConfiguration.MinimumLevel.Information();
+
         loggerConfiguration.MinimumLevel.Information()
                             .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
                             .MinimumLevel.Override("System", LogEventLevel.Warning);
@@ -52,21 +51,7 @@ try
         //loggerConfiguration.ReadFrom.Configuration(context.Configuration);
     });
 
-
-    //Log.Logger = new LoggerConfiguration()
-    //    //.WriteTo.Console()
-    //    .WriteTo.File(projectFolder + "\\Logs" + "\\log-.txt", rollingInterval: RollingInterval.Day)
-    //    .CreateLogger();
-
     AppConfigs appConfigs = new AppConfigs();
-
-    // var projectFolder = Path.Combine(Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "CMS_Files");
-
-    //var projectFolder = builder.Configuration["ProjectDir"];
-
-
-    var propath = Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData);
-
 
     if (!Directory.Exists(projectFolder))
     {
@@ -100,42 +85,42 @@ try
 
 
 
-    //builder.Services.AddAuthentication(options =>
-    //{
-    //    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    //    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    //    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-    //}).AddJwtBearer(options =>
-    //{
+    builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+    }).AddJwtBearer(options =>
+    {
 
-    //    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
-    //    {
-    //        ValidateIssuer = true,
-    //        ValidateAudience = true,
-    //        ValidateLifetime = true,
-    //        ValidateIssuerSigningKey = true,
-    //        ValidIssuer = appConfigs.getTokenIssuer(),
-    //        ValidAudience = appConfigs.getTokenAudience(),
-    //        IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(appConfigs.getSecretKey()))
-    //    };
-    //    options.Events = new JwtBearerEvents
-    //    {
-    //        OnAuthenticationFailed = context =>
-    //        {
-    //            Console.WriteLine("Authentication failed: " + context.Exception.Message);
-    //            // Handle token validation failures (e.g., invalid token)
-    //            if (context.Exception is SecurityTokenInvalidSignatureException)
-    //            {
-    //                context.Fail("Invalid signature");
-    //            }
-    //            else if (context.Exception is SecurityTokenExpiredException)
-    //            {
-    //                context.Fail("Token expired");
-    //            }
-    //            return Task.CompletedTask;
-    //        }
-    //    };
-    //});
+        options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = appConfigs.getTokenIssuer(),
+            ValidAudience = appConfigs.getTokenAudience(),
+            IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(appConfigs.getSecretKey()))
+        };
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = context =>
+            {
+                Console.WriteLine("Authentication failed: " + context.Exception.Message);
+                // Handle token validation failures (e.g., invalid token)
+                if (context.Exception is SecurityTokenInvalidSignatureException)
+                {
+                    context.Fail("Invalid signature");
+                }
+                else if (context.Exception is SecurityTokenExpiredException)
+                {
+                    context.Fail("Token expired");
+                }
+                return Task.CompletedTask;
+            }
+        };
+    });
 
     builder.Services.AddPooledDbContextFactory<CanteenManageDBContext>(option =>
     {
@@ -196,7 +181,6 @@ try
 
     app.UseMiddleware<ErrorHandlerMiddleWare>();
     app.UseCors(MyAllowSpecificOrigins);
-    //Path.Combine(Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\CanteenManagementSystem"
     app.UseStaticFiles(
         new StaticFileOptions
         {
@@ -213,17 +197,14 @@ try
         });
     app.UseStaticFiles();
 
-    //app.UseMiddleware<TokenAuthMiddleWare>();
 
-
-    //app.UseAuthentication();
-    //app.UseAuthorization();
     app.UseRouting();
 
     app.UseSession();
+    app.UseMiddleware<TokenAuthMiddleWare>();
 
 
-    //app.UseAuthentication();
+    app.UseAuthentication();
     app.UseAuthorization();
 
     app.UseMiddleware<SessionValidateMiddleWare>();

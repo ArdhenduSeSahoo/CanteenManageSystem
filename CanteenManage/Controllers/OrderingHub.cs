@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace CanteenManage.Controllers
 {
-    //[Authorize]
+    [Authorize]
     public class OrderingHub : Hub
     {
         //public static ConcurrentBag<string> canteenEmpList = new ConcurrentBag<string>();
@@ -21,13 +21,14 @@ namespace CanteenManage.Controllers
             this.signalRDataHolder = signalRDataHolder;
             this.foodListingService = foodListingService;
         }
-        public async Task SendMessage(string message)
-        {
-            await Clients.All.SendAsync("ReceiveMessage", message);
-        }
+        //public async Task SendMessage(string message)
+        //{
+        //    await Clients.All.SendAsync("ReceiveMessage", message);
+        //}
 
         public async Task RequestForOrderComplete(string OrderId, string ordername, string orderqnt, string userempid, string username)
         {
+
             SROrderModel order = new SROrderModel
             {
                 OrderId = OrderId,
@@ -35,7 +36,8 @@ namespace CanteenManage.Controllers
                 OrderQnt = orderqnt,
                 UserEmpId = userempid,
                 UserName = username,
-                RequestDateTime = DateTime.Now
+                RequestDateTime = DateTime.Now,
+                ConnectionID = Context.ConnectionId ?? string.Empty
             };
             //RequestOrderList.Add(order);
             signalRDataHolder.AddOrderRequest(order);
@@ -65,10 +67,19 @@ namespace CanteenManage.Controllers
         {
             try
             {
-                if (!string.IsNullOrWhiteSpace(orderId) && !string.IsNullOrEmpty(orderId))
+                if (!string.IsNullOrWhiteSpace(orderId))
                 {
-                    await foodListingService.CompleteFoodOrder(int.Parse(orderId));
-                    signalRDataHolder.RemoveOrderRequest(orderId);
+                    var completeResult = await foodListingService.CompleteFoodOrder(orderId);
+                    var removingOrder = signalRDataHolder.RemoveOrderRequest(orderId);
+                    if (completeResult)
+                    {
+                        await Clients.Client(removingOrder.ConnectionID).SendAsync("OrderCompleteNotification", JsonConvert.SerializeObject(removingOrder));
+                    }
+                    else
+                    {
+                        await Clients.Client(removingOrder.ConnectionID).SendAsync("OrderCompleteNotification", JsonConvert.SerializeObject(removingOrder));
+                    }
+
                 }
             }
             catch (Exception ex)

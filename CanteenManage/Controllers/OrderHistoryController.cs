@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace CanteenManage.Controllers
 {
-    //[Authorize(Roles = "Employee")]
+    [Authorize(Roles = "Employee")]
     public class OrderHistoryController : Controller
     {
         private readonly CanteenManageDBContext canteenManageContext;

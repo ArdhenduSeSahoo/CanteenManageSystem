@@ -157,7 +157,7 @@ namespace CanteenManage.Controllers
 
             return this.RedirectToAction(actionName: "Index", controllerName: "Error");
         }
-        //[Authorize(Roles = "Employee")]
+        [Authorize(Roles = "Employee")]
         public IActionResult ChoseModeOfUse(string empid, string empname, string eid)
         {
             ViewBag.empid = empid;
@@ -225,19 +225,19 @@ namespace CanteenManage.Controllers
         {
             //HttpContext.Session.SetString("UserName", Request.Form["username"]);
             //string userId = "";
-            string password = "";
+            //string userPassword = "";
 
             try
             {
-                if (!string.IsNullOrEmpty(userId) && !string.IsNullOrEmpty(username) && string.IsNullOrEmpty(password))
+                if (!string.IsNullOrEmpty(userId) && !string.IsNullOrEmpty(username) && string.IsNullOrEmpty(userPassword))
                 {
                     return await loginUserAsync(userId, username);
                 }
-                if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(password))
+                if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(userPassword))
                 {
                     return this.RedirectToAction(actionName: "Index", controllerName: "Login");
                 }
-                var userFound = loginService.IsValidUser(userId, password);
+                var userFound = loginService.IsValidUser(userId, userPassword);
                 //canteenManageContext.Employes.Where(e => e.EmployID == userId).FirstOrDefault();
                 if (userFound == null)
                 {
@@ -250,7 +250,7 @@ namespace CanteenManage.Controllers
                         {
                             new Claim(JwtRegisteredClaimNames.Sub, ""),
                             new Claim(ClaimTypes.Name, userFound.Name),
-                            new Claim(ClaimTypes.Role, CustomDataConstants.RoleCanteenEmploy) // Add user role
+                            new Claim(ClaimTypes.Role, CustomDataConstants.RoleCanteenEmployee) // Add user role
                         };
                     var jwttokens = loginService.GenerateJSONWebToken(claims);
                     SetJWTCookie(jwttokens);
@@ -350,6 +350,8 @@ namespace CanteenManage.Controllers
 
         private void SetJWTCookie(string token)
         {
+            HttpContext.Session.SetString(CustomDataConstants.jwtTokencookieName, token);
+
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,

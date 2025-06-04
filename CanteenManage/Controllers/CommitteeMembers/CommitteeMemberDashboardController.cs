@@ -5,9 +5,11 @@ using CanteenManage.CanteenRepository.Models;
 using CanteenManage.Utility;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CanteenManage.Controllers.CommitteeMembers
 {
+    [Authorize(Roles = "CommitteeMember")]
     public class CommitteeMemberController : Controller
     {
         private readonly CanteenManageDBContext context;
