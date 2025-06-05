@@ -128,6 +128,7 @@ namespace CanteenManage.Services
 
         public async Task<List<FoodOrder>> GetFoodOrdersToday(int employeeId, FoodTypeEnum foodTypeEnum, CancellationToken cancellationToken)
         {
+            List<FoodOrder> foodOrders = new List<FoodOrder>();
             //var foodOrders = await contextCM.FoodOrders
             //    .Include(fo => fo.FoodOrderFoodDetails.Where(fd => !fd.IsCanceled
             //    && fd.FoodTypeId == (int)foodTypeEnum && fd.EmployeeId == employeeId)
@@ -142,7 +143,7 @@ namespace CanteenManage.Services
             //    )
             //    )
             //    .ToListAsync(cancellationToken);
-            var foodOrders = await contextCM.FoodOrders
+            foodOrders = await contextCM.FoodOrders
                 //.Include(f => f.Food)
                 //.Include(f => f.Employee)
                 .AsNoTracking()

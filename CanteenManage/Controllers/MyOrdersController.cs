@@ -27,7 +27,7 @@ namespace CanteenManage.Controllers
             this.orderingService = orderingService;
         }
 
-        public async Task<IActionResult> Index(CancellationToken cancellationToken, bool ShowAllOrder = false)
+        public async Task<IActionResult> Index(CancellationToken cancellationToken, bool? ShowAllOrder = null)
         {
 
             MyOrderViewDataModel myOrderViewDataModel = new MyOrderViewDataModel();
@@ -42,7 +42,14 @@ namespace CanteenManage.Controllers
 
                 List<FoodOrder> _lunchorders = new List<FoodOrder>();
                 List<FoodOrder> _breakfastorders = new List<FoodOrder>();
-                if (ShowAllOrder)
+                bool cameFromOtherPage = false;
+                if (ShowAllOrder == null)
+                {
+                    ShowAllOrder = false;
+                    cameFromOtherPage = true;
+                }
+
+                if (ShowAllOrder ?? false)
                 {
                     _snacksorders = await foodListingService.GetFoodOrdersAll(sessionDataModel.UserIdOrZero,
                                                                 FoodTypeEnum.Snacks,
@@ -61,7 +68,7 @@ namespace CanteenManage.Controllers
 
                 //////////////////////////////////////////////////////////////
 
-                if (ShowAllOrder)
+                if (ShowAllOrder ?? false)
                 {
                     _lunchorders = await foodListingService.GetFoodOrdersAll(sessionDataModel.UserIdOrZero,
                                                                 FoodTypeEnum.Lunch,
@@ -78,7 +85,7 @@ namespace CanteenManage.Controllers
                 }
 
                 ////////////////////////////////////////////////////////////
-                if (ShowAllOrder)
+                if (ShowAllOrder ?? false)
                 {
                     _breakfastorders = await foodListingService.GetFoodOrdersAll(sessionDataModel.UserIdOrZero,
                                                                 FoodTypeEnum.Breakfast,
@@ -94,22 +101,22 @@ namespace CanteenManage.Controllers
                                                                     );
                 }
                 //if today order are not available then get all orders
-                //if ((_snacksorders.Count == 0 || _breakfastorders.Count == 0 || _lunchorders.Count == 0) && !ShowAllOrder)
-                //{
-                //    _snacksorders = await foodListingService.GetFoodOrdersAll(sessionDataModel.UserIdOrZero,
-                //                                                    FoodTypeEnum.Snacks,
-                //                                                    cancellationToken
-                //                                                    );
-                //    _lunchorders = await foodListingService.GetFoodOrdersAll(sessionDataModel.UserIdOrZero,
-                //                                                FoodTypeEnum.Lunch,
-                //                                                cancellationToken
-                //                                                );
-                //    _breakfastorders = await foodListingService.GetFoodOrdersAll(sessionDataModel.UserIdOrZero,
-                //                                                FoodTypeEnum.Breakfast,
-                //                                                cancellationToken
-                //                                                );
-                //    ShowAllOrder = true;
-                //}
+                if ((_snacksorders.Count == 0 && _breakfastorders.Count == 0 && _lunchorders.Count == 0) && cameFromOtherPage)
+                {
+                    _snacksorders = await foodListingService.GetFoodOrdersAll(sessionDataModel.UserIdOrZero,
+                                                                    FoodTypeEnum.Snacks,
+                                                                    cancellationToken
+                                                                    );
+                    _lunchorders = await foodListingService.GetFoodOrdersAll(sessionDataModel.UserIdOrZero,
+                                                                FoodTypeEnum.Lunch,
+                                                                cancellationToken
+                                                                );
+                    _breakfastorders = await foodListingService.GetFoodOrdersAll(sessionDataModel.UserIdOrZero,
+                                                                FoodTypeEnum.Breakfast,
+                                                                cancellationToken
+                                                                );
+                    ShowAllOrder = true;
+                }
                 myOrderViewDataModel.ShowAllOrder = ShowAllOrder;
                 myOrderViewDataModel.BreakFastFoodOrders = _breakfastorders;
                 myOrderViewDataModel.SnaksFoodOrders = _snacksorders;

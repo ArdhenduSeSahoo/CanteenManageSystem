@@ -8,6 +8,7 @@ using CanteenManage.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 
 namespace CanteenManage.Controllers
 {
@@ -41,6 +42,26 @@ namespace CanteenManage.Controllers
 
             return View();
         }
+
+        [AllowAnonymous]
+        public async Task<IActionResult> PortalLogin(string? portal_token)
+        {
+            logger.LogError("PortalLogin accessed");
+            var headerdata = HttpContext.Request.Headers.Select(hd => new { key = hd.Key, val = hd.Value }).ToList();
+            logger.LogError(JsonConvert.SerializeObject(HttpContext.Request.Headers));
+            return await loginUserAsync("SD1265", "Ardhendu", portal_token);
+        }
+
+        [AllowAnonymous]
+        public async Task<IResult> PortalLogOut()
+        {
+            logger.LogError("PortalLogOut accessed");
+            var headerdata = HttpContext.Request.Headers.Select(hd => new { key = hd.Key, val = hd.Value }).ToList();
+            logger.LogError(JsonConvert.SerializeObject(HttpContext.Request.Headers));
+
+            return Results.Ok(new { Status = "Request accepted. User will sign out." });
+        }
+
         [AllowAnonymous]
         public async Task<IActionResult> testlog(string? empid, string? empname)
         {
@@ -106,7 +127,7 @@ namespace CanteenManage.Controllers
         {
             return await loginUserAsync(empid, empname);
         }
-        public async Task<RedirectToActionResult> loginUserAsync(string? empid, string? empname)
+        public async Task<RedirectToActionResult> loginUserAsync(string? empid, string? empname, string? portal_token = "")
         {
             try
             {
@@ -130,7 +151,7 @@ namespace CanteenManage.Controllers
                 {
                     if (userFound.EmployTypeId == 3)
                     {
-                        return setEmployeeSessionAndRedirect(userFound.Name, userFound.Id, userFound.EmployID);
+                        return setEmployeeSessionAndRedirect(userFound.Name, userFound.Id, userFound.EmployID, portal_token);
                     }
                     else if (userFound.EmployTypeId == 4)
                     {
@@ -145,6 +166,7 @@ namespace CanteenManage.Controllers
                         HttpContext.Session.SetString(SessionConstants.UserId, userFound.Id.ToString());
                         HttpContext.Session.SetString(SessionConstants.UserEmpId, userFound.EmployID.ToString());
                         HttpContext.Session.SetString(SessionConstants.UserName, userFound.Name.ToString());
+                        HttpContext.Session.SetString(SessionConstants.EconnectToken, portal_token ?? "");
                         return this.RedirectToAction(actionName: "ChoseModeOfUse", controllerName: "Login", new { eid = userFound.Id, empid = userFound.EmployID, empname = userFound.Name });
                     }
 
@@ -177,7 +199,7 @@ namespace CanteenManage.Controllers
             {
                 try
                 {
-                    return setEmployeeSessionAndRedirect(empname, int.Parse(eid), empid);
+                    return setEmployeeSessionAndRedirect(empname, int.Parse(eid), empid, "");
                 }
                 catch (Exception ex)
                 {
@@ -282,7 +304,7 @@ namespace CanteenManage.Controllers
             return this.RedirectToAction(actionName: "Index", controllerName: "Login");
         }
 
-        private RedirectToActionResult setEmployeeSessionAndRedirect(string Ename, int Eid, string empId)
+        private RedirectToActionResult setEmployeeSessionAndRedirect(string Ename, int Eid, string empId, string? econnecttoken)
         {
             var claims = new List<Claim>
                         {
@@ -296,7 +318,12 @@ namespace CanteenManage.Controllers
             HttpContext.Session.SetString(SessionConstants.UserId, Eid.ToString());
             HttpContext.Session.SetString(SessionConstants.UserName, Ename.ToString());
             HttpContext.Session.SetString(SessionConstants.UserEmpId, empId.ToString());
-            return this.RedirectToAction(actionName: "Index", controllerName: "EmployDashboard");
+            if (!string.IsNullOrWhiteSpace(econnecttoken))
+            {
+                HttpContext.Session.SetString(SessionConstants.EconnectToken, econnecttoken ?? "");
+            }
+
+            return this.RedirectToAction(actionName: "Index", controllerName: "Dashboard");
         }
 
         private RedirectToActionResult setCommitmemberSessionAndRedirect(string Ename, int Eid, string empId)
@@ -322,13 +349,18 @@ namespace CanteenManage.Controllers
             {
                 HttpContext.Session.Clear();
                 HttpContext.Response.Cookies.Delete(CustomDataConstants.jwtTokencookieName);
+                //HttpClient httpClient = new HttpClient();
+                //httpClient.BaseAddress = new Uri("http://192.168.0.82/");
+                //httpClient.DefaultRequestHeaders.Accept.Clear();
+                //var responsess = httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, "/")).Result;
 
             }
             catch (Exception ex)
             {
 
             }
-            return this.RedirectToAction(actionName: "Index", controllerName: "Login");
+            //return this.RedirectToAction(actionName: "Index", controllerName: "Login");
+            return Redirect("http://192.168.0.82/");
         }
 
         public IActionResult LoginSignOutEmployee()
@@ -343,7 +375,8 @@ namespace CanteenManage.Controllers
             {
 
             }
-            return this.RedirectToAction(actionName: "Index", controllerName: "Error");
+            return Redirect("http://192.168.0.82/");
+            //return this.RedirectToAction(actionName: "Index", controllerName: "Error");
         }
 
 

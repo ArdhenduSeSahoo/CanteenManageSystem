@@ -75,62 +75,73 @@
 		<div class="row row-cols-1 row-cols-md-3">
 			@(
 					await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderListPanelView", new MyOrderListPanelViewModel()
-												{
-													PanelTitle = "Breakfast",
-													FoodOrders = Model.BreakFastFoodOrders.ToList(),
-													FoodType = CanteenManage.Utility.FoodTypeEnum.Breakfast,
-													ShowAllOrder = Model.ShowAllOrder ?? false
-												})
-															)
+		{
+			PanelTitle = "Breakfast",
+			FoodOrders = Model.BreakFastFoodOrders.ToList(),
+			FoodType = CanteenManage.Utility.FoodTypeEnum.Breakfast,
+			ShowAllOrder = Model.ShowAllOrder ?? false
+		})
+					)
 
 			@(
 					await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderListPanelView", new MyOrderListPanelViewModel()
-												{
-													PanelTitle = "Lunch",
-													FoodOrders = Model.LunchFoodOrders.ToList(),
-													FoodType = CanteenManage.Utility.FoodTypeEnum.Lunch,
-													ShowAllOrder = Model.ShowAllOrder ?? false
+		{
+			PanelTitle = "Lunch",
+			FoodOrders = Model.LunchFoodOrders.ToList(),
+			FoodType = CanteenManage.Utility.FoodTypeEnum.Lunch,
+			ShowAllOrder = Model.ShowAllOrder ?? false
 
-												})
-															)
+		})
+					)
 
 			@(
 					await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderListPanelView", new MyOrderListPanelViewModel()
-												{
-													PanelTitle = "Snacks",
-													FoodOrders = Model.SnaksFoodOrders.ToList(),
-													FoodType = CanteenManage.Utility.FoodTypeEnum.Snacks,
-													ShowAllOrder = Model.ShowAllOrder ?? false
-												})
-															)
+		{
+			PanelTitle = "Snacks",
+			FoodOrders = Model.SnaksFoodOrders.ToList(),
+			FoodType = CanteenManage.Utility.FoodTypeEnum.Snacks,
+			ShowAllOrder = Model.ShowAllOrder ?? false
+		})
+					)
+		</div>
+	}
+	else
+	{
+		<div class="card mt-lg-4 text-center py-4" style="min-height: 300px;">
+			<div class="card-body">
+				<img src="~/FoodImages/no-food.png" alt="No Orders" style="width: 100px; height: 100px;" class="mb-3" />
+				<h5 class="card-title text-danger">No Orders</h5>
+				<p class="card-text fw-bold">You have no orders for the day.</p>
+			</div>
+		</div>
 
-	</div>
-	<!-- Modal -->
-	<div class="modal fade" id="removeOrderDialog" tabindex="-1" aria-labelledby="removeOrderDialogLabel" aria-hidden="true">
-		<div class="modal-dialog modal-dialog-centered">
-			<div class="modal-content">
-				<div class="modal-header border-0">
-					<div>Delete Item</div>
-					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-				</div>
-				<div class="modal-body">
-					<input type="hidden" id="orderid" value="" />
-					<input type="hidden" id="foodorderid" value="" />
-					<input type="hidden" id="panelname" value="" />
-					<div class="row">
-						<div class="col">
-							<p>Sure want to delete item <span><strong class="" id="itemname">...</strong> </span>?</p>
-						</div>
+
+	}
+</div>
+<!-- Modal -->
+<div class="modal fade" id="removeOrderDialog" tabindex="-1" aria-labelledby="removeOrderDialogLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header border-0">
+				<div>Delete Item</div>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<input type="hidden" id="orderid" value="" />
+				<input type="hidden" id="foodorderid" value="" />
+				<input type="hidden" id="panelname" value="" />
+				<div class="row">
+					<div class="col">
+						<p>Sure want to delete item <span><strong class="" id="itemname">...</strong> </span>?</p>
 					</div>
 				</div>
-				<div class="modal-footer border-0">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-					<button type="button" class="btn btn-danger" id="removemodaldelete">Delete</button>
-				</div>
+			</div>
+			<div class="modal-footer border-0">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-danger" id="removemodaldelete">Delete</button>
 			</div>
 		</div>
 	</div>
-
 </div>
 
 @section Scripts {
@@ -261,4 +272,6 @@
 		});
 
 	</script>
-}
+	}
+
+

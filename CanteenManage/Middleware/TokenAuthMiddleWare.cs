@@ -36,9 +36,12 @@ namespace CanteenManage.CanteenMiddleWare
                     || requestPath.StartsWith("/login/testlog")
                     || requestPath.StartsWith("/error")
                     || requestPath.StartsWith(("/Login/LoginUser").ToLower())
+                    || requestPath.StartsWith(("/Login/PortalLogin").ToLower())
+                    || requestPath.StartsWith(("/Login/PortalLogOut").ToLower())
+
                     && !requestPath.Contains("/login/chosemodeofuse")
                     )
-                    //&&
+                    //&&/Dashboard
                     //(
                     //!requestPath.Contains("/login/chosemodeofuse")
                     //|| !requestPath.StartsWith("/login/loginasemployee")
