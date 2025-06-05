@@ -1,26 +1,24 @@
-﻿using System.Threading.Tasks;
-using CanteenManage.CanteenRepository.Contexts;
-using CanteenManage.Models;
+﻿using CanteenManage.Models;
+using System.Threading;
 using CanteenManage.Services;
 using CanteenManage.Utility;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CanteenManage.Controllers
 {
     [Authorize(Roles = "Employee")]
-    public class EmployDashboardController : Controller
+    public class DashboardController : Controller
     {
-
         private readonly FoodListingService foodListingService;
         private readonly UtilityServices utilityServices;
-        private readonly CartService cartService;
-        public EmployDashboardController(FoodListingService foodListing, UtilityServices utilityServices, CartService cartService)
+
+        public DashboardController(FoodListingService foodListing, UtilityServices utilityServices)
         {
             foodListingService = foodListing;
             this.utilityServices = utilityServices;
-            this.cartService = cartService;
         }
+
         public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
             SessionDataModel sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
