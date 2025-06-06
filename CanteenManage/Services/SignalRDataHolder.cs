@@ -67,13 +67,18 @@ namespace CanteenManage.Services
                 RequestOrderList.TryTake(out order);
             }
         }
-        public void RemoveOrderRequest(string orderid)
+        public SROrderModel? RemoveOrderRequest(string orderid)
         {
             if (!string.IsNullOrEmpty(orderid))
             {
                 var foundorder = RequestOrderList.Where(x => x.OrderId == orderid).FirstOrDefault();//ToList().ForEach(x => RequestOrderList.TryTake(out x));
                 RequestOrderList.TryTake(out foundorder);
+                if (foundorder != null)
+                {
+                    return foundorder; // Return the removed order
+                }
             }
+            return null; // Return null if no order was found or removed
         }
         public void ClearCanteenEmployeeList()
         {

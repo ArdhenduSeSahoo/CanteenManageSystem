@@ -1,9 +1,11 @@
 ﻿using CanteenManage.Models;
 using CanteenManage.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CanteenManage.Controllers.CommitteeMembers
 {
+    [Authorize(Roles = "CommitteeMember")]
     public class EmployeeOrderReportController : Controller
     {
         private readonly FoodListingService foodListingService;
@@ -34,10 +36,25 @@ namespace CanteenManage.Controllers.CommitteeMembers
             }
             return View(canteenOrderReportViewDataModel);
         }
-        public async Task<IActionResult> EmployeeOrderReportDetails(DateTime orderDate, CancellationToken cancellationToken)
+        [HttpPost]
+        public async Task<IActionResult> GetCanteenOrderReportData(IFormCollection formcollect, CancellationToken cancellationToken)
         {
-            var data = await foodListingService.GetCanteenOrderReportDataByDateRange(orderDate, cancellationToken);
-            return View(data);
+            //var reportData = await foodListingService.GetCanteenOrderReportData(month, year, cancellationToken);
+            int monthfromForm = 0;
+            int yearfromForm = 0;
+
+            try
+            {
+                var ddl_val = formcollect["DDL_Id"].ToString();
+                var splitval = ddl_val.Split('_');
+                monthfromForm = Convert.ToInt32(splitval[1]);
+                yearfromForm = Convert.ToInt32(splitval[0]);
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return this.RedirectToAction("EmpOrderReport", new { month = monthfromForm, year = yearfromForm });
         }
 
     }

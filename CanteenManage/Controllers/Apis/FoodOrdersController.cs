@@ -3,6 +3,7 @@ using CanteenManage.CanteenRepository.Contexts;
 using CanteenManage.Services;
 using CanteenManage.Utility;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 
 
@@ -10,6 +11,7 @@ namespace CanteenManage.Controllers.Apis
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class FoodOrdersController : ControllerBase
     {
 

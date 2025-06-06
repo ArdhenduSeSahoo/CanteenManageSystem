@@ -18,7 +18,8 @@ namespace CanteenManage.CanteenMiddleWare
         public async Task InvokeAsync(HttpContext context)
         {
 
-            var tok = context.Request.Cookies[CustomDataConstants.jwtTokencookieName];
+            //var tok = context.Request.Cookies[CustomDataConstants.jwtTokencookieName];
+            var tok = context.Session.GetString(CustomDataConstants.jwtTokencookieName);
             var requestPath = (context.Request.Path.Value ?? "").Trim().ToLower();
             if (!string.IsNullOrEmpty(requestPath))
             {
@@ -35,9 +36,12 @@ namespace CanteenManage.CanteenMiddleWare
                     || requestPath.StartsWith("/login/testlog")
                     || requestPath.StartsWith("/error")
                     || requestPath.StartsWith(("/Login/LoginUser").ToLower())
+                    || requestPath.StartsWith(("/Login/PortalLogin").ToLower())
+                    || requestPath.StartsWith(("/Login/PortalLogOut").ToLower())
+
                     && !requestPath.Contains("/login/chosemodeofuse")
                     )
-                    //&&
+                    //&&/Dashboard
                     //(
                     //!requestPath.Contains("/login/chosemodeofuse")
                     //|| !requestPath.StartsWith("/login/loginasemployee")
@@ -61,7 +65,8 @@ namespace CanteenManage.CanteenMiddleWare
                 //}
                 else if (string.IsNullOrEmpty(tok))
                 {
-                    context.Response.StatusCode = 401; // Unauthorized
+                    //context.Response.StatusCode = 401; // Unauthorized
+                    context.Response.Redirect("/Error");
                     return;
                 }
                 else
@@ -75,7 +80,8 @@ namespace CanteenManage.CanteenMiddleWare
             }
             else
             {
-                context.Response.StatusCode = 401; // Unauthorized
+                //context.Response.StatusCode = 401; // Unauthorized
+                context.Response.Redirect("/Error");
                 return;
             }
             //if (string.IsNullOrEmpty(tok) && context.Request.Path == "/")

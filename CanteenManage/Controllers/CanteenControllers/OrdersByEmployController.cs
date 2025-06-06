@@ -3,10 +3,12 @@ using System.Threading.Tasks;
 using CanteenManage.Models;
 using CanteenManage.Services;
 using CanteenManage.Utility;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CanteenManage.Controllers.CanteenControllers
 {
+    [Authorize(Roles = "CanteenEmployee")]
     public class OrdersByEmployController : Controller
     {
         private readonly FoodListingService foodListingService;
@@ -87,7 +89,7 @@ namespace CanteenManage.Controllers.CanteenControllers
             }
             try
             {
-                await foodListingService.CompleteFoodOrder(Convert.ToInt32(foodOrderId));
+                await foodListingService.CompleteFoodOrder(foodOrderId);
             }
             catch (Exception ex)
             {
