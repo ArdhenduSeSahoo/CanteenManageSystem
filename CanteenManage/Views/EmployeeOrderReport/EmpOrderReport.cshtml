@@ -48,6 +48,7 @@
 							<th>TotalPrice</th>
 							<th>TotalEmployeePrice</th>
 							<th>TotalSubsidyPrice</th>
+							<th>Action</th>
 
 						</tr>
 					</thead>
@@ -61,6 +62,13 @@
 								<td>@item.TotalPrice</td>
 								<td>@item.TotalEmployeePrice</td>
 								<td>@item.TotalSubsidyPrice</td>
+								<td>
+									<a asp-action="EmployeeOrderReportDetails" asp-controller="EmployeeOrderReport"
+									   asp-route-orderDate="@item.OrderDate.ToString("yyyy-MM-dd")"
+									   class="btn btn-primary">
+										<i class="fa fa-eye"></i>
+									</a>
+								</td>
 							</tr>
 						}
 

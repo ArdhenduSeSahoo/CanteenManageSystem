@@ -104,5 +104,18 @@ namespace CanteenManage.Controllers.CanteenControllers
 
             return RedirectToAction("Feedback");
         }
+
+        public async Task<IActionResult> FoodListMenu(string searchTerm, CancellationToken cancellationToken)
+        {
+            WeeklyFoodViewModel weeklyFoodViewModel = new WeeklyFoodViewModel();
+
+            weeklyFoodViewModel.weekly1_FoodLists = await foodListingService.GetWeekWiseFoodlist(1, cancellationToken);
+            weeklyFoodViewModel.weekly2_FoodLists = await foodListingService.GetWeekWiseFoodlist(2, cancellationToken);
+            weeklyFoodViewModel.weekly3_FoodLists = await foodListingService.GetWeekWiseFoodlist(3, cancellationToken);
+            weeklyFoodViewModel.weekly4_FoodLists = await foodListingService.GetWeekWiseFoodlist(4, cancellationToken);
+            weeklyFoodViewModel.weekly5_FoodLists = await foodListingService.GetWeekWiseFoodlist(5, cancellationToken);
+
+            return View(weeklyFoodViewModel);
+        }
     }
 }

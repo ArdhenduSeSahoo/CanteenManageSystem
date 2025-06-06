@@ -40,10 +40,8 @@ namespace CanteenManage.Controllers.CommitteeMembers
             }
 
             var foodList = await query.ToListAsync(cancellationToken);
-            return View(foodList);
+            return View(foodList); 
         }
-
-
 
         [HttpPost("DeleteFood")]
         public async Task<IActionResult> DeleteFood(IFormCollection formData)

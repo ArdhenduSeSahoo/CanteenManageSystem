@@ -34,6 +34,11 @@ namespace CanteenManage.Controllers.CommitteeMembers
             }
             return View(canteenOrderReportViewDataModel);
         }
+        public async Task<IActionResult> EmployeeOrderReportDetails(DateTime orderDate, CancellationToken cancellationToken)
+        {
+            var data = await foodListingService.GetCanteenOrderReportDataByDateRange(orderDate, cancellationToken);
+            return View(data);
+        }
 
     }
 }
