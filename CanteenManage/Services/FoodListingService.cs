@@ -129,6 +129,7 @@ namespace CanteenManage.Services
 
         public async Task<List<FoodOrder>> GetFoodOrdersToday(int employeeId, FoodTypeEnum foodTypeEnum, CancellationToken cancellationToken)
         {
+            List<FoodOrder> foodOrders = new List<FoodOrder>();
             //var foodOrders = await contextCM.FoodOrders
             //    .Include(fo => fo.FoodOrderFoodDetails.Where(fd => !fd.IsCanceled
             //    && fd.FoodTypeId == (int)foodTypeEnum && fd.EmployeeId == employeeId)
@@ -143,7 +144,7 @@ namespace CanteenManage.Services
             //    )
             //    )
             //    .ToListAsync(cancellationToken);
-            var foodOrders = await contextCM.FoodOrders
+            foodOrders = await contextCM.FoodOrders
                 //.Include(f => f.Food)
                 //.Include(f => f.Employee)
                 .AsNoTracking()
@@ -253,11 +254,20 @@ namespace CanteenManage.Services
             return foodOrders;
         }
 
-        public async Task CompleteFoodOrder(int foodorderID)
+        public async Task<bool> CompleteFoodOrder(string foodorderID)
         {
-            await contextCM.FoodOrders.Where(fo => fo.Id == foodorderID)
-                .ExecuteUpdateAsync(fo => fo.SetProperty(f => f.IsCompleted, true));
-            await contextCM.SaveChangesAsync();
+            try
+            {
+                await contextCM.FoodOrders.Where(fo => fo.OrderID == foodorderID)
+    .ExecuteUpdateAsync(fo => fo.SetProperty(f => f.IsCompleted, true));
+                await contextCM.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+            return false;
         }
 
         public async Task<List<CanteenFoodDetailsDTOModel>> getCanteenUserFoodOrderGroupList(int foodType, CancellationToken cancellationToken)
@@ -279,8 +289,8 @@ namespace CanteenManage.Services
                         FoodTypeId = f.Max(fm => fm.Food.FoodTypeId),
                         Price = 0,
                         FoodQuantity = f.Sum(fo => fo.Quantity),
-                        EmployId = f.Max(fo => fo.EmployeeId ?? 0),
-                        EmployName = f.Max(fo => fo.Employee.Name) ?? "",
+                        //EmployId = f.Max(fo => fo.EmployeeId ?? 0),
+                        //EmployName = f.Max(fo => fo.Employee.Name) ?? "",
                     })
                     .ToListAsync(cancellationToken);
             return FoodlistGrouping;

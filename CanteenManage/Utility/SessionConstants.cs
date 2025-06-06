@@ -8,5 +8,6 @@
         public static string UserSelectedDay = "UserSelectedDay";
         public static string UserSelectedDayOnSamePage = "0";
         public static string UserSelectedDayFull = "UserSelectedDayFull";
+        public static string EconnectToken = "EconnectToken";
     }
 }

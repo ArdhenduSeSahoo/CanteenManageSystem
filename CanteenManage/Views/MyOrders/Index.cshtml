@@ -49,12 +49,12 @@
 
 				<div class="d-inline-flex gap-1">
 					<a asp-action="Index"
-					asp-controller="MyOrders"
-					asp-route-ShowAllOrder="@(!Model.ShowAllOrder)"
-					class="btn btn-outline-primary btn-sm">
+					   asp-controller="MyOrders"
+					   asp-route-ShowAllOrder="@(!Model.ShowAllOrder??false)"
+					   class="btn btn-outline-primary btn-sm">
 						@if (Model.ShowAllOrder ?? false)
 						{
-							<text><i class="fa fa-eye-slash"></i> Hide All</text>
+							<text><i class="fa fa-eye"></i> Today's</text>
 						}
 						else
 						{
@@ -75,35 +75,34 @@
 		<div class="row row-cols-1 row-cols-md-3">
 			@(
 					await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderListPanelView", new MyOrderListPanelViewModel()
-												{
-													PanelTitle = "Breakfast",
-													FoodOrders = Model.BreakFastFoodOrders.ToList(),
-													FoodType = CanteenManage.Utility.FoodTypeEnum.Breakfast,
-													ShowAllOrder = Model.ShowAllOrder ?? false
-												})
-															)
+		{
+			PanelTitle = "Breakfast",
+			FoodOrders = Model.BreakFastFoodOrders.ToList(),
+			FoodType = CanteenManage.Utility.FoodTypeEnum.Breakfast,
+			ShowAllOrder = Model.ShowAllOrder ?? false
+		})
+					)
 
 			@(
 					await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderListPanelView", new MyOrderListPanelViewModel()
-												{
-													PanelTitle = "Lunch",
-													FoodOrders = Model.LunchFoodOrders.ToList(),
-													FoodType = CanteenManage.Utility.FoodTypeEnum.Lunch,
-													ShowAllOrder = Model.ShowAllOrder ?? false
+		{
+			PanelTitle = "Lunch",
+			FoodOrders = Model.LunchFoodOrders.ToList(),
+			FoodType = CanteenManage.Utility.FoodTypeEnum.Lunch,
+			ShowAllOrder = Model.ShowAllOrder ?? false
 
-												})
-															)
+		})
+					)
 
 			@(
 					await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderListPanelView", new MyOrderListPanelViewModel()
-												{
-													PanelTitle = "Snacks",
-													FoodOrders = Model.SnaksFoodOrders.ToList(),
-													FoodType = CanteenManage.Utility.FoodTypeEnum.Snacks,
-													ShowAllOrder = Model.ShowAllOrder ?? false
-												})
-															)
-
+		{
+			PanelTitle = "Snacks",
+			FoodOrders = Model.SnaksFoodOrders.ToList(),
+			FoodType = CanteenManage.Utility.FoodTypeEnum.Snacks,
+			ShowAllOrder = Model.ShowAllOrder ?? false
+		})
+					)
 		</div>
 	}
 	else
@@ -117,102 +116,162 @@
 		</div>
 
 
-
 	}
 </div>
-
-
-
+<!-- Modal -->
+<div class="modal fade" id="removeOrderDialog" tabindex="-1" aria-labelledby="removeOrderDialogLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header border-0">
+				<div>Delete Item</div>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<input type="hidden" id="orderid" value="" />
+				<input type="hidden" id="foodorderid" value="" />
+				<input type="hidden" id="panelname" value="" />
+				<div class="row">
+					<div class="col">
+						<p>Sure want to delete item <span><strong class="" id="itemname">...</strong> </span>?</p>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer border-0">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-danger" id="removemodaldelete">Delete</button>
+			</div>
+		</div>
+	</div>
+</div>
 
 @section Scripts {
 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
 	<script>
-		$(document).ready(function() {
+			$(document).ready(function() {
 
-			const connection = new signalR.HubConnectionBuilder()
-			.withUrl("/OrderingHub")
-			.build();
-
-		connection.start().catch(function (err) {
-			return console.error(err.toString());
-		});
-
-		$(".btn_request_to_conform").click(function(e){
-			const button = event.currentTarget
-			var orderId = button.getAttribute('data-bs-orderid');
-			var ordername = button.getAttribute('data-bs-ordername');
-			var userempid = button.getAttribute('data-bs-userempid');
-			var username = button.getAttribute('data-bs-username');
-			var orderqnt = button.getAttribute('data-bs-orderqnt');
-
-			try {
-			connection.invoke("RequestForOrderComplete", orderId,ordername,orderqnt,userempid,username)
-			  .then((m) => {
-		  console.log('Hub request send ');
-		  showInfoMessage("Request has send for conformation. Request will auto remove after 10 sec. ");
-		})
-			.catch(function (err) {
-				showErrorMessage("Some error happened.Please refresh Page.");
+				const connection = new signalR.HubConnectionBuilder()
+				.withUrl("/OrderingHub")
+				.build();
+			connection.on("OrderCompleteNotification", function (message) {
+				//debugger;
+				console.log("Message received from hub: " + message);
+				//showInfoMessage(message);
+			});
+			connection.start().catch(function (err) {
 				return console.error(err.toString());
+			});
+
+			$(".btn_request_to_conform").click(function(e){
+				const button = event.currentTarget
+				var orderId = button.getAttribute('data-bs-foodorderid');
+				var ordername = button.getAttribute('data-bs-ordername');
+				var userempid = button.getAttribute('data-bs-userempid');
+				var username = button.getAttribute('data-bs-username');
+				var orderqnt = button.getAttribute('data-bs-orderqnt');
+
+				try {
+				connection.invoke("RequestForOrderComplete", orderId,ordername,orderqnt,userempid,username)
+				  .then((m) => {
+			  //console.log('Hub request send ');
+			  showInfoMessage("Request has send for conformation. Request will auto remove after 10 sec. ");
+			})
+				.catch(function (err) {
+					showErrorMessage("Some error happened.Please refresh Page.");
+					return console.error(err.toString());
+
+				});
+						} catch (err) {
+				console.error(err);
+
+			}
+			});
+
+			const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+			const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+
+			$(".btn_Cancle_Item").click(function(e){
+
+				const button = e.currentTarget
+				var orderid = button.getAttribute('data-bs-orderid');
+				var foodorderid = button.getAttribute('data-bs-foodorderid');
+
 
 			});
-					} catch (err) {
-			console.error(err);
 
-		}
-		});
-
-		const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-		const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
-
-		$(".btn_Cancle_Item").click(function(e){
-
-			const button = e.currentTarget
-			var orderid = button.getAttribute('data-bs-orderid');
-			var foodorderid = button.getAttribute('data-bs-foodorderid');
-			sendRequestForCancel(button,orderid,foodorderid);
-
-		});
-
-		function sendRequestForCancel(btn, orderid,foodorderid) {
-			//debugger;
-			var foodid = $(e.currentTarget).data("foodid");
-			//console.log("Add Item button clicked---"+foodid);
-			try {
-				const foodOrderdata = {
-					"orderid":orderid.toString(),
-					"foodOrderId": foodorderid.toString()
-				};
-				// Send the POST request using fetch
-				fetch("MyOrders/cancelOrder", {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json"
-					},
-					body: JSON.stringify(foodOrderdata)
-				})
-					.then((response) => response.json())
-					.then((data) => {
-						//debugger;
-						//console.log("Success:", data);
-						if(data.isDeleted==="ok")
-						{
-							$('tr[data-orderid="'+foodorderid.toString()+'"]').remove();
-							//btn.closest('tr').remove();
-						}
-						//
-
+			function sendRequestForCancel(orderid,foodorderid) {
+				//debugger;
+				var foodid = $(e.currentTarget).data("foodid");
+				//console.log("Add Item button clicked---"+foodid);
+				try {
+					const foodOrderdata = {
+						"orderid":orderid.toString(),
+						"foodOrderId": foodorderid.toString()
+					};
+					// Send the POST request using fetch
+					fetch("MyOrders/cancelOrder", {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json"
+						},
+						body: JSON.stringify(foodOrderdata)
 					})
-					.catch((error) => console.error("Error:", error));
+						.then((response) => response.json())
+						.then((data) => {
+							//debugger;
+							//console.log("Success:", data);
+							if(data.isDeleted==="ok")
+							{
+								$('tr[data-orderid="'+foodorderid.toString()+'"]').remove();
+								//btn.closest('tr').remove();
+							}
+							//
 
+						})
+						.catch((error) => console.error("Error:", error));
+
+				}
+				catch (error) {
+					console.log(error);
+				}
 			}
-			catch (error) {
-				console.log(error);
-			}
-		}
+
+			$( "#removeOrderDialog" ).on('show.bs.modal', function(e){
+				//debugger;
+				console.log("I want this to appear after the modal has opened!");
+				var button = e.relatedTarget;
+				var foodorderid = button.getAttribute('data-bs-foodorderid');
+				var orderid = button.getAttribute('data-bs-orderid');
+				console.log("Food Order ID: " + foodorderid);
+				console.log("Order ID: " + orderid);//data-bs-foodordername itemname
+				$( "#removeOrderDialog").find('#orderid').val(button.getAttribute('data-bs-orderid'));
+				$( "#removeOrderDialog").find('#foodorderid').val(button.getAttribute('data-bs-foodorderid'));
+				$( "#removeOrderDialog").find('#panelname').val(button.getAttribute('data-bs-paneltitle'));
+				$( "#removeOrderDialog").find('#itemname').html(button.getAttribute('data-bs-foodordername'));
+			});
+
+			$("#removeOrderDialog").on("click","#removemodaldelete", function(){
+				var orderid= $( "#removeOrderDialog").find('#orderid').val();
+				var foodorderid= $( "#removeOrderDialog").find('#foodorderid').val();
+				var panelname= $( "#removeOrderDialog").find('#panelname').val();
+				sendRequestForCancel(orderid,foodorderid);
+
+				$("#removeOrderDialog").modal('toggle');
+				var divcard= $("div[data-bs-panelname='"+ panelname +"']");
+				var rlen=$("div[data-bs-panelname='"+ panelname +"']").first('table').find(' tbody tr').length;
+				if(rlen==0)
+				{
+					divcard.addClass("d-none");
+				}
+			});
+
+			$("#myModal").on("click",".btn-primary", function(){
+			   // code
+			});
 
 		});
 
 	</script>
-}
+	}
+
+

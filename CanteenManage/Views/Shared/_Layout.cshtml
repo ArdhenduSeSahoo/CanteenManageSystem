@@ -9,7 +9,7 @@
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title> ESSPL Canteen Connect</title>
+	<title> ESSPL Canteen</title>
 	<link rel="icon" type="image/png" href="~/images/logo12.png" asp-append-version="true" />
 	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
 	<link rel="stylesheet" href="~/lib/fontawesome-free-6.7.2-web/css/all.min.css" />
@@ -63,13 +63,13 @@ background-color:#f5fbff
 	<header>
 		@* <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-info border-bottom box-shadow mb-3"> *@
 		@* 		<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-primary border-bottom box-shadow mb-3"> *@
-		<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-gradient border-bottom box-shadow mb-3">
+		<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark border-bottom box-shadow mb-3" style="background-color:white">
 
 
 			<div class="container-fluid">
 				@* <div class="bg-white rounded-3"> *@
 				<div class="rounded-3" style="background-color: transparent;">
-					<a class="navbar-brand" style="margin:0px" asp-area="" asp-controller="EmployDashboard" asp-action="Index">
+					<a class="navbar-brand" style="margin:0px" asp-area="" asp-controller="Dashboard" asp-action="Index">
 						<img src="~/images/logo3.png" alt="logo" class="img-fluid" style="height:30px;width:130px">
 					</a>
 				</div>
@@ -88,7 +88,7 @@ background-color:#f5fbff
 				<div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
 					<ul class="navbar-nav flex-grow-1" style="">
 						<li class="nav-item customNavItem">
-							<a class="nav-link nav_link text-center" asp-area="" asp-controller="EmployDashboard" asp-action="Index">Dashboard</a>
+							<a class="nav-link nav_link text-center" asp-area="" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
 						</li>
 						<li class="nav-item customNavItem">
 							<a class="nav-link nav_link text-center" asp-area="" asp-controller="BreakFastItems" asp-action="Index">BreakFast</a>

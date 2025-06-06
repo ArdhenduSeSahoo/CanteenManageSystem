@@ -1,13 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿
 using CanteenManage.Models;
-using CanteenManage.CanteenRepository.Contexts;
 using CanteenManage.Services;
-using CanteenManage.Utility;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CanteenManage.Controllers
 {
+    [Authorize(Roles = "CanteenEmployee")]
     public class CanteenEmployController : Controller
     {
         private readonly FoodListingService foodListingService;

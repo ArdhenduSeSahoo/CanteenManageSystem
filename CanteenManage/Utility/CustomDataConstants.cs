@@ -18,7 +18,7 @@
         public static string RoleAdmin = "Admin";
         public static string RoleCommitteeMemberOrEmployee = "CommitteeMember,Employee";
         public static string RoleCommitteeMember = "CommitteeMember";
-        public static string RoleCanteenEmploy = "CanteenEmploy";
+        public static string RoleCanteenEmployee = "CanteenEmployee";
         public static string RoleEmployee = "Employee";
     }
 }

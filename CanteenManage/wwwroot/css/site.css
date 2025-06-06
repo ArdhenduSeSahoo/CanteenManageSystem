@@ -39,8 +39,8 @@ body {
 }
 
     /*.customNavItem:hover {*/
-        /*box-shadow: 0 0 0 0.1rem #ff0086bd, 0 0 0 0.25rem #258cfb91;*/
-        /*background-color: #FFC312;
+    /*box-shadow: 0 0 0 0.1rem #ff0086bd, 0 0 0 0.25rem #258cfb91;*/
+    /*background-color: #FFC312;
         color: black !important;
     }*/
     .customNavItem:hover {
@@ -83,8 +83,11 @@ body {
 
 .btn_conform_order_sr {
 }
-.btn_Cancle_Item{
 
+.btn_Cancle_Item {
+}
+
+.btn_Remove_Cart_Item {
 }
 
 

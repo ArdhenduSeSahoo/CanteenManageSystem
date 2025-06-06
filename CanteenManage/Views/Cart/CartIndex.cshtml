@@ -7,7 +7,9 @@
 @section HeadSection {
 	<link rel="stylesheet" href="~/css/customStyles.css">
 	<style>
-
+		.table tbody tr td {
+			padding: 3px;
+		}
 	</style>
 }
 
@@ -37,7 +39,7 @@
 									{
 										<tr>
 											<td>Breakfast</td>
-											<td>@Model.BreakFastFoodOrders.Sum(fo => fo.Quantity)</td>
+											<td class="text-center">@Model.BreakFastFoodOrders.Sum(fo => fo.Quantity)</td>
 											<td>@Model.BreakFastFoodOrders.Sum(fo => fo.TotalPrice)</td>
 											<td>
 												<form asp-action="RemoveOrder" method="post">
@@ -54,7 +56,7 @@
 									{
 										<tr>
 											<td>Lunch</td>
-											<td>@Model.LunchFoodOrders.Sum(fo => fo.Quantity)</td>
+											<td class="text-center">@Model.LunchFoodOrders.Sum(fo => fo.Quantity)</td>
 											<td>@Model.LunchFoodOrders.Sum(fo => fo.TotalPrice)</td>
 											<td>
 												<form asp-action="RemoveOrder" method="post">
@@ -71,7 +73,7 @@
 									{
 										<tr>
 											<td>Snacks</td>
-											<td>@Model.SnaksFoodOrders.Sum(fo => fo.Quantity)</td>
+											<td class="text-center">@Model.SnaksFoodOrders.Sum(fo => fo.Quantity)</td>
 											<td>@Model.SnaksFoodOrders.Sum(fo => fo.TotalPrice)</td>
 											<td>
 												<form asp-action="RemoveOrder" method="post">
@@ -97,6 +99,7 @@
 					{
 						<div class="card border-warning mb-1 mt-2" style="">
 							<div class="card-body p-2">
+								<p class="card-text" style="color:red"><strong>Note:-</strong></p>
 								@foreach (var item in Model.CartItemInOrders)
 								{
 									<p class="card-text m-0">Item <strong>@item.ItemName</strong> for Date <strong>@item.OrderDate.ToString("dd/MM-ddd")</strong> already exist in your Order.</p>
@@ -146,7 +149,37 @@
 
 @section Scripts {
 	<script>
+		$(document).ready(function() {
+			$('.btn_Remove_Cart_Item').on('click', function(e) {
+				e.preventDefault();
+				const button = event.currentTarget
+				var orderId = button.getAttribute('data-orderId');
+				const foodOrderdata = {
+					"OrderId":orderId.toString()
+				};
+				//debugger;
+				fetch("/Cart/RemoveItem", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json"
+					},
+					body: JSON.stringify(foodOrderdata)
+				})
+					.then((response) => response.json())
+					.then((data) => {
+						//debugger;
+						console.log("Success:", data);
+						if(data.isDeleted==="ok")
+						{
+							$('tr[data-orderid="'+orderId.toString()+'"]').remove();
+							//btn.closest('tr').remove();
+						}
+						//
 
+					})
+					.catch((error) => console.error("Error:", error));
+			});
+		});
 	</script>
 }
 
