@@ -8,43 +8,24 @@
 @{
 	ViewData["Title"] = "Employ Dashboard";
 }
+
 <style>
-	.typing-loop {
+	.shadow-animate {
 		font-weight: bold;
-		color: #0d6efd;
-		font-family: monospace;
-		white-space: nowrap;
-		overflow: hidden;
-		width: 0;
-		animation: typing 4s steps(30, end), reset 5s infinite;
+		font-size: 0.8rem;
+		color: #222;
+		animation: glowShadow 1.5s infinite alternate;
 	}
 
-	@@keyframes typing {
+	@@keyframes glowShadow {
 		0%
 
 	{
-		width: 0;
-	}
-
-	40% {
-		width: 100%;
+		text-shadow: 0 0 5px rgba(0, 123, 255, 0.4), 0 0 10px rgba(0, 123, 255, 0.3), 0 0 15px rgba(0, 123, 255, 0.2);
 	}
 
 	100% {
-		width: 100%;
-	}
-
-	}
-
-	@@keyframes reset {
-		0%, 90%
-
-	{
-		width: 100%;
-	}
-
-	100% {
-		width: 0;
+		text-shadow: 0 0 10px rgba(0, 123, 255, 0.9), 0 0 20px rgba(0, 123, 255, 0.6), 0 0 30px rgba(0, 123, 255, 0.4);
 	}
 
 	}
@@ -68,17 +49,6 @@
 
 <div class="container-fluid">
 	<div class="row row-cols-1 row-cols-md-3 gap-lg-0 gap-3">
-		@* 	<div class="col">
-			<a asp-action="Index" asp-controller="BreakFastItems">
-				<div class="card card-span h-100 text-white rounded-3">
-					<img class="img-fluid rounded-3" style="height:310px" src="~/images/breakfast1.jpg" alt="...">
-					<div class="card-img-overlay ps-0"><span class="badge bg-primary ms-2 me-1 p-2"></span></div>
-					<div class="card-body ps-0">
-						<span class="badge bg-soft-success p-2"><span class="fw-bold fs-1 text-success">Breakfast</span></span>
-					</div>
-				</div>
-			</a>
-		</div> *@
 		<div class="col">
 			<a asp-action="Index" asp-controller="BreakFastItems">
 				<div class="card card-span h-100 text-white rounded-3">
@@ -125,13 +95,6 @@
 
 		<div class="col">
 			<a asp-action="Index" asp-controller="LunchItems">
-				@* <div class="card card-span h-100 text-white rounded-3">
-					<img class="img-fluid rounded-3" src="~/images/lunch.jpg" style="height:310px" alt="...">
-					<div class="card-img-overlay ps-0"><span class="badge bg-primary ms-2 me-1 p-2"></span></div>
-					<div class="card-body ps-0">
-						<span class="badge bg-soft-success p-2"><span class="fw-bold fs-1 text-success">Lunch</span></span>
-					</div>
-				</div> *@
 				<div class="card card-span h-100 text-white rounded-3">
 					<div id="lunchCarousel" class="carousel slide" data-bs-ride="carousel">
 						<div class="carousel-inner rounded-3">
@@ -181,13 +144,6 @@
 		</div>
 		<div class="col">
 			<a asp-action="Index" asp-controller="SnacksItemList">
-				@* <div class="card card-span h-100 text-white rounded-3">
-					<img class="img-fluid rounded-3 " style="height:310px" src="~/images/snacks3.jpg" alt="...">
-					<div class="card-img-overlay ps-0"><span class="badge bg-primary ms-2 me-1 p-2"></span></div>
-					<div class="card-body ps-0">
-						<span class="badge bg-soft-success p-2"><span class="fw-bold fs-1 text-success">Evening Snacks</span></span>
-					</div>
-				</div> *@
 				<div class="card card-span h-100 text-white rounded-3">
 					<div id="snacksCarousel" class="carousel slide" data-bs-ride="carousel">
 						<div class="carousel-inner rounded-3">
@@ -260,25 +216,32 @@
     padding: 0;
     padding-top: 15px;
     padding-left: 5px;">
-											Breakfast
+											<span class="text-warning">Breakfast</span>
 										</h5><span></span>
+									</div>
+									<div class="row mt-2">
+										<div class="col">
+											<div class="typing-loop shadow-animate">
+												Booking Time: Before 7:00 AM (Current Day)
+											</div>
+										</div>
 									</div>
 
 									<div class="row mt-2">
 										<div class="col">
-											<span>
+											<span style="color:rebeccapurple">
+												<i class="fas fa-hand-point-right me-1"></i>
 												@string.Join(", ", Model.BreakfastFoods)
 											</span><br />
-											<span> (Timing : 08:30 AM - 11:30 AM)</span>
+
+											<span style="color:rebeccapurple">
+												<i class="fas fa-hand-point-right me-1"></i>
+												Timing : 08:30 AM - 11:30 AM
+											</span>
 										</div>
 									</div>
-									<div class="row mt-2">
-										<div class="col">
-											<div class="typing-loop">
-												Booking Time: Before 7:00 AM	(Current Day)
-											</div>
-										</div>
-									</div>
+
+
 
 								</div>
 							</div>
@@ -294,27 +257,30 @@
     padding: 0;
     padding-top: 10px;
     padding-left: 5px;">
-											Lunch
+											<span class="text-success">Lunch</span>
 										</h5><span></span>
 									</div>
-
 									<div class="row mt-2">
 										<div class="col">
-											<span>
-												@string.Join(", ", Model.LunchFoods)
-											</span><br />
-											<span>
-												(Timing : 12:30 PM - 02:30 PM)
-											</span>
-										</div>
-									</div>
-									<div class="row mt-2">
-										<div class="col">
-											<div class="typing-loop">
+											<div class="typing-loop shadow-animate">
 												Booking Time: Before 11:00 AM (Current Day)
 											</div>
 										</div>
 									</div>
+
+									<div class="row mt-2">
+										<div class="col">
+											<span style="color:rebeccapurple">
+												<i class="fas fa-hand-point-right me-1"></i>
+												@string.Join(", ", Model.LunchFoods)
+											</span><br />
+											<span style ="color:rebeccapurple">
+												<i class="fas fa-hand-point-right me-1"></i>
+												Timing : 12:30 PM - 02:30 PM
+											</span>
+										</div>
+									</div>
+								
 								</div>
 							</div>
 						</div>
@@ -329,26 +295,28 @@
     padding: 0;
     padding-top: 20px;
     padding-left: 5px;">
-											Snacks
+											<span class="text-primary">Snacks</span>
 										</h5><span></span>
 									</div>
-
-
 									<div class="row mt-2">
 										<div class="col">
-											<span>
-												@string.Join(", ", Model.SnacksFoods)
-											</span><br />
-											<span>
-												(Timing : 04:30 PM - 07:30 PM)
-											</span>
+											<div class="typing-loop shadow-animate">
+												Booking Time: Before 3:00 PM (Current Day)
+											</div>
 										</div>
 									</div>
+
+
 									<div class="row mt-2">
 										<div class="col">
-											<div class="typing-loop">
-												Booking Time: Before 03:00 PM (Current Day)
-											</div>
+											<span style="color:rebeccapurple">
+												<i class="fas fa-hand-point-right me-1"></i>
+												@string.Join(", ", Model.SnacksFoods)
+											</span><br />
+											<span style="color:rebeccapurple">
+												<i class="fas fa-hand-point-right me-1"></i>
+												Timing : 04:30 PM - 07:30 PM
+											</span>
 										</div>
 									</div>
 								</div>
