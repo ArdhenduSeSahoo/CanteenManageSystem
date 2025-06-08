@@ -29,12 +29,11 @@
 						<tr>
 							<th>Date</th>
 							<th>OrdNo.</th>
-							<th>Name</th>
+							@* <th>Name</th> *@
 							<th>Qnt.</th>
 							<th>Price</th>
 							<th>Status</th>
 							<th>Review</th>
-							<th></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -49,14 +48,14 @@
 								<td>
 									@if (!@order.IsCompleted)
 									{
-										<span class="badge bg-warning text-dark rounded-pill px-3 py-2 shadow-sm d-inline-flex align-items-center">
-											<i class="bi bi-hourglass-split"></i>
+										<span class="badge rounded-pill bg-warning text-dark">
+											<i class="fas fa-hourglass-half me-1"></i>
 										</span>
 									}
 									else
 									{
-										<span class="badge bg-success rounded-pill px-3 py-2 shadow-sm d-inline-flex align-items-center">
-											<i class="bi bi-check-circle"></i>
+										<span class="badge rounded-pill bg-success">
+											<i class="bi bi-check-circle-fill text-white me-1"></i>
 										</span>
 									}
 								</td>

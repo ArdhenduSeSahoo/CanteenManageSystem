@@ -1,0 +1,185 @@
+﻿@model WeeklyFoodViewModel
+
+@{
+    ViewData["Title"] = "Weekly Food List";
+    Layout = "_Layout_canteenEmploy";
+}
+
+<div class="container-fluid p-0">
+    <h2 class="text-center text-primary mb-2">🍽️ Weekly Food Menu</h2>
+    <p class="text-muted text-center mb-4">Note: Food items are scheduled based on their availability during the month.</p>
+
+    <!-- Week 1 Card -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white text-black fw-bold">
+            Week 1
+        </div>
+        <div class="card-body">
+            @if (Model.weekly1_FoodLists?.Any() == true)
+            {
+                <div class="row row-cols-2 g-3">
+                    @foreach (var day in Model.weekly1_FoodLists)
+                    {
+                        <div class="col">
+                            <div class="border rounded bg-light h-100 p-3">
+                                <h5 class="text-secondary">@day.DayOfWeek</h5>
+                                <ul class="list-unstyled">
+                                    @foreach (var food in day.Foods)
+                                    {
+                                        <li class="mb-1 d-flex justify-content-between align-items-center">
+                                            <span><i class="bi bi-dot text-danger"></i> @food.Name</span>
+                                            <span class="text-danger fw-semibold">₹@food.Price</span>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="text-muted">No food items available for Week 1.</p>
+            }
+        </div>
+    </div>
+
+
+
+    <!-- Week 2 Card -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white text-black fw-bold">
+            Week 2
+        </div>
+        <div class="card-body">
+            @if (Model.weekly2_FoodLists?.Any() == true)
+            {
+                <div class="row row-cols-2 g-3">
+                    @foreach (var day in Model.weekly2_FoodLists)
+                    {
+                        <div class="col">
+                            <div class="border rounded bg-light h-100 p-3">
+                                <h5 class="text-secondary">@day.DayOfWeek</h5>
+                                <ul class="list-unstyled">
+                                    @foreach (var food in day.Foods)
+                                    {
+                                        <li class="mb-1 d-flex justify-content-between align-items-center">
+                                            <span><i class="bi bi-dot text-danger"></i> @food.Name</span>
+                                            <span class="text-danger fw-semibold">₹@food.Price</span>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="text-muted">No food items available for Week 2.</p>
+            }
+        </div>
+    </div>
+    <!-- Week 3 Card -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white text-black fw-bold">
+            Week 3
+        </div>
+        <div class="card-body">
+            @if (Model.weekly3_FoodLists?.Any() == true)
+            {
+                <div class="row row-cols-2 g-3">
+                    @foreach (var day in Model.weekly3_FoodLists)
+                    {
+                        <div class="col">
+                            <div class="border rounded bg-light h-100 p-3">
+                                <h5 class="text-secondary">@day.DayOfWeek</h5>
+                                <ul class="list-unstyled">
+                                    @foreach (var food in day.Foods)
+                                    {
+                                        <li class="mb-1 d-flex justify-content-between align-items-center">
+                                            <span><i class="bi bi-dot text-danger"></i> @food.Name</span>
+                                            <span class="text-danger fw-semibold">₹@food.Price</span>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="text-muted">No food items available for Week 1.</p>
+            }
+        </div>
+    </div>
+    <!-- Week 4 Card -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white text-black fw-bold">
+            Week 4
+        </div>
+        <div class="card-body">
+            @if (Model.weekly4_FoodLists?.Any() == true)
+            {
+                <div class="row row-cols-2 g-3">
+                    @foreach (var day in Model.weekly4_FoodLists)
+                    {
+                        <div class="col">
+                            <div class="border rounded bg-light h-100 p-3">
+                                <h5 class="text-secondary">@day.DayOfWeek</h5>
+                                <ul class="list-unstyled">
+                                    @foreach (var food in day.Foods)
+                                    {
+                                        <li class="mb-1 d-flex justify-content-between align-items-center">
+                                            <span><i class="bi bi-dot text-danger"></i> @food.Name</span>
+                                            <span class="text-danger fw-semibold">₹@food.Price</span>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="text-muted">No food items available for Week 4.</p>
+            }
+        </div>
+    </div>
+    <!-- Week 5 Card -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white text-black fw-bold">
+            Week 5
+        </div>
+        <div class="card-body">
+            @if (Model.weekly1_FoodLists?.Any() == true)
+            {
+                <div class="row row-cols-2 g-3">
+                    @foreach (var day in Model.weekly1_FoodLists)
+                    {
+                        <div class="col">
+                            <div class="border rounded bg-light h-100 p-3">
+                                <h5 class="text-secondary">@day.DayOfWeek</h5>
+                                <ul class="list-unstyled">
+                                    @foreach (var food in day.Foods)
+                                    {
+                                        <li class="mb-1 d-flex justify-content-between align-items-center">
+                                            <span><i class="bi bi-dot text-danger"></i> @food.Name</span>
+                                            <span class="text-danger fw-semibold">₹@food.Price</span>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="text-muted">No food items available for Week 5.</p>
+            }
+        </div>
+    </div>
+</div>

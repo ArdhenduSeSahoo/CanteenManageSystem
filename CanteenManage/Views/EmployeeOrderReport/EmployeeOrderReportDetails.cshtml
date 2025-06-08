@@ -1,0 +1,56 @@
+﻿@model CanteenManage.Models.FoodReportViewModel
+
+@{
+    ViewData["Title"] = "Orders for Date";
+}
+
+@{
+    Layout = "_Layout_canteenEmploy";
+}
+
+
+<div class="container mt-5">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-gradient text-black rounded-top-4">
+            <h3 class="mb-0">Orders Details - @DateTime.Now.ToString("dd MMM yyyy")</h3>
+        </div>
+        <div class="card-body">
+            @if (Model.FoodOrders != null && Model.FoodOrders.Any())
+            {
+                    <table class="table table-hover table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Food ID</th>
+                                <th scope="col">Food Item</th>
+                                <th scope="col">Quantity</th>
+                                <th scope="col">Price</th>
+                                <th scope="col">Order Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @for (int i = 0; i < Model.FoodOrders.Count; i++)
+                        {
+                            var order = Model.FoodOrders[i];
+                                    <tr>
+                                        <th scope="row">@(i + 1)</th>
+                                        <td>@order.FoodId</td>
+                                        <td>@order.Food?.Name</td>
+                                        <td>@order.Quantity</td>
+                                        <td>₹@order.TotalPrice.ToString("N2")</td>
+                                        <td>@order.OrderDateCustom.ToString("hh:mm tt")</td>
+                                    </tr>
+                        }
+                        </tbody>
+                    </table>
+            }
+            else
+            {
+                    <div class="alert alert-info">
+                        No orders found for the selected date.
+                    </div>
+            }
+        </div>
+    </div>
+</div>
+
