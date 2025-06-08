@@ -64,7 +64,7 @@ try
         var appConfigJson = File.ReadAllText(Path.Combine(projectFolder, "AppConfigs.json"));
         appConfigs = System.Text.Json.JsonSerializer.Deserialize<AppConfigs>(appConfigJson) ?? new AppConfigs();
         builder.Environment.EnvironmentName = appConfigs.getAppEnvironment();
-        var con = appConfigs.getConnectionString();
+        //var con = appConfigs.getConnectionString();
         //AppConfigs appconff = appConfigs.getEncryptedObject();
         //var appConfigJson2 = System.Text.Json.JsonSerializer.Serialize(appconff);
 
@@ -101,6 +101,7 @@ try
             ValidateIssuerSigningKey = true,
             ValidIssuer = appConfigs.getTokenIssuer(),
             ValidAudience = appConfigs.getTokenAudience(),
+            ClockSkew = TimeSpan.Zero,
             IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(appConfigs.getSecretKey()))
         };
         options.Events = new JwtBearerEvents
@@ -109,14 +110,15 @@ try
             {
                 Console.WriteLine("Authentication failed: " + context.Exception.Message);
                 // Handle token validation failures (e.g., invalid token)
-                if (context.Exception is SecurityTokenInvalidSignatureException)
-                {
-                    context.Fail("Invalid signature");
-                }
-                else if (context.Exception is SecurityTokenExpiredException)
-                {
-                    context.Fail("Token expired");
-                }
+                //if (context.Exception is SecurityTokenInvalidSignatureException)
+                //{
+                //    context.Fail("Invalid signature");
+                //}
+                //else if (context.Exception is SecurityTokenExpiredException)
+                //{
+                //    context.Fail("Token expired");
+                //}
+                context.Response.Redirect("/Error");
                 return Task.CompletedTask;
             }
         };
@@ -129,16 +131,18 @@ try
     });
 
     builder.Services.AddSingleton<SignalRDataHolder>();
+    builder.Services.AddSingleton<SessionManager>();
     builder.Services.AddSignalR(e =>
     {
         e.EnableDetailedErrors = true;
         e.MaximumReceiveMessageSize = 1024000; // Set maximum message size to 1 MB
     });
-    builder.Services.AddHostedService<SignalRBackgroundService>();
+    //builder.Services.AddHostedService<SignalRBackgroundService>();
     builder.Services.AddScoped<CanteenManageContextFactory>();
     builder.Services.AddScoped(sp => sp.GetRequiredService<CanteenManageContextFactory>().CreateDbContext());
     builder.Services.AddScoped<AppConfigProvider>();
     builder.Services.AddScoped<UtilityServices>();
+
     builder.Services.AddTransient<LoginService>();
     builder.Services.AddScoped<FoodListingService>();
     builder.Services.AddScoped<OrderingService>();
@@ -201,13 +205,12 @@ try
     app.UseRouting();
 
     app.UseSession();
+
     app.UseMiddleware<TokenAuthMiddleWare>();
 
 
     app.UseAuthentication();
     app.UseAuthorization();
-
-    app.UseMiddleware<SessionValidateMiddleWare>();
 
     app.MapHub<OrderingHub>("/OrderingHub");
     app.MapControllers();

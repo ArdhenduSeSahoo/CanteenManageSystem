@@ -19,5 +19,6 @@ namespace CanteenManage.CanteenRepository.Models
         public int EmployTypeId { get; set; }
         public EmployeeType EmployType { get; set; }
         public bool? IsActive { get; set; } = true;
+        public bool? IsLogin { get; set; } = false;
     }
 }

@@ -46,8 +46,12 @@ namespace CanteenManage.Services
         {
             return appConfigs?.getTokenAudience();
         }
+        public string? GetLogOutURL()
+        {
+            return appConfigs?.getLogOutURL();
+        }
 
-        public bool IsDevelopment()
+        public bool IsDevelopmentEnv()
         {
             if (appConfigs?.getAppEnvironment() == "Development")
             {

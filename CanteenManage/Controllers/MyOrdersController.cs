@@ -18,13 +18,15 @@ namespace CanteenManage.Controllers
         private readonly UtilityServices utilityServices;
         private readonly FoodListingService foodListingService;
         private readonly OrderingService orderingService;
+        private readonly ILogger<MyOrdersController> logger;
 
-        public MyOrdersController(UtilityServices utility, FoodListingService foodListingService, OrderingService orderingService)
+        public MyOrdersController(UtilityServices utility, FoodListingService foodListingService, OrderingService orderingService, ILogger<MyOrdersController> logger)
         {
             //this.canteenManageContext = canteenManageContext;
             this.utilityServices = utility;
             this.foodListingService = foodListingService;
             this.orderingService = orderingService;
+            this.logger = logger;
         }
 
         public async Task<IActionResult> Index(CancellationToken cancellationToken, bool? ShowAllOrder = null)
