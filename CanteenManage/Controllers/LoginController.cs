@@ -64,10 +64,27 @@ namespace CanteenManage.Controllers
         }
 
         [AllowAnonymous]
-        public async Task<IResult> PortalLogOut(string empid)
+        public async Task<IResult> PortalLogOut(string? portal_token)
         {
-            //await loginService.LogOutUpdateEmployee("SD1265");
-            return Results.Ok(new { Status = "Request accepted. User will sign out." });
+            try
+            {
+                var handler = new JwtSecurityTokenHandler();
+                var jwtToken = handler.ReadJwtToken(portal_token);
+                var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value;
+                if (!string.IsNullOrWhiteSpace(userId))
+                {
+                    await loginService.LogOutUpdateEmployee(userId);
+                    return Results.Ok(new { Status = "Request accepted. User will sign out." });
+                }
+                else
+                {
+                    return Results.BadRequest(new { Status = "Some error happened--" });
+                }
+            }
+            catch (Exception ex)
+            {
+                return Results.BadRequest(new { Status = "Some error happened--" + ex.Message });
+            }
         }
         public async Task<RedirectToActionResult> loginUserAsync(string? empid, string? empname, string portal_token = "")
         {
@@ -101,14 +118,14 @@ namespace CanteenManage.Controllers
                 {
                     empid = userId;
                 }
-                var exp = jwtToken.Claims.FirstOrDefault(c => c.Type == "exp")?.Value;
-                if (!string.IsNullOrWhiteSpace(exp))
-                {
-                    expv = exp;
-                }
-                double ticks = double.Parse(exp);
-                TimeSpan time = TimeSpan.FromMilliseconds(ticks);
-                DateTime dateTime = DateTime.Now.Date + time;
+                //var exp = jwtToken.Claims.FirstOrDefault(c => c.Type == "exp")?.Value;
+                //if (!string.IsNullOrWhiteSpace(exp))
+                //{
+                //    expv = exp;
+                //}
+                //double ticks = double.Parse(exp);
+                //TimeSpan time = TimeSpan.FromMilliseconds(ticks);
+                //DateTime dateTime = DateTime.Now.Date + time;
             }
             catch (Exception ex)
             {
