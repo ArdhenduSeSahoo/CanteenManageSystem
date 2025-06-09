@@ -138,7 +138,7 @@
 		@(
 				await Html.PartialAsync("__CartItemListPanel", new CartItemListPanelViewDataModel()
 		{
-			panelTitle = "Out Of Order",
+			panelTitle = "Out Of Order (auto remove)",
 			employeeCarts = Model.OutOfStockOrders
 		})
 				)

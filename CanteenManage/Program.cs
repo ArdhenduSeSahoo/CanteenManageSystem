@@ -128,6 +128,13 @@ try
     {
         //option.UseSqlServer(builder.Configuration.GetConnectionString("CantenSystemDBConnection"));
         option.UseSqlServer(appConfigs.getConnectionString());
+        if (builder.Environment.IsDevelopment())
+        {
+            option.LogTo(Console.WriteLine, LogLevel.Information)
+                  .EnableSensitiveDataLogging()
+                  .EnableDetailedErrors();
+        }
+
     });
 
     builder.Services.AddSingleton<SignalRDataHolder>();

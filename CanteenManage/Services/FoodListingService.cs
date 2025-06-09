@@ -424,11 +424,11 @@ namespace CanteenManage.Services
             return employee?.EmployID;
         }
 
-        public async Task<List<Food>> GetquickfoodsAsync()
+        public async Task<List<Food>> GetquickfoodsAsync(CancellationToken cancellationToken)
         {
             var result = await contextCM.Foods
                                         .Where(f => f.FoodTypeId == 4)
-                                        .ToListAsync();
+                                        .ToListAsync(cancellationToken);
 
             return result;
         }
