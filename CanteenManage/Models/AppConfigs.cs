@@ -10,6 +10,7 @@ namespace CanteenManage.Models
         public string TokenIssuer { get; set; } = "";
         public string TokenAudience { get; set; } = "";
         public string AppEnvironment { get; set; } = "";
+        public string LogOutURL { get; set; } = "";
         /////for Production
         public string qpiowerbzlkvywe34bdsdvx0zx { get; set; } = "";
         public string hgwf899fwMi66chz394ghz { get; set; } = "";
@@ -36,6 +37,10 @@ namespace CanteenManage.Models
         {
             return AppEnvironment != "" ? AppEnvironment : new EncryptionDecryptions().DecryptString(vtauerbzdchzpobqwjqbvgdyewwt);
         }
+        public string getLogOutURL()
+        {
+            return LogOutURL;
+        }
         public AppConfigs getEncryptedObject()
         {
             AppConfigs appConfigs = new AppConfigs();
@@ -44,6 +49,7 @@ namespace CanteenManage.Models
             appConfigs.TokenIssuer = TokenIssuer;
             appConfigs.TokenAudience = TokenAudience;
             appConfigs.AppEnvironment = AppEnvironment;
+            appConfigs.LogOutURL = LogOutURL;
             //for Production
             appConfigs.qpiowerbzlkvywe34bdsdvx0zx = new EncryptionDecryptions().EncryptString(ConnectionString);
             appConfigs.hgwf899fwMi66chz394ghz = new EncryptionDecryptions().EncryptString(SecretKey);

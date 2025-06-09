@@ -14,6 +14,7 @@ namespace CanteenManage.Middleware
         {
             SessionDataModel sessionData = new SessionDataModel();
             var requestPath = (context.Request.Path.Value ?? "").Trim().ToLower();
+
             var empid = context.Session.GetString(SessionConstants.UserId);
             var empEid = context.Session.GetString(SessionConstants.UserEmpId);
             if (requestPath == "/")
@@ -22,24 +23,7 @@ namespace CanteenManage.Middleware
                 context.Response.Redirect("/login/index");
                 return;
             }
-            else if (
-                (requestPath.StartsWith("/login/index")
-                || requestPath.StartsWith("/login/emp")
-                || requestPath.StartsWith("/login/testlog")
-                || requestPath.StartsWith("/error")
-                || requestPath.StartsWith(("/Login/LoginUser").ToLower())
-                || requestPath.StartsWith(("/Login/PortalLogin").ToLower())
-                || requestPath.StartsWith(("/Login/PortalLogOut").ToLower())
-
-                && !requestPath.Contains("/login/chosemodeofuse")
-                )
-                //&&
-                //(
-                //!requestPath.Contains("/login/chosemodeofuse")
-                //|| !requestPath.StartsWith("/login/loginasemployee")
-                //|| !requestPath.StartsWith("/login/loginascanteenmember")
-                //)
-                )
+            else if (IsAllowedURL(context))
             {
                 //context.Response.Redirect("/Login/emp");
                 //return;
@@ -54,6 +38,10 @@ namespace CanteenManage.Middleware
             {
                 await _next(context);
             }
+        }
+        public bool IsAllowedURL(HttpContext context)
+        {
+            return AllowedEndPoints.AllowedURL_List.Contains(context.Request.Path.Value?.ToLower() ?? "");
         }
     }
 }

@@ -2,6 +2,8 @@
 
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
+using CanteenManage.Middleware;
+using CanteenManage.Services;
 using CanteenManage.Utility;
 using Microsoft.IdentityModel.Tokens;
 
@@ -10,143 +12,89 @@ namespace CanteenManage.CanteenMiddleWare
     public class TokenAuthMiddleWare
     {
         private readonly RequestDelegate _next;
-        public TokenAuthMiddleWare(RequestDelegate next)
+        private readonly SessionManager _sessionManager;
+        public TokenAuthMiddleWare(RequestDelegate next, SessionManager sessionManager)
         {
             _next = next;
+            _sessionManager = sessionManager;
         }
 
         public async Task InvokeAsync(HttpContext context)
         {
 
             //var tok = context.Request.Cookies[CustomDataConstants.jwtTokencookieName];
-            var tok = context.Session.GetString(CustomDataConstants.jwtTokencookieName);
-            var requestPath = (context.Request.Path.Value ?? "").Trim().ToLower();
-            if (!string.IsNullOrEmpty(requestPath))
-            {
-                if (requestPath == "/")
-                {
-                    //context.Response.StatusCode = 401; // Unauthorized
-                    //context.Response.Redirect("/login/index");
-                    await _next(context);
-                    return;
-                }
-                else if (
-                    (requestPath.StartsWith("/login/index")
-                    || requestPath.StartsWith("/login/emp")
-                    || requestPath.StartsWith("/login/testlog")
-                    || requestPath.StartsWith("/error")
-                    || requestPath.StartsWith(("/Login/LoginUser").ToLower())
-                    || requestPath.StartsWith(("/Login/PortalLogin").ToLower())
-                    || requestPath.StartsWith(("/Login/PortalLogOut").ToLower())
+            var tok = context.Session.GetString(SessionConstants.AppToken);
+            var userEmpID = context.Session.GetString(SessionConstants.UserEmpId);
+            var userType = context.Session.GetString(SessionConstants.UserType);
 
-                    && !requestPath.Contains("/login/chosemodeofuse")
-                    )
-                    //&&/Dashboard
-                    //(
-                    //!requestPath.Contains("/login/chosemodeofuse")
-                    //|| !requestPath.StartsWith("/login/loginasemployee")
-                    //|| !requestPath.StartsWith("/login/loginascanteenmember")
-                    //)
-                    )
-                {
-                    //context.Response.Redirect("/Login/emp");
-                    //return;
-                    await _next(context);
-                }
-                //else if (requestPath.StartsWith("/Login/emp"))
-                //{
-                //    //context.Response.Redirect("/Login/emp");
-                //    //return;
-                //    await _next(context);
-                //}
-                //else if (string.IsNullOrEmpty(tok) && requestPath.StartsWith(("/Login/LoginUser").ToLower()))
-                //{
-                //    await _next(context);
-                //}
-                else if (string.IsNullOrEmpty(tok))
-                {
-                    //context.Response.StatusCode = 401; // Unauthorized
-                    context.Response.Redirect("/Error");
-                    return;
-                }
-                else
-                {
-                    //if (string.IsNullOrEmpty(tok))
-                    {
-                        context.Request.Headers["Authorization"] = "Bearer " + tok;
-                    }
-                    await _next(context);
-                }
+            var requestPath = (context.Request.Path.Value ?? "").Trim().ToLower();
+
+            if (requestPath == "/")
+            {
+                //context.Response.StatusCode = 401; // Unauthorized
+                //context.Response.Redirect("/login/index");
+                await _next(context);
+                return;
             }
-            else
+            else if (IsAllowedURL(context))
+            {
+                //context.Response.Redirect("/Login/emp");
+                //return;
+                await _next(context);
+            }
+            else if (string.IsNullOrEmpty(tok))
             {
                 //context.Response.StatusCode = 401; // Unauthorized
                 context.Response.Redirect("/Error");
                 return;
             }
-            //if (string.IsNullOrEmpty(tok) && context.Request.Path == "/")
-            //{
-            //    //context.Response.StatusCode = 401; // Unauthorized
-            //    context.Response.Redirect("/Login/Index");
-            //    return;
-            //}
-            //else if ((context.Request.Path.Value ?? "").Contains("/Login/Index"))
-            //{
-            //    //context.Response.Redirect("/Login/emp");
-            //    //return;
-            //    await _next(context);
-            //}
-            //else if ((context.Request.Path.Value ?? "").Contains("/Login/emp"))
-            //{
-            //    //context.Response.Redirect("/Login/emp");
-            //    //return;
-            //    await _next(context);
-            //}
-            //else if (string.IsNullOrEmpty(tok) && (context.Request.Path.Value ?? "").Contains("/Login/emp"))
-            //{
-            //    context.Response.Redirect("/Login/emp");
-            //    return;
-            //}
-            //else if (!string.IsNullOrEmpty(tok) && (context.Request.Path.Value ?? "").Contains("/Login/emp"))
-            //{
-            //    context.Request.Headers["Authorization"] = "Bearer " + context.Request.Cookies[CustomDataConstants.cookieName];
-            //}
-            //else if (string.IsNullOrEmpty(tok) && !(context.Request.Path.Value ?? "").Contains("/Login/Index"))
-            //{
-            //    context.Response.StatusCode = 401; // Unauthorized
-            //    return;
-            //}
-            //else
-            //{
-            //    if (string.IsNullOrEmpty(tok))
-            //    {
-            //        context.Request.Headers["Authorization"] = "Bearer " + tok;
-            //    }
+            else
+            {
+                try
+                {
+                    var usertype_int = int.Parse(userType);
+                    if (usertype_int == (int)EmployTypeEnum.Employee)
+                    {
+                        if (!string.IsNullOrWhiteSpace(userEmpID)
+                            && _sessionManager.IsUserLoggedIn(userEmpID)
+                            )
+                        {
+                            context.Request.Headers["Authorization"] = "Bearer " + tok;
+                            await _next(context);
+                        }
+                        else
+                        {
+                            //context.Response.StatusCode = 401; // Unauthorized
+                            context.Response.Redirect("/Error");
+                            return;
+                        }
+                    }
+                    else if (usertype_int == (int)EmployTypeEnum.Committee_Members || usertype_int == (int)EmployTypeEnum.CanteenStaf
+                            )//check for member login and canteen employ login
+                    {
+                        context.Request.Headers["Authorization"] = "Bearer " + tok;
+                        await _next(context);
+                    }
+                    else
+                    {
+                        //context.Response.StatusCode = 401; // Unauthorized
+                        context.Response.Redirect("/Error");
+                        return;
+                    }
+                }
+                catch (Exception ex)
+                {
 
-            //}
-            //var token = ""; //context.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-            //if (!string.IsNullOrEmpty(token))
-            //{
-            //    var tokenHandler = new JwtSecurityTokenHandler();
-            //    var validationParameters = new TokenValidationParameters
-            //    {
-            //        ValidateIssuerSigningKey = true,
-            //        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey)),
-            //        ValidateIssuer = false,
-            //        ValidateAudience = false
-            //    };
-            //    try
-            //    {
-            //        tokenHandler.ValidateToken(token, validationParameters, out SecurityToken validatedToken);
-            //    }
-            //    catch (Exception)
-            //    {
-            //        context.Response.StatusCode = 401; // Unauthorized
-            //        return;
-            //    }
-            //}
+                    context.Response.Redirect("/Error");
+                    return;
+                }
+            }
 
+        }
 
+        public bool IsAllowedURL(HttpContext context)
+        {
+            return AllowedEndPoints.AllowedURL_List.Contains(context.Request.Path.Value?.ToLower() ?? "");
         }
     }
 }
