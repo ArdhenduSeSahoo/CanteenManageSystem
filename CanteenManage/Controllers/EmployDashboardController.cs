@@ -40,9 +40,9 @@ namespace CanteenManage.Controllers
             return View(employeeDashboardViewDataModel);
         }
 
-        public async Task<IActionResult> QuickFood()
+        public async Task<IActionResult> QuickFood(CancellationToken cancellationToken)
         {
-            var data = await foodListingService.GetquickfoodsAsync();
+            var data = await foodListingService.GetquickfoodsAsync(cancellationToken);
             EmployeeDashboardViewDataModel employeeDashboardViewDataModel = new EmployeeDashboardViewDataModel();
             employeeDashboardViewDataModel.Foods = data;
             return View(employeeDashboardViewDataModel);

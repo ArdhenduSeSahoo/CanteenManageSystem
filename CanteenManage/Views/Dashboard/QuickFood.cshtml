@@ -1,0 +1,34 @@
+﻿@model EmployeeDashboardViewDataModel
+
+<div class="container-fluid">
+	<div class="card mb-1" style="border-radius:15px">
+		<div class="card-body">
+			<div class="d-flex justify-content-between">
+				<div class="row">
+					<div class="col">
+						<h3 class="fw-bold">Food List</h3>
+						<p class="text-muted fst-italic">Note: These foods are available from 08:30 AM to 07:30 PM (Monday - Friday).</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="row row-cols-1 row-cols-md-5 g-2">
+		@foreach (var food in Model.Foods)
+		{
+			<div class="col-md-4 mb-4">
+				<div class="card h-100 shadow-sm">
+					<img src="~/FoodImage/@(food.ImageUrl)" class="card-img-top" alt="@food.Name" style="height: 300px; object-fit: cover;" />
+					<div class="card-body">
+						<h5 class="card-title">@food.Name</h5>
+						<p class="card-text">
+							Price: <span class="text-danger fw-semibold">₹@food.Price</span>
+						</p>
+					</div>
+				</div>
+			</div>
+		}
+	</div>
+
+</div>
