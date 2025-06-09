@@ -432,12 +432,12 @@ namespace CanteenManage.Services
 
             return result;
         }
-        public async Task<List<WeeklyFoodList>> GetWeekWiseFoodlist(int weekNumber , CancellationToken cancellationToken, string? searchTerm = null)
+        public async Task<List<WeeklyFoodList>> GetWeekWiseFoodlist(int weekNumber, CancellationToken cancellationToken, string? searchTerm = null)
         {
-            var ffff= await contextCM.FoodAvailabilityDays
+            var ffff = await contextCM.FoodAvailabilityDays
                 .Include(fo => fo.Food)
-                .Where(fo=>fo.WeekOfMonth == weekNumber)
-                .GroupBy(fo=>fo.DayOfWeek)
+                .Where(fo => fo.WeekOfMonth == weekNumber)
+                .GroupBy(fo => fo.DayOfWeek)
                 .Select(g => new WeeklyFoodList
                 {
                     DayOfWeek = ((DayOfWeek)g.Key).ToString(),
