@@ -9,5 +9,7 @@
         public static string UserSelectedDayOnSamePage = "0";
         public static string UserSelectedDayFull = "UserSelectedDayFull";
         public static string EconnectToken = "EconnectToken";
+        public static string AppToken = "AppToken";
+        public static string UserType = "UserType";
     }
 }

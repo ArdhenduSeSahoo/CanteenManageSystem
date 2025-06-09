@@ -103,12 +103,15 @@ namespace CanteenManage.Services
                 if (existingFoodOrder != null)
                 {
                     food_quantity = existingFoodOrder.Quantity;
-                    existingFoodOrder.Quantity = existingFoodOrder.Quantity + 1;
-                    // Price is not calculating bcz it may changes in Food table after added to cart
-                    //so we are calculating price at fetching list from cart table, what ever price is in Food table
-                    //existingFoodOrder.TotalPrice = existingFoodOrder.Quantity * existingFoodOrder.Food.Price;
-                    contextDB.EmployeeCarts.Update(existingFoodOrder);
-                    food_quantity = existingFoodOrder.Quantity;
+                    if (food_quantity <= 4)
+                    {
+                        existingFoodOrder.Quantity = existingFoodOrder.Quantity + 1;
+                        // Price is not calculating bcz it may changes in Food table after added to cart
+                        //so we are calculating price at fetching list from cart table, what ever price is in Food table
+                        //existingFoodOrder.TotalPrice = existingFoodOrder.Quantity * existingFoodOrder.Food.Price;
+                        contextDB.EmployeeCarts.Update(existingFoodOrder);
+                        food_quantity = existingFoodOrder.Quantity;
+                    }
                 }
                 else if (existingFoodOrder == null)
                 {
@@ -343,6 +346,7 @@ namespace CanteenManage.Services
 
         private async Task<List<EmployeeCart>?> getcartfoodlistAsync(FoodTypeEnum foodTypeEnum, SessionDataModel sessionData, int houreValue, CancellationToken cancellationToken)
         {
+
             var foodOrderByUseridlist = await contextDB.EmployeeCarts
                     .Include(f => f.Food)
                     .Where(fo => fo.EmployeeId == sessionData.UserId
@@ -350,7 +354,7 @@ namespace CanteenManage.Services
                     fo.Food.FoodTypeId == (int)foodTypeEnum
                     )
                     .Where(fo =>
-                    (fo.OrderDate.Date < DateTime.Now.Date) || (fo.OrderDate.Date == DateTime.Now && fo.OrderDate.Hour >= houreValue)
+                    (fo.OrderDate.Date < DateTime.Now.Date) || (fo.OrderDate.Date == DateTime.Now.Date && fo.OrderDate.Hour >= houreValue)
                     )
                     .Where(fo => fo.OutDateStatus == (int)CartFoodOutDateEnum.InOrder)
 

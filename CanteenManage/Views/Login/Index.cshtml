@@ -36,13 +36,16 @@
 						<input type="text" class="form-control" name="userId" value="" placeholder="EmployID">
 
 					</div>
-					<div class="input-group form-group mt-2">
-						<div class="input-group-prepend">
-							<span class="input-group-text h-100"><i class="fas fa-user"></i></span>
-						</div>
-						<input type="text" class="form-control" name="username" value="" placeholder="EmployName">
+					@if (ViewBag.IsDevEnv)
+					{
+						<div class="input-group form-group mt-2">
+							<div class="input-group-prepend">
+								<span class="input-group-text h-100"><i class="fas fa-user"></i></span>
+							</div>
+							<input type="text" class="form-control" name="username" value="" placeholder="EmployName">
 
-					</div>
+						</div>
+					}
 					<div class="input-group form-group mt-2">
 						<div class="input-group-prepend">
 							<span class="input-group-text h-100"><i class="fas fa-key"></i></span>

@@ -3,12 +3,28 @@
 
 // Write your JavaScript code.
 function showErrorMessage(messages) {
-    $("#errorModal #emsg").text(messages);
-    $("#errorModal").modal('show');
+    //$("#errorModal #emsg").text(messages);
+    //$("#errorModal").modal('show');
+    const notyfs = new Notyf({
+
+        position: {
+            x: 'right',
+            y: 'bottom',
+        },
+    });
+    notyfs.error(messages);
+
 }
 function showInfoMessage(messages) {
-    $("#infoModal #imsg").text(messages);
-    $("#infoModal").modal('show');
+    //$("#infoModal #imsg").text(messages);
+    //$("#infoModal").modal('show');
+    const notyfs = new Notyf({
+        position: {
+            x: 'right',
+            y: 'bottom',
+        },
+    });
+    notyfs.success(messages);
 }
 
 function addFoodItem(e, api_Url) {
@@ -43,7 +59,7 @@ function addFoodItem(e, api_Url) {
                         $('.food_add_remove_btn_div[data-foodid="' + foodid + '"]').removeClass("d-none");
                         $('.food_add_btn_div[data-foodid="' + foodid + '"]').addClass("d-none");
                     }
-                    debugger;
+
                     if (data.total_quantity_cart > 0) {
                         $('.cartDiv').removeClass("d-none");
                         $('.cartValue').html(data.total_quantity_cart);
@@ -53,7 +69,7 @@ function addFoodItem(e, api_Url) {
                         $('.cartValue').html("0");
                     }
                     if (data.message != null && data.message != "") {
-                        showInfoMessage(data.message);
+                        showErrorMessage(data.message);
                     }
                 }
 

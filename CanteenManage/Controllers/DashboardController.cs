@@ -37,5 +37,14 @@ namespace CanteenManage.Controllers
 
             return View(employeeDashboardViewDataModel);
         }
+        public async Task<IActionResult> QuickFood(CancellationToken cancellationToken)
+        {
+            SessionDataModel sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
+            var data = await foodListingService.GetquickfoodsAsync(cancellationToken);
+            EmployeeDashboardViewDataModel employeeDashboardViewDataModel = new EmployeeDashboardViewDataModel();
+            employeeDashboardViewDataModel.Foods = data;
+            employeeDashboardViewDataModel.CartItemCount = await foodListingService.GetCartItemCount(sessionDataModel.UserId ?? 0, cancellationToken);
+            return View(employeeDashboardViewDataModel);
+        }
     }
 }

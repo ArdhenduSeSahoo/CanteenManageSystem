@@ -31,7 +31,7 @@ namespace CanteenManage.Services
 
             return userFound;
         }
-        public async Task<Employee> IsValidEmployee(string userId, string name)
+        public async Task<Employee> GetOrAddEmployee(string userId, string name, string EmployEmail)
         {
             Employee? userFound = null;
             userFound = await canteenManageContext.Employees
@@ -49,6 +49,9 @@ namespace CanteenManage.Services
                     IsActive = true,
                     EmployTypeId = (int)EmployTypeEnum.Employee,
                     Password = "",
+                    Email = EmployEmail,
+                    PhoneNumber = "",
+                    IsLogin = false
 
                 };
                 canteenManageContext.Employees.Add(employee);
@@ -69,20 +72,42 @@ namespace CanteenManage.Services
             return userFound;
         }
 
-        public string GenerateJSONWebToken(List<Claim> claims)
+        public string GenerateJSONWebToken(List<Claim> claims, DateTime expiresDateTime)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(appConfigProvider.GetSecretKey() ?? CustomDataConstants.DefaultSecret));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
+            var tokenHandler = new JwtSecurityTokenHandler();
             var token = new JwtSecurityToken(
                 issuer: appConfigProvider.GetTokenIssuer(),
                 audience: appConfigProvider.GetTokenAudience(),
-                expires: DateTime.Now.AddHours(3),
+
+                expires: expiresDateTime,
                 claims: claims,
                 signingCredentials: credentials
                 );
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+                Issuer = appConfigProvider.GetTokenIssuer(),
+                Audience = appConfigProvider.GetTokenAudience(),
+                Subject = new ClaimsIdentity(claims),
+                IssuedAt = DateTime.Now,
+                Expires = expiresDateTime,
+                SigningCredentials = credentials
+            };
+            var tokens = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(tokens);
+        }
+
+        public async Task LoginUpdateEmployee(string employee_e_id)
+        {
+            canteenManageContext.Employees.Where(e => e.EmployID == employee_e_id)
+                .ExecuteUpdate(e => e.SetProperty(x => x.IsLogin, true));
+        }
+        public async Task LogOutUpdateEmployee(string employee_e_id)
+        {
+            canteenManageContext.Employees.Where(e => e.EmployID == employee_e_id)
+                .ExecuteUpdate(e => e.SetProperty(x => x.IsLogin, false));
         }
 
     }
