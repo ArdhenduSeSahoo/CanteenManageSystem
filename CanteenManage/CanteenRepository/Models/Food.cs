@@ -19,6 +19,7 @@ namespace CanteenManage.CanteenRepository.Models
         [StringLength(1000)]
         public string? ImageUrl { get; set; }
         public double Rating { get; set; }
+        public bool? IsVegFood { get; set; }
 
         [DeleteBehavior(DeleteBehavior.Cascade)]
         public ICollection<FoodAvailabilityDay> FoodAvailabilityDays { get; set; } = new List<FoodAvailabilityDay>();

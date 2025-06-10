@@ -42,7 +42,7 @@ namespace CanteenManage.Controllers.CommitteeMembers
             }
 
             var foodList = await query.ToListAsync(cancellationToken);
-            return View(foodList); 
+            return View(foodList);
         }
 
         [HttpPost("DeleteFood")]
@@ -104,6 +104,7 @@ namespace CanteenManage.Controllers.CommitteeMembers
                     IsAvailable = f.IsAvailable,
                     ImageUrl = f.ImageUrl,
                     Rating = f.Rating,
+                    IsVegFood = f.IsVegFood ?? false,
 
                     MonDay = f.FoodAvailabilityDays.Where(fa => fa.DayOfWeek == 1).Count() >= 1,
                     TuesDay = f.FoodAvailabilityDays.Where(fa => fa.DayOfWeek == 2).Count() >= 1,
@@ -153,7 +154,7 @@ namespace CanteenManage.Controllers.CommitteeMembers
                         {
                             System.IO.File.Delete(filePath);
                         }
-                        using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None, 1024))
+                        using (var fileStream = new FileStream(filePath, FileMode.Append, FileAccess.Write, FileShare.None, 1024))
                         {
                             foodFormDataModel.FoodImage.CopyTo(fileStream);
                         }
@@ -181,6 +182,7 @@ namespace CanteenManage.Controllers.CommitteeMembers
                     IsAvailable = foodFormDataModel.IsAvailable,
                     ImageUrl = foodFormDataModel.ImageUrl,
                     Rating = foodFormDataModel.Rating,
+                    IsVegFood = foodFormDataModel.IsVegFood
                 };
 
                 context.Foods.Update(food_to_update);

@@ -20,5 +20,6 @@
         public static string RoleCommitteeMember = "CommitteeMember";
         public static string RoleCanteenEmployee = "CanteenEmployee";
         public static string RoleEmployee = "Employee";
+        public static string PortalAuthValidater = "PortalAuthValidater";
     }
 }

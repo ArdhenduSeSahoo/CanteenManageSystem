@@ -18,6 +18,7 @@ namespace CanteenManage.Models
         public double Rating { get; set; }
         public int AvailableOnDay { get; set; }
         public IFormFile? FoodImage { get; set; }
+        public bool IsVegFood { get; set; }
 
         public bool WeekOneAndFive { get; set; }
         public bool WeekTwo { get; set; }
