@@ -197,7 +197,7 @@ namespace CanteenManage.Services
                 && fo.IsCanceled == false
                 &&
                 (fo.Employee.Name.ToLower().Contains(SearchVal) ||
-                fo.Employee.EmployID.ToLower().Contains(SearchVal) ||
+                fo.Employee.EmployeeID.ToLower().Contains(SearchVal) ||
                 fo.OrderID.ToLower().Contains(SearchVal)
                 )
                 )
@@ -208,7 +208,7 @@ namespace CanteenManage.Services
                     FoodId = fo.Id,
                     FoodOrderId = fo.OrderID,
                     EmployeeId = fo.EmployeeId ?? 0,
-                    EmployeeCode = fo.Employee.EmployID,
+                    EmployeeCode = fo.Employee.EmployeeID,
                     FoodName = fo.Food.Name,
                     OrderDate = fo.OrderDateCustom,
                     Quantity = fo.Quantity,
@@ -232,14 +232,14 @@ namespace CanteenManage.Services
                 .Where(fo => fo.OrderDateCustom.Date < DateTime.Now.Date
                 && fo.IsCanceled == false
                 //&& fo.OrderCompleteStatus == (int)OrderCompleteStatusEnum.Pending
-                && (fo.Employee.Name.ToLower().Contains(SearchVal) || fo.Employee.EmployID.ToLower().Contains(SearchVal))
+                && (fo.Employee.Name.ToLower().Contains(SearchVal) || fo.Employee.EmployeeID.ToLower().Contains(SearchVal))
                 )
                 .Select(fo => new EmployeeFoodOrdersTableDataModel()
                 {
                     FoodId = fo.Id,
                     FoodOrderId = fo.OrderID,
                     EmployeeId = fo.EmployeeId ?? 0,
-                    EmployeeCode = fo.Employee.EmployID,
+                    EmployeeCode = fo.Employee.EmployeeID,
                     FoodName = fo.Food.Name,
                     OrderDate = fo.OrderDateCustom,
                     Quantity = fo.Quantity,
@@ -421,7 +421,7 @@ namespace CanteenManage.Services
             var employee = await contextCM.Employees
                 .FirstOrDefaultAsync(ue => ue.Id == id);
 
-            return employee?.EmployID;
+            return employee?.EmployeeID;
         }
 
         public async Task<List<Food>> GetquickfoodsAsync(CancellationToken cancellationToken)

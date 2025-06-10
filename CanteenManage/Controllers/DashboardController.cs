@@ -1,5 +1,4 @@
 ﻿using CanteenManage.Models;
-using System.Threading;
 using CanteenManage.Services;
 using CanteenManage.Utility;
 using Microsoft.AspNetCore.Mvc;
@@ -12,11 +11,16 @@ namespace CanteenManage.Controllers
     {
         private readonly FoodListingService foodListingService;
         private readonly UtilityServices utilityServices;
+        private readonly ILogger<DashboardController> _logger;
 
-        public DashboardController(FoodListingService foodListing, UtilityServices utilityServices)
+
+        public DashboardController(FoodListingService foodListing, UtilityServices utilityServices, IHttpClientFactory httpClientFactory, ILogger<DashboardController> logger)
         {
             foodListingService = foodListing;
             this.utilityServices = utilityServices;
+            //_httpClientFactory = httpClientFactory1;
+            //_appConfigProvider = appConfigProvider;
+            _logger = logger;
         }
 
         public async Task<IActionResult> Index(CancellationToken cancellationToken)
@@ -29,7 +33,7 @@ namespace CanteenManage.Controllers
             EmployeeDashboardViewDataModel employeeDashboardViewDataModel = new EmployeeDashboardViewDataModel();
             employeeDashboardViewDataModel.UserName = sessionDataModel.UserName;
             employeeDashboardViewDataModel.UserId = sessionDataModel.UserId;
-            employeeDashboardViewDataModel.CartItemCount = await foodListingService.GetCartItemCount(sessionDataModel.UserId ?? 0, cancellationToken);
+            employeeDashboardViewDataModel.CartItemCount = await foodListingService.GetCartItemCount(sessionDataModel.UserIdOrZero, cancellationToken);
 
             employeeDashboardViewDataModel.BreakfastFoods = string.Join(", ", breakfastFoods);
             employeeDashboardViewDataModel.LunchFoods = string.Join(", ", lunchFoods);
@@ -43,7 +47,7 @@ namespace CanteenManage.Controllers
             var data = await foodListingService.GetquickfoodsAsync(cancellationToken);
             EmployeeDashboardViewDataModel employeeDashboardViewDataModel = new EmployeeDashboardViewDataModel();
             employeeDashboardViewDataModel.Foods = data;
-            employeeDashboardViewDataModel.CartItemCount = await foodListingService.GetCartItemCount(sessionDataModel.UserId ?? 0, cancellationToken);
+            employeeDashboardViewDataModel.CartItemCount = await foodListingService.GetCartItemCount(sessionDataModel.UserIdOrZero, cancellationToken);
             return View(employeeDashboardViewDataModel);
         }
     }
