@@ -50,6 +50,14 @@ namespace CanteenManage.Services
         {
             return appConfigs?.getLogOutURL();
         }
+        public string? GetPortalAuthValidaTorBaseURL()
+        {
+            return appConfigs?.PortalAuthValidaTorBaseURL;
+        }
+        public string? GetPortalAuthValidaTorEndpoint()
+        {
+            return appConfigs?.PortalAuthValidaTorEndpoint;
+        }
 
         public bool IsDevelopmentEnv()
         {

@@ -85,6 +85,7 @@ try
 
 
 
+
     builder.Services.AddAuthentication(options =>
     {
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -137,8 +138,16 @@ try
 
     });
 
+    builder.Services.AddHttpClient(CustomDataConstants.PortalAuthValidater, httpClient =>
+    {
+        httpClient.BaseAddress = new Uri(appConfigs.PortalAuthValidaTorBaseURL);
+        httpClient.DefaultRequestHeaders.Clear();
+
+    }).SetHandlerLifetime(TimeSpan.FromHours(5));
+
     builder.Services.AddSingleton<SignalRDataHolder>();
     builder.Services.AddSingleton<SessionManager>();
+    builder.Services.AddSingleton<AppConfigProvider>();
     builder.Services.AddSignalR(e =>
     {
         e.EnableDetailedErrors = true;
@@ -147,7 +156,7 @@ try
     //builder.Services.AddHostedService<SignalRBackgroundService>();
     builder.Services.AddScoped<CanteenManageContextFactory>();
     builder.Services.AddScoped(sp => sp.GetRequiredService<CanteenManageContextFactory>().CreateDbContext());
-    builder.Services.AddScoped<AppConfigProvider>();
+
     builder.Services.AddScoped<UtilityServices>();
 
     builder.Services.AddTransient<LoginService>();

@@ -38,9 +38,9 @@ namespace CanteenManage.Middleware
                 }
                 else
                 {
-                    _logger.LogError("An error occurred while processing the request. From ErrorHandlerMiddleWare---" + ex.Message);
-                    context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                    await context.Response.WriteAsJsonAsync(new { status = "Error Page--" + ex.StackTrace });
+                    _logger.LogError("An error occurred while processing the request. From ErrorHandlerMiddleWare---" + ex.Message + "-----" + ex.StackTrace);
+                    //context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                    context.Response.Redirect("/Error");
                     return;
                 }
                 _logger.LogError("An error occurred while processing the request. From ErrorHandlerMiddleWare---" + ex);
