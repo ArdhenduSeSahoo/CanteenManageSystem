@@ -44,7 +44,7 @@
 
 							<th>Order Date</th>
 							<th>Order Count</th>
-							<th>Employ Order Count</th>
+							<th>Employee Order Count</th>
 							<th>TotalPrice</th>
 							<th>TotalEmployeePrice</th>
 							<th>TotalSubsidyPrice</th>
@@ -64,8 +64,8 @@
 								<td>@item.TotalSubsidyPrice</td>
 								<td>
 									<a asp-action="CanteenOrderReportDetails" asp-controller="CanteenOrderReport"
-											asp-route-orderDate="@item.OrderDate.ToString("yyyy-MM-dd")"
-									class="btn btn-primary">
+									   asp-route-orderDate="@item.OrderDate.ToString("yyyy-MM-dd")"
+									   class="btn btn-primary">
 										<i class="fa fa-eye"></i>
 									</a>
 								</td>

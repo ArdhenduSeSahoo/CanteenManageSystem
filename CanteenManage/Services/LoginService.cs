@@ -24,8 +24,8 @@ namespace CanteenManage.Services
         {
             var userFound = canteenManageContext.Employees
                 .Where(e =>
-                e.EmployID == userId
-                //&& e.Password == password
+                e.EmployeeID == userId
+                && e.Password == password
                 )
                 .FirstOrDefault();
 
@@ -36,7 +36,7 @@ namespace CanteenManage.Services
             Employee? userFound = null;
             userFound = await canteenManageContext.Employees
                 .Where(e =>
-                e.EmployID == userId
+                e.EmployeeID == userId
                 //&& e.Password == password
                 )
                 .FirstOrDefaultAsync();
@@ -44,10 +44,10 @@ namespace CanteenManage.Services
             {
                 Employee employee = new Employee()
                 {
-                    EmployID = userId,
+                    EmployeeID = userId,
                     Name = name,
                     IsActive = true,
-                    EmployTypeId = (int)EmployTypeEnum.Employee,
+                    EmployeeTypeId = (int)EmployTypeEnum.Employee,
                     Password = "",
                     Email = EmployEmail,
                     PhoneNumber = "",
@@ -101,12 +101,12 @@ namespace CanteenManage.Services
 
         public async Task LoginUpdateEmployee(string employee_e_id)
         {
-            canteenManageContext.Employees.Where(e => e.EmployID == employee_e_id)
+            canteenManageContext.Employees.Where(e => e.EmployeeID == employee_e_id)
                 .ExecuteUpdate(e => e.SetProperty(x => x.IsLogin, true));
         }
         public async Task LogOutUpdateEmployee(string employee_e_id)
         {
-            canteenManageContext.Employees.Where(e => e.EmployID == employee_e_id)
+            canteenManageContext.Employees.Where(e => e.EmployeeID == employee_e_id)
                 .ExecuteUpdate(e => e.SetProperty(x => x.IsLogin, false));
         }
 
