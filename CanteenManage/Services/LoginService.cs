@@ -24,7 +24,7 @@ namespace CanteenManage.Services
         {
             var userFound = canteenManageContext.Employees
                 .Where(e =>
-                e.EmployeeID == userId
+                e.EmployeeID.ToLower() == userId.ToLower()
                 && e.Password == password
                 )
                 .FirstOrDefault();
@@ -36,7 +36,7 @@ namespace CanteenManage.Services
             Employee? userFound = null;
             userFound = await canteenManageContext.Employees
                 .Where(e =>
-                e.EmployeeID == userId
+                e.EmployeeID.ToLower() == userId.ToLower()
                 //&& e.Password == password
                 )
                 .FirstOrDefaultAsync();
