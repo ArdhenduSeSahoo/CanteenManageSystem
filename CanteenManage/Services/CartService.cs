@@ -103,7 +103,7 @@ namespace CanteenManage.Services
                 if (existingFoodOrder != null)
                 {
                     food_quantity = existingFoodOrder.Quantity;
-                    if (food_quantity <= 4)
+                    //if (food_quantity <= 4)
                     {
                         existingFoodOrder.Quantity = existingFoodOrder.Quantity + 1;
                         // Price is not calculating bcz it may changes in Food table after added to cart
@@ -136,17 +136,17 @@ namespace CanteenManage.Services
                 var totalFoodOrderByuser = await foodListingService.GetCartFoodQuantityOrderByUserCount(user_Id, (int)foodTypeEnum, userSelected_DateTime, cancellationToken);
 
                 var cart_count = await foodListingService.GetCartItemCount(user_Id, cancellationToken);
-                if (food_quantity >= 5)
-                {
-                    return Results.Ok(new FoodOrderApiReturnMessage()
-                    {
-                        food_quantity = food_quantity,
-                        total_quantity = totalFoodOrderByuser,
-                        total_quantity_cart = cart_count ?? 0,
-                        message = "Can't add more than 5 times."
-                    });
-                }
-                else
+                //if (food_quantity >= 5)
+                //{
+                //    return Results.Ok(new FoodOrderApiReturnMessage()
+                //    {
+                //        food_quantity = food_quantity,
+                //        total_quantity = totalFoodOrderByuser,
+                //        total_quantity_cart = cart_count ?? 0,
+                //        message = "Can't add more than 5 times."
+                //    });
+                //}
+                //else
                 {
                     return Results.Ok(new FoodOrderApiReturnMessage()
                     {

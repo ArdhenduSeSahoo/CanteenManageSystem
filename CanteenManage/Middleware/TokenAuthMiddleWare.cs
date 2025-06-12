@@ -70,7 +70,7 @@ namespace CanteenManage.CanteenMiddleWare
                         {
                             //string responsbody = "";
                             //_logger.LogError($"Econnect token--" + EConnect_token);
-                            if (!_appConfigProvider.IsDevelopmentEnv())
+                            if (false) //(!_appConfigProvider.IsDevelopmentEnv())
                             {
                                 try
                                 {

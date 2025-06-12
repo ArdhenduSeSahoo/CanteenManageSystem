@@ -18,105 +18,114 @@
 	</style>
 }
 
-<div class=" container-fluid h-100" style="">
+<div class="container-fluid min-vh-100 d-flex flex-column" style="">
 
-	<div class="card customCard">
-		<div class="card-body">
-			<div class="d-flex justify-content-between">
-				<div class="row">
-					<div class="col d-inline-flex">
-						<img src="~/images/package.png" class="img-fluid" alt="My Orders" style="width: 50px; height: 50px;">
-						<h3 class="mt-2">My Orders</h3>
+	<div class="row">
+		<div class="col">
+			<div class="card customCard">
+				<div class="card-body">
+					<div class="d-flex justify-content-between">
+						<div class="row">
+							<div class="col d-inline-flex">
+								<img src="~/images/package.png" class="img-fluid" alt="My Orders" style="width: 50px; height: 50px;">
+								<h3 class="mt-2">My Orders</h3>
+							</div>
+						</div>
+						<a asp-action="Index" asp-controller="OrderHistory" class="btn btn-outline-info" style="height:40px">History</a>
 					</div>
-				</div>
-				<a asp-action="Index" asp-controller="OrderHistory" class="btn btn-outline-info" style="height:40px">History</a>
-			</div>
-			<br />
-			<div class="d-flex text-center justify-content-between">
-				@if (Model.ShowAllOrder ?? false)
-				{
-					<h6>All</h6>
-				}
-				else
-				{
-					<h6>Today's</h6>
-				}
+					<br />
+					<div class="d-flex text-center justify-content-between">
+						@if (Model.ShowAllOrder ?? false)
+						{
+							<h6>All</h6>
+						}
+						else
+						{
+							<h6>Today's</h6>
+						}
 
-				@* <div class="">
+						@* <div class="">
 			<input class="form-check-input" type="checkbox" @(Model.ShowAllOrder ? "checked" : "") id="ShowAllOrder" name="ShowAllOrder">
 			<a asp-action="Index" asp-controller="MyOrders" asp-route-ShowAllOrder="@(!Model.ShowAllOrder)">Show All</a>
 		</div> *@
 
-				<div class="d-inline-flex gap-1">
-					<a asp-action="Index"
-					   asp-controller="MyOrders"
-					   asp-route-ShowAllOrder="@(!Model.ShowAllOrder??false)"
-					   class="btn btn-outline-primary btn-sm">
-						@if (Model.ShowAllOrder ?? false)
-						{
-							<text><i class="fa fa-eye"></i> Today's</text>
-						}
-						else
-						{
-							<text><i class="fa fa-eye"></i> Show All</text>
-						}
-					</a>
+						<div class="d-inline-flex gap-1">
+							<a asp-action="Index"
+							   asp-controller="MyOrders"
+							   asp-route-ShowAllOrder="@(!Model.ShowAllOrder??false)"
+							   class="btn btn-outline-primary btn-sm">
+								@if (Model.ShowAllOrder ?? false)
+								{
+									<text><i class="fa fa-eye"></i> Today's</text>
+								}
+								else
+								{
+									<text><i class="fa fa-eye"></i> Show All</text>
+								}
+							</a>
+						</div>
+
+
+
+
+					</div>
 				</div>
-
-
-
-
 			</div>
+
 		</div>
 	</div>
+	<div class="row flex-grow-1">
+		<div class="col-md-12">
 
-	@if (Model.BreakFastFoodOrders.Count > 0 || Model.LunchFoodOrders.Count > 0 || Model.SnaksFoodOrders.Count > 0)
-	{
-		<div class="row row-cols-1 row-cols-md-3">
-			@(
-					await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderListPanelView", new MyOrderListPanelViewModel()
-		{
-			PanelTitle = "Breakfast",
-			FoodOrders = Model.BreakFastFoodOrders.ToList(),
-			FoodType = CanteenManage.Utility.FoodTypeEnum.Breakfast,
-			ShowAllOrder = Model.ShowAllOrder ?? false
-		})
-					)
 
-			@(
-					await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderListPanelView", new MyOrderListPanelViewModel()
-		{
-			PanelTitle = "Lunch",
-			FoodOrders = Model.LunchFoodOrders.ToList(),
-			FoodType = CanteenManage.Utility.FoodTypeEnum.Lunch,
-			ShowAllOrder = Model.ShowAllOrder ?? false
+			@if ((Model.BreakFastFoodOrders.Count > 0 || Model.LunchFoodOrders.Count > 0 || Model.SnaksFoodOrders.Count > 0) && 3 < 2)//
+			{
+				<div class="row row-cols-1 row-cols-md-3">
+					@(
+									await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderListPanelView", new MyOrderListPanelViewModel()
+				{
+					PanelTitle = "Breakfast",
+					FoodOrders = Model.BreakFastFoodOrders.ToList(),
+					FoodType = CanteenManage.Utility.FoodTypeEnum.Breakfast,
+					ShowAllOrder = Model.ShowAllOrder ?? false
+				})
+									)
 
-		})
-					)
+					@(
+									await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderListPanelView", new MyOrderListPanelViewModel()
+				{
+					PanelTitle = "Lunch",
+					FoodOrders = Model.LunchFoodOrders.ToList(),
+					FoodType = CanteenManage.Utility.FoodTypeEnum.Lunch,
+					ShowAllOrder = Model.ShowAllOrder ?? false
 
-			@(
-					await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderListPanelView", new MyOrderListPanelViewModel()
-		{
-			PanelTitle = "Snacks",
-			FoodOrders = Model.SnaksFoodOrders.ToList(),
-			FoodType = CanteenManage.Utility.FoodTypeEnum.Snacks,
-			ShowAllOrder = Model.ShowAllOrder ?? false
-		})
-					)
+				})
+									)
+
+					@(
+									await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderListPanelView", new MyOrderListPanelViewModel()
+				{
+					PanelTitle = "Snacks",
+					FoodOrders = Model.SnaksFoodOrders.ToList(),
+					FoodType = CanteenManage.Utility.FoodTypeEnum.Snacks,
+					ShowAllOrder = Model.ShowAllOrder ?? false
+				})
+									)
+				</div>
+			}
+			else
+			{
+				<div class="card mt-lg-4 text-center h-100 py-4" style="">
+					<div class="card-body">
+						<img src="~/images/noOrders.png" alt="No Orders" style="" class="mb-3 img h-50" />
+						<h5 class="card-title text-danger">No Orders</h5>
+						<p class="card-text fw-bold">Please place some orders.</p>
+					</div>
+				</div>
+
+			}
 		</div>
-	}
-	else
-	{
-		<div class="card mt-lg-4 text-center py-4" style="min-height: 300px;">
-			<div class="card-body">
-				<img src="~/FoodImages/no-food.png" alt="No Orders" style="width: 100px; height: 100px;" class="mb-3" />
-				<h5 class="card-title text-danger">No Orders</h5>
-				<p class="card-text fw-bold">You have no orders for the day.</p>
-			</div>
-		</div>
-
-
-	}
+	</div>
 </div>
 <!-- Modal -->
 <div class="modal fade" id="removeOrderDialog" tabindex="-1" aria-labelledby="removeOrderDialogLabel" aria-hidden="true">

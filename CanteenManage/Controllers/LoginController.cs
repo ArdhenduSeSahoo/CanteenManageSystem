@@ -115,10 +115,21 @@ namespace CanteenManage.Controllers
                 {
                     empname = name;
                 }
-                var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value;
-                if (!string.IsNullOrWhiteSpace(userId))
+                if (appConfigProvider.IsDevelopmentEnv())
                 {
-                    empid = userId;
+                    var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value;
+                    if (!string.IsNullOrWhiteSpace(userId))
+                    {
+                        empid = userId;
+                    }
+                }
+                else
+                {
+                    var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "description")?.Value;
+                    if (!string.IsNullOrWhiteSpace(userId))
+                    {
+                        empid = userId;
+                    }
                 }
                 //var exp = jwtToken.Claims.FirstOrDefault(c => c.Type == "exp")?.Value;
                 //if (!string.IsNullOrWhiteSpace(exp))
