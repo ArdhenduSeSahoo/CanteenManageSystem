@@ -1,13 +1,10 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Threading.Tasks;
 using CanteenManage.Models;
 using CanteenManage.Services;
 using CanteenManage.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using Newtonsoft.Json;
 //using NuGet.Common;
 
@@ -137,7 +134,7 @@ namespace CanteenManage.Controllers
                 logger.LogError("Error in reading JWT token: " + ex.Message);
                 logger.LogError($"Token--: {portal_token}");
                 logger.LogError(ex.StackTrace);
-                //return this.RedirectToAction(actionName: "Index", controllerName: "Error");
+                //return this.RedirectToAction(actionName: "Index", controllerName: "Error", new { jasowerukasj = JsonConvert.SerializeObject(ex) });
             }
 
 
@@ -147,7 +144,7 @@ namespace CanteenManage.Controllers
             }
             else if (!string.IsNullOrEmpty(empid) || !string.IsNullOrEmpty(empname))
             {
-                var userFound = await loginService.GetOrAddEmployee(empid, empname, empEmail);
+                var userFound = await loginService.GetOrAddEmployee(userId: empid, name: empname, EmployEmail: empEmail);
                 if (userFound != null)
                 {
                     if (userFound.EmployeeTypeId == (int)EmployTypeEnum.Employee)

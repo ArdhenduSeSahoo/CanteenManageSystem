@@ -155,8 +155,22 @@
 				.build();
 			connection.on("OrderCompleteNotification", function (message) {
 				//debugger;
-				console.log("Message received from hub: " + message);
+
 				//showInfoMessage(message);
+				try{
+				var responsobj=JSON.parse(message);
+				console.log("Message received from hub: " + responsobj.OrderId);
+				if(responsobj.status==1)
+				{
+				var divorder=$('.myOrderActionPanel[data-orderid="'+responsobj.OrderId.toString()+'"]')
+				var divstatus=$('.myOrderStatusPanel[data-orderid="'+responsobj.OrderId.toString()+'"]')
+				divorder.addClass("d-none");
+				divstatus.html('<span class="badge bg-success rounded-pill px-3 py-2 shadow-sm d-inline-flex align-items-center"><i class="bi bi-check-circle"></i></span>');
+				}
+
+				} catch (err) {
+				console.error(err);
+				}
 			});
 			connection.start().catch(function (err) {
 				return console.error(err.toString());
@@ -174,7 +188,7 @@
 				connection.invoke("RequestForOrderComplete", orderId,ordername,orderqnt,userempid,username)
 				  .then((m) => {
 			  //console.log('Hub request send ');
-			  showInfoMessage("Request has send for conformation. Request will auto remove after 10 sec. ");
+			  showInfoMessage("Request has been sent for confirmation. Request will be removed after 10 sec. ");
 			})
 				.catch(function (err) {
 					showErrorMessage("Some error happened.Please refresh Page.");

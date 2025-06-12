@@ -25,7 +25,7 @@ namespace CanteenManage.Services
                     foreach (var order in signalRDataHolder.GetOrderList())
                     {
 
-                        if (DateTime.Now.Subtract(order.RequestDateTime).Seconds > 5)
+                        if (DateTime.Now.Subtract(order.RequestDateTime).Seconds > 10)
                         {
                             signalRDataHolder.RemoveOrderRequest(order);
                         }

@@ -97,7 +97,7 @@
 		<div class="card-body">
 			<div class="d-inline-flex">
 
-				<div class="card d-none" id="defaultcardorderdet" style="max-width:300px">
+				<div class="card mb-2 d-none " id="defaultcardorderdet" style="max-width:300px">
 					<div class="card-body p-2">
 						<div class="row row-cols-1">
 							<div class="col">
@@ -110,6 +110,9 @@
 									<div>Qnt.:<span id="orderqnt" style="font-weight:500"></span></div>
 								</div>
 
+							</div>
+							<div class="col">
+								<div>EmpId:<span id="orderid"></span></div>
 							</div>
 							<div class="col">
 								<div>EmpId:<span id="userempid"></span></div>
@@ -295,9 +298,10 @@
 		connection.on("OrderCompleteNotification", function (orderJson) {
 			//const msg = document.createElement("li");
 			//msg.textContent = `${user}: ${message}`;
+			//debugger;
 			//document.getElementById("messagesList").appendChild(msg);
-			//console.log("Order completed with ID: " + orderJson);
-				const myArr = JSON.parse(orderJson);
+			console.log("Order completed with ID: " + orderJson);
+				const myArr =orderJson; //JSON.parse(orderJson);
 				if(myArr.length>0)
 				{
 					$('#cardUserRequestDiv').removeClass('d-none');
@@ -307,18 +311,19 @@
 				}
 		$('#userordergrid').empty();
 		myArr.forEach(function(item) {
-				console.log("Order ID: " + item.OrderId);
+						console.log("Order ID: " + item.orderId);
 
 				var clone_card=$("#defaultcardorderdet").clone();
 				clone_card.removeClass('d-none');
-				clone_card.find("#username").html(item.UserName);
+				clone_card.find("#username").html(item.userName);
 				//var onme=clone_card.find("#ordername");
-				clone_card.find("#ordername").html(item.OrderName);
-				clone_card.find("#orderqnt").html(item.OrderQnt);
+				clone_card.find("#ordername").html(item.orderName);
+				clone_card.find("#orderqnt").html(item.orderQnt);
 				//var unam=clone_card.find("#userempid");
-				clone_card.find("#userempid").html(item.UserEmpId);
+				clone_card.find("#orderid").html(item.orderId);
+				clone_card.find("#userempid").html(item.userEmpId);
 				var confbtn=clone_card.find(".btn_conform_order_sr");
-				confbtn.attr("data-bs-orderid", item.OrderId);
+				confbtn.attr("data-bs-orderid", item.orderId);
 				$("#userordergrid").append(clone_card);
 				//console.log("Order Name: " + item.OrderName);
 				//console.log("User Emp ID: " + item.UserEmpId);
@@ -326,26 +331,29 @@
 				//console.log("Request Date Time: " + item.RequestDateTime);
 			});
 		});
-
+		connection.on("OrderCompleteSuccess", function (orderJson) {
+			console.log("Order completed with ID: " + orderJson);
+			showInfoMessage(orderJson);
+		});
 		connection.start()
 		.then(function() {
 			connection.invoke("AssignAsCanteenEmployee", "Hi");
 		})
 		.catch(function (err) {
-			return console.error(err.toString());
+		 console.error(err.toString());
 		});
 
 
 		$(document).on('click', '.btn_conform_order_sr', function(event) {
 		  // Code to execute when the button is clicked
-		  console.log('Button clicked using .on() method!');
+		  //console.log('Button clicked using .on() method!');
 		  const button = event.currentTarget
 			var orderId = button.getAttribute('data-bs-orderid');
-			console.log(orderId);
+			//console.log(orderId);
 			try {
 			connection.invoke("ConformingOrder", orderId)
 			.catch(function (err) {
-				return console.error(err.toString());
+				//return console.error(err.toString());
 				showErrorMessage("Some error happened. Please refresh page.");
 			});
 					} catch (err) {
