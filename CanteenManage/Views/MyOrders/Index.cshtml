@@ -64,10 +64,6 @@
 								}
 							</a>
 						</div>
-
-
-
-
 					</div>
 				</div>
 			</div>
@@ -77,8 +73,7 @@
 	<div class="row flex-grow-1">
 		<div class="col-md-12">
 
-
-			@if ((Model.BreakFastFoodOrders.Count > 0 || Model.LunchFoodOrders.Count > 0 || Model.SnaksFoodOrders.Count > 0) && 3 < 2)//
+			@if ((Model.BreakFastFoodOrders.Count > 0 || Model.LunchFoodOrders.Count > 0 || Model.SnaksFoodOrders.Count > 0))//
 			{
 				<div class="row row-cols-1 row-cols-md-3">
 					@(

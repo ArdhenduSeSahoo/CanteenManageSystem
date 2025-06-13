@@ -353,13 +353,12 @@ namespace CanteenManage.Services
                     &&
                     fo.Food.FoodTypeId == (int)foodTypeEnum
                     )
-                    .Where(fo =>
-                    (fo.OrderDate.Date < DateTime.Now.Date) || (fo.OrderDate.Date == DateTime.Now.Date && fo.OrderDate.Hour >= houreValue)
-                    )
                     .Where(fo => fo.OutDateStatus == (int)CartFoodOutDateEnum.InOrder)
-
                     .ToListAsync(cancellationToken);
-            return foodOrderByUseridlist;
+
+            ///bcz 24 hour format can not check in sql linq we are again filtering in memory
+            var foodOrderByUseridlist_24Hr = foodOrderByUseridlist.Where(fo => fo.OrderDate.Date < DateTime.Now.Date || (fo.OrderDate.Date == DateTime.Now.Date && int.Parse(DateTime.Now.ToString("HH")) >= houreValue)).ToList();
+            return foodOrderByUseridlist_24Hr;
         }
         public async Task<bool> RemoveCartItem(SessionDataModel sessionData, int foodId, CancellationToken cancellationToken)
         {
