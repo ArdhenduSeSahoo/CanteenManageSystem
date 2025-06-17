@@ -115,30 +115,19 @@ namespace CanteenManage.Controllers
                 {
                     empname = name;
                 }
-                if (appConfigProvider.IsDevelopmentEnv())
+                var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value;
+                if (!string.IsNullOrWhiteSpace(userId))
                 {
-                    var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value;
-                    if (!string.IsNullOrWhiteSpace(userId))
-                    {
-                        empid = userId;
-                    }
+                    empid = userId;
                 }
-                else
+                var exp = jwtToken.Claims.FirstOrDefault(c => c.Type == "exp")?.Value;
+                if (!string.IsNullOrWhiteSpace(exp))
                 {
-                    var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "description")?.Value;
-                    if (!string.IsNullOrWhiteSpace(userId))
-                    {
-                        empid = userId;
-                    }
+                    expv = exp;
                 }
-                //var exp = jwtToken.Claims.FirstOrDefault(c => c.Type == "exp")?.Value;
-                //if (!string.IsNullOrWhiteSpace(exp))
-                //{
-                //    expv = exp;
-                //}
-                //double ticks = double.Parse(exp);
-                //TimeSpan time = TimeSpan.FromMilliseconds(ticks);
-                //DateTime dateTime = DateTime.Now.Date + time;
+                double ticks = double.Parse(exp);
+                TimeSpan time = TimeSpan.FromMilliseconds(ticks);
+                DateTime dateTime = DateTime.Now.Date + time;
             }
             catch (Exception ex)
             {
@@ -315,7 +304,22 @@ namespace CanteenManage.Controllers
                     HttpContext.Session.SetString(SessionConstants.UserId, userFound.Id.ToString());
                     HttpContext.Session.SetString(SessionConstants.UserEmpId, userFound.EmployeeID.ToString());
                     HttpContext.Session.SetString(SessionConstants.UserName, userFound.Name.ToString());
-                    return this.RedirectToAction(actionName: "Index", controllerName: "CanteenEmploy");
+                    return this.RedirectToAction(actionName: "Dashboard", controllerName: "CanteenOrderReport");
+                }
+                else if (userFound.EmployeeTypeId == (int)EmployTypeEnum.Committee_Members)
+                {
+
+                    var claims = new List<Claim>
+                        {
+                            new Claim(ClaimTypes.Email, userFound.Email??""),
+                            new Claim(ClaimTypes.Name, userFound.Name),
+                            new Claim(ClaimTypes.Role, CustomDataConstants.RoleCommitteeMember) // Add user role
+                        };
+
+                    var jwttokens = loginService.GenerateJSONWebToken(claims, DateTime.Now.AddHours(8));
+                    SetJWTCookie(jwttokens, userId, "", ((int)EmployTypeEnum.CanteenStaf).ToString());
+
+                    return setCommitmemberSessionAndRedirect(userFound.Name, userFound.Id, userFound.EmployeeID, "", claims, DateTime.Now.AddHours(3));
                 }
                 else if (userFound.EmployeeTypeId == (int)EmployTypeEnum.Committee_Members)
                 {

@@ -4,7 +4,9 @@ using CanteenManage.CanteenRepository.Contexts;
 using CanteenManage.CanteenRepository.Models;
 using CanteenManage.Models;
 using CanteenManage.Utility;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Protocol;
 
 namespace CanteenManage.Services
 {
@@ -466,7 +468,81 @@ namespace CanteenManage.Services
             return ffff;
         }
 
+        public (int today, int tomorrow, int all) GetOrderCounts()
+        {
+            try
+            {
+                DateTime today = DateTime.Today;
+                DateTime tomorrow = today.AddDays(1);
 
+                var foods= contextCM.FoodOrders.AsNoTracking().Where(o => !o.IsCanceled && o.OrderDateCustom.Date == today).ToList();
+                int todayCount = contextCM.FoodOrders.AsNoTracking().Count(o => !o.IsCanceled && o.OrderDateCustom.Date == today);
+                int tomorrowCount = contextCM.FoodOrders.AsNoTracking().Count(o => !o.IsCanceled && o.OrderDateCustom.Date == tomorrow);
+                int allCount = contextCM.FoodOrders.AsNoTracking().Count(o=> !o.IsCanceled &&o.OrderDateCustom.Date>=DateTime.Now.Date);
+
+                return (todayCount, tomorrowCount, allCount);
+            }
+            catch
+            {
+                return (0, 0, 0);
+            }
+        }
+
+        public async Task<List<CanteenFoodDetailsDTOModel>> GetOrdersByDateAsync(DateTime date,FoodTypeEnum foodTypeEnum,CancellationToken cancellationToken,bool showAllData)
+        {
+            List<CanteenFoodDetailsDTOModel> orders = new List<CanteenFoodDetailsDTOModel>();
+            
+            
+
+            if (showAllData) {
+                orders = await contextCM.FoodOrders
+                 .Include(f => f.Food)
+                 .AsNoTracking()
+                 .Where(o =>
+                 o.Food.FoodTypeId == (int)foodTypeEnum
+                 && o.OrderDateCustom.Date >= DateTime.Now.Date
+                 && !o.IsCanceled
+                 )
+                 .GroupBy(f => new { f.FoodId, f.OrderDateCustom.Date })
+                 .Select(f => new CanteenFoodDetailsDTOModel()
+                 {
+                     Id = f.Max(fo => fo.Id),
+                     Name = f.Max(fm => fm.Food.Name) ?? "",
+                     OrderDate = f.Key.Date,
+                     FoodTypeId = f.Max(fm => fm.Food.FoodTypeId),
+                     Price = 0,
+                     FoodQuantity = f.Sum(fo => fo.Quantity),
+                     TotalCompleted = f.Where(fo => fo.IsCompleted).Sum(fo => fo.Quantity),
+                     TotalUnCompleted = f.Where(fo => !fo.IsCompleted).Sum(fo => fo.Quantity)
+                 })
+                 .ToListAsync(cancellationToken);
+            }
+            else {
+                orders = await contextCM.FoodOrders
+                .Include(f => f.Food)
+                .AsNoTracking()
+                .Where(o =>
+                o.Food.FoodTypeId == (int)foodTypeEnum
+                && o.OrderDateCustom.Date == date.Date
+                && !o.IsCanceled
+                )
+                .GroupBy(f => new { f.FoodId, f.OrderDateCustom.Date })
+                .Select(f => new CanteenFoodDetailsDTOModel()
+                {
+                    Id = f.Max(fo => fo.Id),
+                    Name = f.Max(fm => fm.Food.Name) ?? "",
+                    OrderDate = f.Key.Date,
+                    FoodTypeId = f.Max(fm => fm.Food.FoodTypeId),
+                    Price = 0,
+                    FoodQuantity = f.Sum(fo => fo.Quantity),
+                    TotalCompleted = f.Where(fo => fo.IsCompleted).Sum(fo => fo.Quantity),
+                    TotalUnCompleted = f.Where(fo => !fo.IsCompleted).Sum(fo => fo.Quantity)
+                })
+                .ToListAsync(cancellationToken);
+            }
+            
+            return orders;
+        }
 
 
     }
