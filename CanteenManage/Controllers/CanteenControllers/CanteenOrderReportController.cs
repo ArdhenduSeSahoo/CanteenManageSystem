@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using CanteenManage.Models;
 using CanteenManage.Services;
+using CanteenManage.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,6 +18,82 @@ namespace CanteenManage.Controllers.CanteenControllers
             this.foodListingService = foodListingService;
             _orderingService = orderingService;
         }
+
+        /// <summary>
+        /// OrderDateType is 1 for today, 2 for tomorrow, 3 for all
+        /// </summary>
+        /// <param name="OrderDateType"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> Dashboard(string? OrderDateType,CancellationToken cancellationToken)
+        {
+            string panelTitle = "";
+            CanteenDashboardViewDataModel model = new CanteenDashboardViewDataModel();
+            var counts = foodListingService.GetOrderCounts();
+            model.PanelTitle = "";
+            model.TodaysCount = counts.today;
+            model.TomorowCount=counts.tomorrow;
+            model.AllCount = counts.all;
+            if (!string.IsNullOrWhiteSpace(OrderDateType))
+            {
+                if (OrderDateType == "1")
+                {
+                    model.BreakFastFoodOrders = await foodListingService.GetOrdersByDateAsync(DateTime.Now, foodTypeEnum: FoodTypeEnum.Breakfast, cancellationToken, false);
+                    model.LunchFoodOrders = await foodListingService.GetOrdersByDateAsync(DateTime.Now, foodTypeEnum: FoodTypeEnum.Lunch, cancellationToken, false);
+                    model.SnaksFoodOrders = await foodListingService.GetOrdersByDateAsync(DateTime.Now, foodTypeEnum: FoodTypeEnum.Snacks, cancellationToken, false);
+                    model.PanelTitle = "Today";
+                }
+                else if (OrderDateType == "2")
+                {
+                    model.BreakFastFoodOrders = await foodListingService.GetOrdersByDateAsync(DateTime.Now.AddDays(1), foodTypeEnum: FoodTypeEnum.Breakfast, cancellationToken, false);
+                    model.LunchFoodOrders = await foodListingService.GetOrdersByDateAsync(DateTime.Now.AddDays(1), foodTypeEnum: FoodTypeEnum.Lunch, cancellationToken, false);
+                    model.SnaksFoodOrders = await foodListingService.GetOrdersByDateAsync(DateTime.Now.AddDays(1), foodTypeEnum: FoodTypeEnum.Snacks, cancellationToken, false);
+                    model.PanelTitle = "Tomorrow";
+                }
+                else if (OrderDateType == "3")
+                {
+                    model.BreakFastFoodOrders = await foodListingService.GetOrdersByDateAsync(DateTime.Now, foodTypeEnum: FoodTypeEnum.Breakfast, cancellationToken, true);
+                    model.LunchFoodOrders = await foodListingService.GetOrdersByDateAsync(DateTime.Now, foodTypeEnum: FoodTypeEnum.Lunch, cancellationToken,true);
+                    model.SnaksFoodOrders = await foodListingService.GetOrdersByDateAsync(DateTime.Now, foodTypeEnum: FoodTypeEnum.Snacks, cancellationToken, true);
+                    model.PanelTitle = "All";
+                }
+            }
+            return View(model);
+        }
+
+        [HttpGet]
+        public JsonResult GetOrderCounts()
+        {
+            var counts = foodListingService.GetOrderCounts();
+
+            return Json(new
+            {
+                today = counts.today,
+                tomorrow = counts.tomorrow,
+                all = counts.all
+            });
+        }
+
+        [HttpGet]
+        public JsonResult GetOrdersByDate(string? type)
+        {
+            DateTime? date = null;
+            if (type == "today")
+                date = DateTime.Today;
+            else if (type == "tomorrow")
+                date = DateTime.Today.AddDays(1);
+            // else keep null for "all"
+
+            //var result = foodListingService.GetOrdersByDateAsync(date);
+
+            //return Json(result.Select(g => new
+            //{
+            //    mealType = g.MealType,
+            //    orders = g.Orders
+            //}));
+            return Json("{}");
+        }
+
 
         public async Task<IActionResult> CanteenOrderReport(CancellationToken cancellationToken, int? month, int? year)
         {
