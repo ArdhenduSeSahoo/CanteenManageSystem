@@ -61,7 +61,7 @@ background-color:#f5fbff
 		<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-gradient border-bottom box-shadow mb-3" style="background-color:white">
 			<div class="container-fluid">
 				<div class="bg-white rounded-3">
-					<a class="navbar-brand" style="margin:0px" asp-area="" asp-controller="CanteenEmploy" asp-action="Index">
+					<a class="navbar-brand" style="margin:0px" asp-area="" asp-controller="CanteenOrderReport" asp-action="Dashboard">
 						<img src="~/images/logo3.png" alt="logo" class="img-fluid" style="height:30px;width:130px">
 
 					</a>
@@ -79,6 +79,9 @@ background-color:#f5fbff
 
 				<div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
 					<ul class="navbar-nav flex-grow-1" style="">
+						<li class="nav-item customNavItem">
+							<a class="nav-link nav_link text-center" asp-area="" asp-controller="CanteenOrderReport" asp-action="Dashboard">Dashboard</a>
+						</li>
 						<li class="nav-item customNavItem">
 							<a class="nav-link nav_link text-center" asp-area="" asp-controller="CanteenEmploy" asp-action="Index">All Orders</a>
 						</li>

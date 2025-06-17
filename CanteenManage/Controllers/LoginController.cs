@@ -307,7 +307,7 @@ namespace CanteenManage.Controllers
                     HttpContext.Session.SetString(SessionConstants.UserId, userFound.Id.ToString());
                     HttpContext.Session.SetString(SessionConstants.UserEmpId, userFound.EmployeeID.ToString());
                     HttpContext.Session.SetString(SessionConstants.UserName, userFound.Name.ToString());
-                    return this.RedirectToAction(actionName: "Index", controllerName: "CanteenEmploy");
+                    return this.RedirectToAction(actionName: "Dashboard", controllerName: "CanteenOrderReport");
                 }
                 else if (userFound.EmployeeTypeId == (int)EmployTypeEnum.Committee_Members)
                 {
