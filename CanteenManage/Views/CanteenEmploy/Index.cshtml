@@ -31,6 +31,8 @@
 								<th scope="col">Date</th>
 								<th scope="col">Food</th>
 								<th scope="col">Quantity</th>
+								<th scope="col">Com.</th>
+								<th scope="col">UnCom.</th>
 								<th scope="col"></th>
 							</tr>
 						</thead>
@@ -41,6 +43,8 @@
 									<td>@order.OrderDate.ToString("dd/MM-")@order.OrderDate.DayOfWeek</td>
 									<td>@order.Name</td>
 									<td>@order.FoodQuantity.ToString()</td>
+									<th style="font-weight:normal;color:green">@order.TotalCompleted.ToString()</th>
+									<th style="font-weight:normal;color:red">@order.TotalUnCompleted.ToString()</th>
 									<td></td>
 								</tr>
 							}
@@ -61,6 +65,8 @@
 								<th scope="col">Date</th>
 								<th scope="col">Name</th>
 								<th scope="col">Quantity</th>
+								<th scope="col">Com.</th>
+								<th scope="col">UnCom.</th>
 								<th scope="col"></th>
 							</tr>
 						</thead>
@@ -71,6 +77,8 @@
 									<th scope="row" style="font-weight:normal">@order.OrderDate.ToString("dd/MM-")@order.OrderDate.DayOfWeek</th>
 									<td>@order.Name</td>
 									<th style="font-weight:normal">@order.FoodQuantity.ToString()</th>
+									<th style="font-weight:normal;color:green">@order.TotalCompleted.ToString()</th>
+									<th style="font-weight:normal;color:red">@order.TotalUnCompleted.ToString()</th>
 									<td>
 									</td>
 								</tr>
@@ -92,6 +100,8 @@
 								<th scope="col">Date</th>
 								<th scope="col">Name</th>
 								<th scope="col">Quantity</th>
+								<th scope="col">Com.</th>
+								<th scope="col">UnCom.</th>
 								<th scope="col"></th>
 							</tr>
 						</thead>
@@ -102,6 +112,8 @@
 									<th scope="row" style="font-weight:normal">@order.OrderDate.ToString("dd/MM-")@order.OrderDate.DayOfWeek</th>
 									<td>@order.Name</td>
 									<th style="font-weight:normal">@order.FoodQuantity.ToString()</th>
+									<th style="font-weight:normal;color:green">@order.TotalCompleted.ToString()</th>
+									<th style="font-weight:normal;color:red">@order.TotalUnCompleted.ToString()</th>
 									<td>
 									</td>
 								</tr>

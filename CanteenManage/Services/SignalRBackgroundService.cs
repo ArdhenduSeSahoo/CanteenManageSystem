@@ -27,7 +27,7 @@ namespace CanteenManage.Services
 
                         if (DateTime.Now.Subtract(order.RequestDateTime).Seconds > 10)
                         {
-                            signalRDataHolder.RemoveOrderRequest(order);
+                            // signalRDataHolder.RemoveOrderRequest(order);
                         }
                     }
                 }

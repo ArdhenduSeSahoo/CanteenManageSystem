@@ -33,7 +33,7 @@ namespace CanteenManage.Middleware
                 {
                     _logger.LogError("An error occurred while processing the request. From ErrorHandlerMiddleWare---" + ex.Message);
                     context.Response.StatusCode = StatusCodes.Status404NotFound;
-                    await context.Response.WriteAsJsonAsync(new { status = "Some error Found." + ex.StackTrace });
+                    await context.Response.WriteAsJsonAsync(new { status = "Some error Found.---" + ex.Message + "---" + ex.StackTrace });
                     return;
                 }
                 else

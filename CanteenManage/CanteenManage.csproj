@@ -24,11 +24,13 @@
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
 		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.10.0" />
+		<PackageReference Include="WebEssentials.AspNetCore.PWA" Version="1.0.85" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<Folder Include="Data\" />
 		<Folder Include="Migrations\" />
+		<Folder Include="wwwroot\CMS_Files\" />
 		<Folder Include="wwwroot\lib\bootstrap\" />
 		<Folder Include="wwwroot\lib\bootstrap\dist\js\" />
 		<Folder Include="wwwroot\lib\jquery-validation-unobtrusive\" />

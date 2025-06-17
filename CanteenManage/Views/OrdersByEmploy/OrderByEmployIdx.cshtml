@@ -1,5 +1,6 @@
 ﻿@using CanteenManage.Utility
-@model CanteenManage.Models.OrderByEmployViewDataModel
+@model CanteenManage.Models.OrderByEmployViewDataModel;
+@using Newtonsoft.Json;
 @*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
@@ -141,7 +142,7 @@
 				<input type="hidden" name="FoodType" value="@Model.FoodType" />
 
 				<div class="col-auto">
-					<input type="text" class="form-control" id="empName" name="searchTerm" value="@Model.SearchValue" placeholder="Employee Name and Id" />
+					<input type="text" class="form-control" id="empName" name="searchTerm" value="@Model.SearchValue" placeholder="Name or Id or Orderid" />
 				</div>
 
 				<div class="col-auto">
@@ -151,8 +152,6 @@
 				</div>
 			</form>
 		</div>
-
-
 
 
 		<div class="table-responsive">
@@ -280,15 +279,17 @@
 			</style>
 		</div>
 	</div>
-
 </div>
 
 
 @section Scripts {
 	<script src="~/js/signalr.min.js"></script>
 
-@* <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script> *@
+	@* <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script> *@
 	<script>
+		function searchData(){
+			var foodOrders=@(JsonConvert.SerializeObject(Model.FoodOrders));
+		}
 		$(document).ready(function() {
 		const connection = new signalR.HubConnectionBuilder()
 			.withUrl("/OrderingHub")
@@ -309,9 +310,10 @@
 				else{
 					$('#cardUserRequestDiv').addClass('d-none');
 				}
+		console.log(myArr.length);
 		$('#userordergrid').empty();
 		myArr.forEach(function(item) {
-						console.log("Order ID: " + item.orderId);
+				//console.log("Order ID: " + item.orderId);
 
 				var clone_card=$("#defaultcardorderdet").clone();
 				clone_card.removeClass('d-none');

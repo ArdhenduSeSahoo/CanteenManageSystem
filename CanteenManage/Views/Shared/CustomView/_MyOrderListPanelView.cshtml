@@ -85,7 +85,7 @@
 							}
 
 							<tr data-orderid="@order.OrderID">
-								<td>@order.OrderDateCustom.ToString("dd-MM-")@order.OrderDateCustom.ToString("ddd")</td>
+								<td>@order.OrderDateCustom.ToString("dd-MMM-")@order.OrderDateCustom.ToString("ddd")</td>
 								<td>@order.OrderID</td>
 								<td class="customTableBoldCell" colspan="4">
 
@@ -149,7 +149,27 @@
 												}
 												else
 												{
+													@if (order.Rating == null)
+													{
+														<a href="javascript:void(0);"
+														   data-bs-toggle="modal"
+														   data-bs-target="#exampleModal"
+														   data-bs-orderid="@order.Id"
+														   title="Add Review">
+															<i class="bi bi-chat-left-text-fill fs-5 text-primary"></i>
+														</a>
+													}
+													else
+													{
+														<a href="javascript:void(0);" data-bs-toggle="modal"
+														   data-bs-target="#viewReviewModal"
+														   title="View Review"
+														   data-bs-rating="@order.Rating"
+														   data-bs-review="@order.Review">
+															<i class="bi bi-eye-fill fs-5 text-success"></i>
+														</a>
 
+													}
 												}
 
 											</td>

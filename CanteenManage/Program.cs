@@ -5,16 +5,11 @@ using CanteenManage.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Options;
-using static NuGet.Packaging.PackagingConstants;
-using Microsoft.IdentityModel.Tokens;
 using CanteenManage.Middleware;
 using CanteenManage.Utility;
-using System.Configuration;
 using Serilog;
 using CanteenManage.Controllers;
 using Serilog.Events;
-using Microsoft.CodeAnalysis.Elfie.Serialization;
 
 
 
@@ -82,6 +77,7 @@ try
     // Add services to the container.
     builder.Services.AddControllersWithViews();
     builder.Services.AddDistributedMemoryCache();
+    builder.Services.AddProgressiveWebApp();
 
 
 
@@ -153,7 +149,11 @@ try
         e.EnableDetailedErrors = true;
         e.MaximumReceiveMessageSize = 1024000; // Set maximum message size to 1 MB
     });
-    //builder.Services.AddHostedService<SignalRBackgroundService>();
+    if (!builder.Environment.IsDevelopment())
+    {
+        builder.Services.AddHostedService<SignalRBackgroundService>();
+    }
+
     builder.Services.AddScoped<CanteenManageContextFactory>();
     builder.Services.AddScoped(sp => sp.GetRequiredService<CanteenManageContextFactory>().CreateDbContext());
 

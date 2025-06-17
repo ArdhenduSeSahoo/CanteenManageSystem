@@ -79,7 +79,7 @@ namespace CanteenManage.Controllers
             {
                 if (!string.IsNullOrWhiteSpace(orderId))
                 {
-                    var completeResult = true;//await foodListingService.CompleteFoodOrder(orderId);
+                    var completeResult = await foodListingService.CompleteFoodOrder(orderId);
                     var removingOrder = signalRDataHolder.RemoveOrderRequest(orderId);
                     if (completeResult)
                     {
