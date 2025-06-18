@@ -127,7 +127,8 @@
 	<div class="modal-dialog modal-dialog-centered">
 		<div class="modal-content">
 			<div class="modal-header border-0">
-				<div>Delete Item</div>
+				<h1 class="modal-title fs-5 text-danger" id="removeOrderDialogLabel">Delete Item</h1>
+				<div></div>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
@@ -141,8 +142,8 @@
 				</div>
 			</div>
 			<div class="modal-footer border-0">
-				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-				<button type="button" class="btn btn-danger" id="removemodaldelete">Delete</button>
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+				<button type="button" class="btn btn-danger" id="removemodaldelete" data-bs-dismiss="modal"> <i class="fa fa-trash" aria-hidden="true"></i> Delete</button>
 			</div>
 		</div>
 	</div>
@@ -353,7 +354,7 @@
 				var panelname= $( "#removeOrderDialog").find('#panelname').val();
 				sendRequestForCancel(orderid,foodorderid);
 
-				$("#removeOrderDialog").modal('toggle');
+				//$("#removeOrderDialog").modal('toggle');
 				var divcard= $("div[data-bs-panelname='"+ panelname +"']");
 				var rlen=$("div[data-bs-panelname='"+ panelname +"']").first('table').find(' tbody tr').length;
 				if(rlen==0)

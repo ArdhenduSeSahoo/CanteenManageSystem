@@ -25,15 +25,19 @@ namespace CanteenManage.Controllers.CanteenControllers
         /// <param name="OrderDateType"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task<IActionResult> Dashboard(string? OrderDateType,CancellationToken cancellationToken)
+        public async Task<IActionResult> Dashboard(string? OrderDateType, CancellationToken cancellationToken)
         {
             string panelTitle = "";
             CanteenDashboardViewDataModel model = new CanteenDashboardViewDataModel();
             var counts = foodListingService.GetOrderCounts();
             model.PanelTitle = "";
             model.TodaysCount = counts.today;
-            model.TomorowCount=counts.tomorrow;
+            model.TomorowCount = counts.tomorrow;
             model.AllCount = counts.all;
+            if (string.IsNullOrWhiteSpace(OrderDateType))
+            {
+                OrderDateType = "1";
+            }
             if (!string.IsNullOrWhiteSpace(OrderDateType))
             {
                 if (OrderDateType == "1")
@@ -53,7 +57,7 @@ namespace CanteenManage.Controllers.CanteenControllers
                 else if (OrderDateType == "3")
                 {
                     model.BreakFastFoodOrders = await foodListingService.GetOrdersByDateAsync(DateTime.Now, foodTypeEnum: FoodTypeEnum.Breakfast, cancellationToken, true);
-                    model.LunchFoodOrders = await foodListingService.GetOrdersByDateAsync(DateTime.Now, foodTypeEnum: FoodTypeEnum.Lunch, cancellationToken,true);
+                    model.LunchFoodOrders = await foodListingService.GetOrdersByDateAsync(DateTime.Now, foodTypeEnum: FoodTypeEnum.Lunch, cancellationToken, true);
                     model.SnaksFoodOrders = await foodListingService.GetOrdersByDateAsync(DateTime.Now, foodTypeEnum: FoodTypeEnum.Snacks, cancellationToken, true);
                     model.PanelTitle = "All";
                 }
@@ -123,9 +127,9 @@ namespace CanteenManage.Controllers.CanteenControllers
             var data = await foodListingService.GetCanteenOrderReportDataByDateRange(orderDate, cancellationToken);
             return View(data);
         }
-            [HttpGet]
+        [HttpGet]
         public async Task<IActionResult> Report(DateTime orderDate, CancellationToken cancellationToken)
-        {   
+        {
             var data = await foodListingService.GetCanteenOrderReportDataByDateRange(orderDate, cancellationToken);
             return View(data);
         }

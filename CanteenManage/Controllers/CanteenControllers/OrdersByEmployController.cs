@@ -25,6 +25,10 @@ namespace CanteenManage.Controllers.CanteenControllers
 
             try
             {
+                if (string.IsNullOrEmpty(FoodType))
+                {
+                    FoodType = Convert.ToString((int)FoodTypeEnum.Breakfast) ?? "1";
+                }
                 if (!string.IsNullOrEmpty(FoodType))
                 {
                     var foodtype_qp = Convert.ToInt32(FoodType);
