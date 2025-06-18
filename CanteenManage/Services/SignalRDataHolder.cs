@@ -24,7 +24,12 @@ namespace CanteenManage.Services
         {
             if (order != null)
             {
-                RequestOrderList.Add(order);
+                var foundorder = RequestOrderList.Where(x => x.OrderId == order.OrderId).FirstOrDefault();
+                if (foundorder == null)
+                {
+                    RequestOrderList.Add(order);
+                }
+
             }
         }
         public List<string> GetCanteenEmployeeList()

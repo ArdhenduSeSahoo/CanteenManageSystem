@@ -1,4 +1,5 @@
-﻿@*
+﻿@model CanteenManage.Models.ErrorViewDataModels
+@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
@@ -10,9 +11,8 @@
 
 <html>
 <head>
-	<title>Login Page</title>
-	<!--Made with love by Mutiullah Samim -->
-	<!--Bootsrap 4 CDN-->
+	<title>Error Page</title>
+
 	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
 	<!--Fontawesome CDN-->
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
@@ -26,14 +26,30 @@
 <body>
 	<div class="container-fluid justify-content-center align-content-center text-center">
 		<div class="d-flex align-items-center justify-content-center vh-100">
-			<div class="card border-danger mb-3" style="">
+			<div class="card border-danger" style="">
 
 				<div class="card-body text-danger">
 					<img src="~/images/accessdenied1.jpg" class="img img-fluid" style="height:470px;width:500px;" />
 					<h5 class="card-title">Access denied</h5>
 					<p class="card-text">Something went wrong or You have Signed out.</p>
+
 					<p class="card-text">Please login again form portal</p>
-					<h5><a href="@ViewBag.redireURL" class="btn btn-sm btn-primary">Esspl E-Connect</a> </h5>
+					<h5><a href="@Model.RedirectURL" class="btn btn-sm btn-primary">@Model.RedirectLinkName</a> </h5>
+
+				</div>
+				<div class="card-footer border-0 bg-white justify-content-start">
+					<div class="card">
+						<div class="card-header p-0 bg-white">
+							<a class="btn" data-bs-toggle="collapse" href="#collapseOne">
+								More details
+							</a>
+						</div>
+						<div id="collapseOne" class="collapse" data-bs-parent="#accordion">
+							<div class="card-body">
+								@Model.Error
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 

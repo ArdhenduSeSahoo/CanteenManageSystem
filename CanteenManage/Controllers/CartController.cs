@@ -28,6 +28,11 @@ namespace CanteenManage.Controllers
             try
             {
                 SessionDataModel sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
+                await cartService.CheckOutOfOrderInCart(
+                                                                foodTypeEnum: FoodTypeEnum.Breakfast,
+                                                                sessionData: sessionDataModel,
+                                                                cancellationToken: cancellationToken
+                                                                );
                 var breakfastCart = await cartService.getCartList((int)FoodTypeEnum.Breakfast,
                     sessionDataModel.UserIdOrZero,
                     cancellationToken

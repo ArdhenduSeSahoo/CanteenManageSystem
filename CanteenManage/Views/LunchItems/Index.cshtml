@@ -62,7 +62,8 @@
 				@(
 							await Html.PartialAsync("_FoodItemCardView", new FoodItemCardDataModel()
 			{
-				food = food,
+				Food = food,
+				ShowAddToCartButton = true,
 			})
 							)
 			</div>

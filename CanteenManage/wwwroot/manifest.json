@@ -1,0 +1,51 @@
+{
+    "name": "ESSPLCanteen",
+    "short_name": "ESSCanteen",
+    "description": "Esspl canteen application",
+    "theme_color": "#2196f3",
+    "background_color": "#2196f3",
+    "display": "standalone",
+    "start_url": "/",
+    "icons": [
+        {
+            "src": "images/logo12.png",
+            "sizes": "72x72",
+            "type": "image/png"
+        },
+        {
+            "src": "images/logo12.png",
+            "sizes": "96x96",
+            "type": "image/png"
+        },
+        {
+            "src": "images/logo12.png",
+            "sizes": "128x128",
+            "type": "image/png"
+        },
+        {
+            "src": "images/logo12.png",
+            "sizes": "144x144",
+            "type": "image/png"
+        },
+        {
+            "src": "images/logo12.png",
+            "sizes": "152x152",
+            "type": "image/png"
+        },
+        {
+            "src": "images/logo12.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "images/logo12.png",
+            "sizes": "384x384",
+            "type": "image/png"
+        },
+        {
+            "src": "images/logo12.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}

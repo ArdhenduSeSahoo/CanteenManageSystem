@@ -298,6 +298,7 @@ namespace CanteenManage.Controllers.CommitteeMembers
                     Price = foodFormDataModel.EmployeePrice + foodFormDataModel.SubsidyPrice,
                     FoodTypeId = foodFormDataModel.FoodTypeId,
                     IsAvailable = foodFormDataModel.IsAvailable,
+                    IsVegFood = foodFormDataModel.IsVegFood,
                     ImageUrl = foodFormDataModel.ImageUrl,
                     Rating = foodFormDataModel.Rating,
                     FoodAvailabilityDays = foodAvailabilityDays,

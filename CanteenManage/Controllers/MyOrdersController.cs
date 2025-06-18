@@ -163,9 +163,6 @@ namespace CanteenManage.Controllers
             return Results.Ok(result);
         }
 
-
-
-
         [HttpPost]
         public async Task<IActionResult> removeOrder(IFormCollection formcollect, CancellationToken cancellationToken)
         {
@@ -197,6 +194,29 @@ namespace CanteenManage.Controllers
             }
 
             return RedirectToAction("Index", new { ShowAllOrder = true });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> addReview(IFormCollection formcollect)
+        {
+
+            try
+            {
+                var options = formcollect["options"];
+                var review = formcollect["review_text"];
+                var orderId = formcollect["order_id"];
+                var reviewdata = formcollect["review_text"];
+                if (!string.IsNullOrEmpty(options) || !string.IsNullOrEmpty(review) || !string.IsNullOrEmpty(orderId))
+                {
+                    SessionDataModel sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
+                    await orderingService.addReview(sessionDataModel, int.Parse(orderId), int.Parse(options), review);
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return RedirectToAction("Index");
         }
 
     }

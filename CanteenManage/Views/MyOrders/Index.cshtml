@@ -18,112 +18,117 @@
 	</style>
 }
 
-<div class=" container-fluid h-100" style="">
+<div class="container-fluid min-vh-100 d-flex flex-column" style="">
 
-	<div class="card customCard">
-		<div class="card-body">
-			<div class="d-flex justify-content-between">
-				<div class="row">
-					<div class="col d-inline-flex">
-						<img src="~/images/package.png" class="img-fluid" alt="My Orders" style="width: 50px; height: 50px;">
-						<h3 class="mt-2">My Orders</h3>
+	<div class="row">
+		<div class="col">
+			<div class="card customCard">
+				<div class="card-body">
+					<div class="d-flex justify-content-between">
+						<div class="row">
+							<div class="col d-inline-flex">
+								<img src="~/images/package.png" class="img-fluid" alt="My Orders" style="width: 50px; height: 50px;">
+								<h3 class="mt-2">My Orders</h3>
+							</div>
+						</div>
+						<a asp-action="Index" asp-controller="OrderHistory" class="btn btn-outline-info" style="height:40px">History</a>
 					</div>
-				</div>
-				<a asp-action="Index" asp-controller="OrderHistory" class="btn btn-outline-info" style="height:40px">History</a>
-			</div>
-			<br />
-			<div class="d-flex text-center justify-content-between">
-				@if (Model.ShowAllOrder ?? false)
-				{
-					<h6>All</h6>
-				}
-				else
-				{
-					<h6>Today's</h6>
-				}
+					<br />
+					<div class="d-flex text-center justify-content-between">
+						@if (Model.ShowAllOrder ?? false)
+						{
+							<h6>All</h6>
+						}
+						else
+						{
+							<h6>Today's</h6>
+						}
 
-				@* <div class="">
+						@* <div class="">
 			<input class="form-check-input" type="checkbox" @(Model.ShowAllOrder ? "checked" : "") id="ShowAllOrder" name="ShowAllOrder">
 			<a asp-action="Index" asp-controller="MyOrders" asp-route-ShowAllOrder="@(!Model.ShowAllOrder)">Show All</a>
 		</div> *@
 
-				<div class="d-inline-flex gap-1">
-					<a asp-action="Index"
-					   asp-controller="MyOrders"
-					   asp-route-ShowAllOrder="@(!Model.ShowAllOrder??false)"
-					   class="btn btn-outline-primary btn-sm">
-						@if (Model.ShowAllOrder ?? false)
-						{
-							<text><i class="fa fa-eye"></i> Today's</text>
-						}
-						else
-						{
-							<text><i class="fa fa-eye"></i> Show All</text>
-						}
-					</a>
+						<div class="d-inline-flex gap-1">
+							<a asp-action="Index"
+							   asp-controller="MyOrders"
+							   asp-route-ShowAllOrder="@(!Model.ShowAllOrder??false)"
+							   class="btn btn-outline-primary btn-sm">
+								@if (Model.ShowAllOrder ?? false)
+								{
+									<text><i class="fa fa-eye"></i> Today's</text>
+								}
+								else
+								{
+									<text><i class="fa fa-eye"></i> Show All</text>
+								}
+							</a>
+						</div>
+					</div>
 				</div>
-
-
-
-
 			</div>
+
 		</div>
 	</div>
+	<div class="row flex-grow-1">
+		<div class="col-md-12">
 
-	@if (Model.BreakFastFoodOrders.Count > 0 || Model.LunchFoodOrders.Count > 0 || Model.SnaksFoodOrders.Count > 0)
-	{
-		<div class="row row-cols-1 row-cols-md-3">
-			@(
-					await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderListPanelView", new MyOrderListPanelViewModel()
-		{
-			PanelTitle = "Breakfast",
-			FoodOrders = Model.BreakFastFoodOrders.ToList(),
-			FoodType = CanteenManage.Utility.FoodTypeEnum.Breakfast,
-			ShowAllOrder = Model.ShowAllOrder ?? false
-		})
-					)
+			@if ((Model.BreakFastFoodOrders.Count > 0 || Model.LunchFoodOrders.Count > 0 || Model.SnaksFoodOrders.Count > 0))//
+			{
+				<div class="row row-cols-1 row-cols-md-3">
+					@(
+									await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderListPanelView", new MyOrderListPanelViewModel()
+				{
+					PanelTitle = "Breakfast",
+					FoodOrders = Model.BreakFastFoodOrders.ToList(),
+					FoodType = CanteenManage.Utility.FoodTypeEnum.Breakfast,
+					ShowAllOrder = Model.ShowAllOrder ?? false
+				})
+									)
 
-			@(
-					await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderListPanelView", new MyOrderListPanelViewModel()
-		{
-			PanelTitle = "Lunch",
-			FoodOrders = Model.LunchFoodOrders.ToList(),
-			FoodType = CanteenManage.Utility.FoodTypeEnum.Lunch,
-			ShowAllOrder = Model.ShowAllOrder ?? false
+					@(
+									await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderListPanelView", new MyOrderListPanelViewModel()
+				{
+					PanelTitle = "Lunch",
+					FoodOrders = Model.LunchFoodOrders.ToList(),
+					FoodType = CanteenManage.Utility.FoodTypeEnum.Lunch,
+					ShowAllOrder = Model.ShowAllOrder ?? false
 
-		})
-					)
+				})
+									)
 
-			@(
-					await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderListPanelView", new MyOrderListPanelViewModel()
-		{
-			PanelTitle = "Snacks",
-			FoodOrders = Model.SnaksFoodOrders.ToList(),
-			FoodType = CanteenManage.Utility.FoodTypeEnum.Snacks,
-			ShowAllOrder = Model.ShowAllOrder ?? false
-		})
-					)
+					@(
+									await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderListPanelView", new MyOrderListPanelViewModel()
+				{
+					PanelTitle = "Snacks",
+					FoodOrders = Model.SnaksFoodOrders.ToList(),
+					FoodType = CanteenManage.Utility.FoodTypeEnum.Snacks,
+					ShowAllOrder = Model.ShowAllOrder ?? false
+				})
+									)
+				</div>
+			}
+			else
+			{
+				<div class="card mt-lg-4 text-center h-100 py-4" style="">
+					<div class="card-body">
+						<img src="~/images/noOrders.png" alt="No Orders" style="" class="mb-3 img h-50" />
+						<h5 class="card-title text-danger">No Orders</h5>
+						<p class="card-text fw-bold">Please place some orders.</p>
+					</div>
+				</div>
+
+			}
 		</div>
-	}
-	else
-	{
-		<div class="card mt-lg-4 text-center py-4" style="min-height: 300px;">
-			<div class="card-body">
-				<img src="~/FoodImages/no-food.png" alt="No Orders" style="width: 100px; height: 100px;" class="mb-3" />
-				<h5 class="card-title text-danger">No Orders</h5>
-				<p class="card-text fw-bold">You have no orders for the day.</p>
-			</div>
-		</div>
-
-
-	}
+	</div>
 </div>
 <!-- Modal -->
 <div class="modal fade" id="removeOrderDialog" tabindex="-1" aria-labelledby="removeOrderDialogLabel" aria-hidden="true">
 	<div class="modal-dialog modal-dialog-centered">
 		<div class="modal-content">
 			<div class="modal-header border-0">
-				<div>Delete Item</div>
+				<h1 class="modal-title fs-5 text-danger" id="removeOrderDialogLabel">Delete Item</h1>
+				<div></div>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
@@ -137,15 +142,94 @@
 				</div>
 			</div>
 			<div class="modal-footer border-0">
-				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-				<button type="button" class="btn btn-danger" id="removemodaldelete">Delete</button>
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+				<button type="button" class="btn btn-danger" id="removemodaldelete" data-bs-dismiss="modal"> <i class="fa fa-trash" aria-hidden="true"></i> Delete</button>
 			</div>
 		</div>
 	</div>
 </div>
 
-@section Scripts {
+<div class="modal fade " id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h1 class="modal-title fs-5" id="exampleModalLabel">Review</h1>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<form asp-action="addReview">
+				<div class="modal-body">
 
+					<input type="hidden" name="order_id" id="order_id" value="0" />
+					<div class="form-check form-check-inline" style="margin:1px;padding:5px">
+						<input type="radio" class="btn-check" name="options" id="option1" value="1" autocomplete="off">
+						<label class="btn btn-outline-info" for="option1">
+							<img src="~/images/emoji/Emoji1.png" alt="Sad" style="width: 30px; height: 30px;" />
+						</label>
+					</div>
+					<div class="form-check form-check-inline" style="margin:1px;padding:5px">
+						<input type="radio" class="btn-check" name="options" id="option2" value="2" autocomplete="off">
+						<label class="btn btn-outline-info" for="option2">
+							<img src="~/images/emoji/Emoji2.png" alt="Sad" style="width: 30px; height: 30px;" />
+						</label>
+					</div>
+					<div class="form-check form-check-inline" style="margin:1px;padding:5px">
+						<input type="radio" class="btn-check" name="options" value="3" id="option3" autocomplete="off">
+						<label class="btn btn-outline-info" for="option3">
+							<img src="~/images/emoji/Emoji3.png" alt="Sad" style="width: 30px; height: 30px;" />
+						</label>
+					</div>
+					<div class="form-check form-check-inline" style="margin:1px;padding:5px">
+						<input type="radio" class="btn-check" name="options" value="4" id="option4" autocomplete="off">
+						<label class="btn btn-outline-info" for="option4">
+							<img src="~/images/emoji/Emoji4.png" alt="Sad" style="width: 30px; height: 30px;" />
+						</label>
+					</div>
+					<div class="form-check form-check-inline" style="margin:1px;padding:5px">
+						<input type="radio" class="btn-check" name="options" id="option5" value="5" autocomplete="off">
+						<label class="btn btn-outline-info" for="option5">
+							<img src="~/images/emoji/Emoji5.png" alt="Sad" style="width: 30px; height: 30px;" />
+						</label>
+					</div>
+					<div class="mb-3">
+						<label for="message-text" class="col-form-label">Message:</label>
+						<textarea class="form-control" name="review_text" id="message-text"></textarea>
+					</div>
+
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+					<button type="submit" class="btn btn-primary">Submit</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<!-- Modal to View Review -->
+<div class="modal fade" id="viewReviewModal" tabindex="-1" aria-labelledby="viewReviewModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="viewReviewModalLabel">Feedback</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<p>
+					<strong>Rating:</strong>
+					<img src="" id="ratingimg" alt="Rating Emoji" style="width: 40px; height: 40px;" />
+				</p>
+				<p><strong>Comment:</strong> <span id="reviewText"></span></p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+@section Scripts {
+	<script src="~/js/reviewModals_Min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
 	<script>
 			$(document).ready(function() {
@@ -155,8 +239,22 @@
 				.build();
 			connection.on("OrderCompleteNotification", function (message) {
 				//debugger;
-				console.log("Message received from hub: " + message);
+
 				//showInfoMessage(message);
+				try{
+				var responsobj=JSON.parse(message);
+				console.log("Message received from hub: " + responsobj.OrderId);
+				if(responsobj.status==1)
+				{
+				var divorder=$('.myOrderActionPanel[data-orderid="'+responsobj.OrderId.toString()+'"]')
+				var divstatus=$('.myOrderStatusPanel[data-orderid="'+responsobj.OrderId.toString()+'"]')
+				divorder.addClass("d-none");
+				divstatus.html('<span class="badge bg-success rounded-pill px-3 py-2 shadow-sm d-inline-flex align-items-center"><i class="bi bi-check-circle"></i></span>');
+				}
+
+				} catch (err) {
+				console.error(err);
+				}
 			});
 			connection.start().catch(function (err) {
 				return console.error(err.toString());
@@ -174,7 +272,7 @@
 				connection.invoke("RequestForOrderComplete", orderId,ordername,orderqnt,userempid,username)
 				  .then((m) => {
 			  //console.log('Hub request send ');
-			  showInfoMessage("Request has send for conformation. Request will auto remove after 10 sec. ");
+			  showInfoMessage("Request has been sent for confirmation. Request will be removed after 10 sec. ");
 			})
 				.catch(function (err) {
 					showErrorMessage("Some error happened.Please refresh Page.");
@@ -256,7 +354,7 @@
 				var panelname= $( "#removeOrderDialog").find('#panelname').val();
 				sendRequestForCancel(orderid,foodorderid);
 
-				$("#removeOrderDialog").modal('toggle');
+				//$("#removeOrderDialog").modal('toggle');
 				var divcard= $("div[data-bs-panelname='"+ panelname +"']");
 				var rlen=$("div[data-bs-panelname='"+ panelname +"']").first('table').find(' tbody tr').length;
 				if(rlen==0)

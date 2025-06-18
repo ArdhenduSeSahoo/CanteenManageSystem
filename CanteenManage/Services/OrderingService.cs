@@ -341,6 +341,7 @@ namespace CanteenManage.Services
                     fo => fo.Food.FoodTypeId == foodTypeId
                     && fo.EmployeeId == employeId
                     && fo.OrderDateCustom.Date > DateTime.Now.AddDays(-30).Date && fo.OrderDateCustom.Date < DateTime.Now.Date
+                    && fo.IsCanceled == false
                     //&& daysOfWeek_for_snaks.Select(s => s.DateTime.Date).Contains(fo.OrderDate.Date)
                     )
                     .ToListAsync();

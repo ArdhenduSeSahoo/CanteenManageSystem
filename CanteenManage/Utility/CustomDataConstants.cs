@@ -3,7 +3,7 @@
     public class CustomDataConstants
     {
         public static int BreakfastTimeHour = 7;
-        public static int LunchTimeHour = 10;
+        public static int LunchTimeHour = 11;
         public static int SnacksTimeHour = 15;
 
         public static int BreakfastTimeHourEnd = 11;

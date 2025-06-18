@@ -26,7 +26,7 @@
 							<th>Date</th>
 							<th>OrdNum</th>
 							<th>Name</th>
-							<th>.</th>
+							<th></th>
 							<th></th>
 							<th></th>
 							<th></th>
@@ -85,7 +85,7 @@
 							}
 
 							<tr data-orderid="@order.OrderID">
-								<td>@order.OrderDateCustom.ToString("dd-MM-")@order.OrderDateCustom.ToString("ddd")</td>
+								<td>@order.OrderDateCustom.ToString("dd-MMM-")@order.OrderDateCustom.ToString("ddd")</td>
 								<td>@order.OrderID</td>
 								<td class="customTableBoldCell" colspan="4">
 
@@ -95,8 +95,8 @@
 										</tr>
 										<tr>
 											<td><span style="font-weight:400">Qnt:</span> @order.Quantity.ToString()</td>
-											<td class="text-danger fw-bold" style="text-align:end">&#8377;@order.TotalEmployeePrice.ToString()</td>
-											<td class="align-self-center text-center">
+											<td class="" style="text-align:end">&#8377;@order.TotalEmployeePrice.ToString()</td>
+											<td class="align-self-center text-center myOrderStatusPanel" data-orderid="@order.OrderID">
 												@if (!(@order.IsCompleted))
 												{
 													<span class="badge bg-warning text-dark rounded-pill px-3 py-2 shadow-sm d-inline-flex align-items-center">
@@ -110,7 +110,7 @@
 													</span>
 												}
 											</td>
-											<td class="align-self-center text-center" data-orderid="@order.OrderID" style="vertical-align:middle;">
+											<td class="align-self-center text-center myOrderActionPanel" data-orderid="@order.OrderID" style="vertical-align:middle;">
 
 												@if (!(order.IsCompleted))
 												{
@@ -139,7 +139,7 @@
 													}
 													else if (shouldSendRequest) //
 													{
-														<button type="submit" data-bs-orderqnt="@order.Quantity" data-bs-ordername="@order.FoodName" data-bs-foodorderid="@order.OrderID" data-bs-username="@username" class="btn btn-outline-success btn-sm btn_request_to_conform" data-bs-toggle="tooltip" data-bs-placement="top"
+														<button type="submit" data-bs-orderqnt="@order.Quantity" data-bs-ordername="@order.FoodName" data-bs-foodorderid="@order.OrderID" data-bs-username="@username" data-bs-userempid="@userempId" class="btn btn-outline-success btn-sm btn_request_to_conform" data-bs-toggle="tooltip" data-bs-placement="top"
 																data-bs-custom-class="custom-tooltip"
 																data-bs-title="Send request for conformation of order.">
 															<i class="fa fa-paper-plane" aria-hidden="true"></i>
@@ -149,7 +149,27 @@
 												}
 												else
 												{
+													@if (order.Rating == null)
+													{
+														<a href="javascript:void(0);"
+														   data-bs-toggle="modal"
+														   data-bs-target="#exampleModal"
+														   data-bs-orderid="@order.Id"
+														   title="Add Review">
+															<i class="bi bi-chat-left-text-fill fs-5 text-primary"></i>
+														</a>
+													}
+													else
+													{
+														<a href="javascript:void(0);" data-bs-toggle="modal"
+														   data-bs-target="#viewReviewModal"
+														   title="View Review"
+														   data-bs-rating="@order.Rating"
+														   data-bs-review="@order.Review">
+															<i class="bi bi-eye-fill fs-5 text-success"></i>
+														</a>
 
+													}
 												}
 
 											</td>

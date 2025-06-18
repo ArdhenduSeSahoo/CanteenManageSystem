@@ -154,7 +154,9 @@ namespace CanteenManage.Services
                 && fo.EmployeeId == employeeId
                 && !fo.IsCanceled
                 && fo.Food.FoodTypeId == (int)foodTypeEnum
-                ).ToListAsync(cancellationToken);
+                )
+                .OrderBy(fo => fo.OrderDateCustom)
+                .ToListAsync(cancellationToken);
 
             return foodOrders;
         }
@@ -184,7 +186,9 @@ namespace CanteenManage.Services
                 && fo.EmployeeId == employeeId
                 && !fo.IsCanceled
                 && fo.Food.FoodTypeId == (int)foodTypeEnum
-                ).ToListAsync(cancellationToken);
+                )
+                .OrderBy(fo => fo.OrderDateCustom)
+                .ToListAsync(cancellationToken);
             return foodOrders;
         }
         public async Task<List<EmployeeFoodOrdersTableDataModel>> GetFoodOrdersToday_CU(FoodTypeEnum foodTypeEnum, CancellationToken cancellationToken, string SearchVal = "")
@@ -203,8 +207,8 @@ namespace CanteenManage.Services
                 fo.OrderID.ToLower().Contains(SearchVal)
                 )
                 )
-                .OrderBy(fo => fo.Id)
-                .Take(10)
+                .OrderBy(fo => fo.IsCompleted)
+                //.Take(10)
                 .Select(fo => new EmployeeFoodOrdersTableDataModel()
                 {
                     FoodId = fo.Id,
@@ -291,6 +295,8 @@ namespace CanteenManage.Services
                         FoodTypeId = f.Max(fm => fm.Food.FoodTypeId),
                         Price = 0,
                         FoodQuantity = f.Sum(fo => fo.Quantity),
+                        TotalCompleted = f.Where(fo => fo.IsCompleted).Sum(fo => fo.Quantity),
+                        TotalUnCompleted = f.Where(fo => !fo.IsCompleted).Sum(fo => fo.Quantity),
                         //EmployId = f.Max(fo => fo.EmployeeId ?? 0),
                         //EmployName = f.Max(fo => fo.Employee.Name) ?? "",
                     })
@@ -354,10 +360,22 @@ namespace CanteenManage.Services
             var orders = await contextCM.FoodOrders
                 .Include(f => f.Food)
                 .AsNoTracking()
-                .Where(o => o.OrderDateCustom.Date == date.Date && o.IsCanceled == false)
+                .Where(o => o.OrderDateCustom.Date == date.Date
+                && o.IsCanceled == false
+                && o.IsCompleted == true
+                )
+                .Select(f => new FoodReportDetailsViewModel()
+                {
+                    EmployeeName = f.Employee.Name,
+                    FoodName = f.Food.Name,
+
+                    Quantity = f.Quantity,
+                    TotalPrice = f.TotalPrice
+                }
+                )
                 .ToListAsync(cancellationToken);
 
-            return new FoodReportViewModel { FoodOrders = orders };
+            return new FoodReportViewModel { FoodOrdersDetails = orders };
         }
 
 

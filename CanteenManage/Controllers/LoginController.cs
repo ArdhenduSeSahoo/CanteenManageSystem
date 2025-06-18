@@ -1,13 +1,10 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Threading.Tasks;
 using CanteenManage.Models;
 using CanteenManage.Services;
 using CanteenManage.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using Newtonsoft.Json;
 //using NuGet.Common;
 
@@ -123,21 +120,21 @@ namespace CanteenManage.Controllers
                 {
                     empid = userId;
                 }
-                //var exp = jwtToken.Claims.FirstOrDefault(c => c.Type == "exp")?.Value;
-                //if (!string.IsNullOrWhiteSpace(exp))
-                //{
-                //    expv = exp;
-                //}
-                //double ticks = double.Parse(exp);
-                //TimeSpan time = TimeSpan.FromMilliseconds(ticks);
-                //DateTime dateTime = DateTime.Now.Date + time;
+                var exp = jwtToken.Claims.FirstOrDefault(c => c.Type == "exp")?.Value;
+                if (!string.IsNullOrWhiteSpace(exp))
+                {
+                    expv = exp;
+                }
+                double ticks = double.Parse(exp);
+                TimeSpan time = TimeSpan.FromMilliseconds(ticks);
+                DateTime dateTime = DateTime.Now.Date + time;
             }
             catch (Exception ex)
             {
                 logger.LogError("Error in reading JWT token: " + ex.Message);
                 logger.LogError($"Token--: {portal_token}");
                 logger.LogError(ex.StackTrace);
-                //return this.RedirectToAction(actionName: "Index", controllerName: "Error");
+                //return this.RedirectToAction(actionName: "Index", controllerName: "Error", new { jasowerukasj = JsonConvert.SerializeObject(ex) });
             }
 
 
@@ -147,7 +144,7 @@ namespace CanteenManage.Controllers
             }
             else if (!string.IsNullOrEmpty(empid) || !string.IsNullOrEmpty(empname))
             {
-                var userFound = await loginService.GetOrAddEmployee(empid, empname, empEmail);
+                var userFound = await loginService.GetOrAddEmployee(userId: empid, name: empname, EmployEmail: empEmail);
                 if (userFound != null)
                 {
                     if (userFound.EmployeeTypeId == (int)EmployTypeEnum.Employee)
@@ -308,6 +305,21 @@ namespace CanteenManage.Controllers
                     HttpContext.Session.SetString(SessionConstants.UserEmpId, userFound.EmployeeID.ToString());
                     HttpContext.Session.SetString(SessionConstants.UserName, userFound.Name.ToString());
                     return this.RedirectToAction(actionName: "Dashboard", controllerName: "CanteenOrderReport");
+                }
+                else if (userFound.EmployeeTypeId == (int)EmployTypeEnum.Committee_Members)
+                {
+
+                    var claims = new List<Claim>
+                        {
+                            new Claim(ClaimTypes.Email, userFound.Email??""),
+                            new Claim(ClaimTypes.Name, userFound.Name),
+                            new Claim(ClaimTypes.Role, CustomDataConstants.RoleCommitteeMember) // Add user role
+                        };
+
+                    var jwttokens = loginService.GenerateJSONWebToken(claims, DateTime.Now.AddHours(8));
+                    SetJWTCookie(jwttokens, userId, "", ((int)EmployTypeEnum.CanteenStaf).ToString());
+
+                    return setCommitmemberSessionAndRedirect(userFound.Name, userFound.Id, userFound.EmployeeID, "", claims, DateTime.Now.AddHours(3));
                 }
                 else if (userFound.EmployeeTypeId == (int)EmployTypeEnum.Committee_Members)
                 {
