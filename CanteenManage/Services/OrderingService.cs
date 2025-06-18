@@ -421,9 +421,10 @@ namespace CanteenManage.Services
                     canteenManageContext.FoodReviewDetails.Update(foodReviewDetails);
                 }
                 foodOrder.Rating = rating;
-                foodOrder.Review = review;
+                foodOrder.Review = review.Substring(0, 100);
                 foodOrder.RatingCreatedAt = DateTime.Now;
                 foodOrder.Food.Rating = (foodReviewDetails.TotalRating / foodReviewDetails.TotalUserCount);
+                foodOrder.Food.UserRateGiven = foodReviewDetails.TotalUserCount;
                 canteenManageContext.FoodOrders.Update(foodOrder);
                 await canteenManageContext.SaveChangesAsync();
             }

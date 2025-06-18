@@ -45,7 +45,6 @@ namespace CanteenManage.Services
                &&
                fo.OutDateStatus == (int)CartFoodOutDateEnum.InOrder
                )
-
                .ToListAsync(cancellationToken);
             return foodOrderByUser;
         }
@@ -468,33 +467,42 @@ namespace CanteenManage.Services
             return ffff;
         }
 
-        public (int today, int tomorrow, int all) GetOrderCounts()
+        public async Task<(int TodayTotal, int TodayTotalCompleted, int TodayTotalUnCompleted, int tomorrow, int all)> GetOrderCounts(CancellationToken cancellationToken)
         {
-            try
-            {
-                DateTime today = DateTime.Today;
-                DateTime tomorrow = today.AddDays(1);
+            DateTime today = DateTime.Today;
+            DateTime tomorrow = today.AddDays(1);
 
-                var foods= contextCM.FoodOrders.AsNoTracking().Where(o => !o.IsCanceled && o.OrderDateCustom.Date == today).ToList();
-                int todayCount = contextCM.FoodOrders.AsNoTracking().Count(o => !o.IsCanceled && o.OrderDateCustom.Date == today);
-                int tomorrowCount = contextCM.FoodOrders.AsNoTracking().Count(o => !o.IsCanceled && o.OrderDateCustom.Date == tomorrow);
-                int allCount = contextCM.FoodOrders.AsNoTracking().Count(o=> !o.IsCanceled &&o.OrderDateCustom.Date>=DateTime.Now.Date);
+            //var todayCounts = await contextCM.FoodOrders
+            //    .AsNoTracking()
+            //    .Where(o => !o.IsCanceled
+            //    && o.OrderDateCustom.Date == today
+            //    )
+            //    .GroupBy(fo => fo.Id)
+            //    .Select(fo => new
+            //    {
+            //        TotalCount = fo.Sum(f => f.Quantity),
+            //        TotalCompleted = fo.Sum(f => f.IsCompleted ? f.Quantity : 0),
+            //        TotalUnCompleted = fo.Sum(f => !f.IsCompleted ? f.Quantity : 0)
+            //    })
+            //    .FirstOrDefaultAsync(cancellationToken)
+            //    ;
+            int todayCounts_total = await contextCM.FoodOrders.AsNoTracking().CountAsync(o => !o.IsCanceled && o.OrderDateCustom.Date == today, cancellationToken: cancellationToken);
+            int todayCounts_com = await contextCM.FoodOrders.AsNoTracking().CountAsync(o => !o.IsCanceled && o.IsCompleted && o.OrderDateCustom.Date == today, cancellationToken: cancellationToken);
+            int todayCounts_uncom = await contextCM.FoodOrders.AsNoTracking().CountAsync(o => !o.IsCanceled && !o.IsCompleted && o.OrderDateCustom.Date == today, cancellationToken: cancellationToken);
+            int tomorrowCount = await contextCM.FoodOrders.AsNoTracking().CountAsync(o => !o.IsCanceled && o.OrderDateCustom.Date == tomorrow, cancellationToken: cancellationToken);
+            int allCount = await contextCM.FoodOrders.AsNoTracking().CountAsync(o => !o.IsCanceled && o.OrderDateCustom.Date >= DateTime.Now.Date, cancellationToken: cancellationToken);
 
-                return (todayCount, tomorrowCount, allCount);
-            }
-            catch
-            {
-                return (0, 0, 0);
-            }
+            return (todayCounts_total, todayCounts_com, todayCounts_uncom, tomorrowCount, allCount);
         }
 
-        public async Task<List<CanteenFoodDetailsDTOModel>> GetOrdersByDateAsync(DateTime date,FoodTypeEnum foodTypeEnum,CancellationToken cancellationToken,bool showAllData)
+        public async Task<List<CanteenFoodDetailsDTOModel>> GetOrdersByDateAsync(DateTime date, FoodTypeEnum foodTypeEnum, CancellationToken cancellationToken, bool showAllData)
         {
             List<CanteenFoodDetailsDTOModel> orders = new List<CanteenFoodDetailsDTOModel>();
-            
-            
 
-            if (showAllData) {
+
+
+            if (showAllData)
+            {
                 orders = await contextCM.FoodOrders
                  .Include(f => f.Food)
                  .AsNoTracking()
@@ -517,7 +525,8 @@ namespace CanteenManage.Services
                  })
                  .ToListAsync(cancellationToken);
             }
-            else {
+            else
+            {
                 orders = await contextCM.FoodOrders
                 .Include(f => f.Food)
                 .AsNoTracking()
@@ -540,7 +549,7 @@ namespace CanteenManage.Services
                 })
                 .ToListAsync(cancellationToken);
             }
-            
+
             return orders;
         }
 

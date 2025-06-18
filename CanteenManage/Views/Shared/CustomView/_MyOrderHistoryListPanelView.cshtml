@@ -13,66 +13,77 @@
 						<tr>
 							<th>Date</th>
 							<th>OrdNo.</th>
-							@* <th>Name</th> *@
-							<th>Qnt.</th>
-							<th>Price</th>
-							<th>Status</th>
-							<th>Review</th>
+							<th>Name</th>
+							<th></th>
+							<th></th>
+							<th></th>
+							<th></th>
 						</tr>
 					</thead>
 					<tbody>
 						@foreach (var order in Model.FoodOrders)
 						{
 							<tr>
-								<td>@order.OrderDateCustom.ToString("dd-MM-")@order.OrderDateCustom.ToString("ddd")</td>
+								<td>@order.OrderDateCustom.ToString("dd-MMM-")@order.OrderDateCustom.ToString("ddd")</td>
 								<td>@order.OrderID</td>
-								<td class="customTableBoldCell">@order.FoodName</td>
-								<td>@order.Quantity.ToString()</td>
-								<td class="" style="text-align:end">@order.TotalEmployeePrice.ToString()</td>
-								<td>
-									@if (!@order.IsCompleted)
-									{
-										<span class="badge rounded-pill bg-warning text-dark">
-											<i class="fas fa-hourglass-half me-1"></i>
-										</span>
-									}
-									else
-									{
-										<span class="badge rounded-pill bg-success">
-											<i class="bi bi-check-circle-fill text-white me-1"></i>
-										</span>
-									}
-								</td>
-								<td class="align-self-center text-center align-t" style="vertical-align:middle;">
-									@if (!order.IsCompleted)
-									{
 
-									}
-									else
-									{
-										@if (order.Rating == null)
-										{
-											<a href="javascript:void(0);"
-											   data-bs-toggle="modal"
-											   data-bs-target="#exampleModal"
-											   data-bs-orderid="@order.Id"
-											   title="Add Review">
-												<i class="bi bi-chat-left-text-fill fs-5 text-primary"></i>
-											</a>
-										}
-										else
-										{
-											<a href="javascript:void(0);" data-bs-toggle="modal"
-											   data-bs-target="#viewReviewModal"
-											   title="View Review"
-											   data-bs-rating="@order.Rating"
-											   data-bs-review="@order.Review">
-												<i class="bi bi-eye-fill fs-5 text-success"></i>
-											</a>
+								<td class="customTableBoldCell" colspan="4">
+									<table class="table table-borderless">
+										<tr>
+											<td colspan="4">@order.FoodName</td>
+										</tr>
+										<tr>
+											<td><span style="font-weight:400">Qnt:</span> @order.Quantity.ToString()</td>
+											<td class="" style="text-align:end">&#8377;@order.TotalEmployeePrice.ToString()</td>
+											<td class="align-self-center text-center myOrderStatusPanel" data-orderid="@order.OrderID">
+											<td>
+													@if (!@order.IsCompleted)
+													{
+													<span class="badge rounded-pill bg-warning text-dark">
+														<i class="fas fa-hourglass-half me-1"></i>
+													</span>
+													}
+													else
+													{
+													<span class="badge rounded-pill bg-success">
+														<i class="bi bi-check-circle-fill text-white me-1"></i>
+													</span>
+													}
+											</td>
+											<td class="align-self-center text-center" style="vertical-align:middle;">
+													@if (!order.IsCompleted)
+													{
 
-										}
-									}
+													}
+													else
+													{
+														@if (order.Rating == null)
+														{
+														<a href="javascript:void(0);"
+														   data-bs-toggle="modal"
+														   data-bs-target="#exampleModal"
+														   data-bs-orderid="@order.Id"
+														   title="Add Review">
+															<i class="bi bi-chat-left-text-fill fs-5 text-primary"></i>
+														</a>
+														}
+														else
+														{
+														<a href="javascript:void(0);" data-bs-toggle="modal"
+														   data-bs-target="#viewReviewModal"
+														   title="View Review"
+														   data-bs-rating="@order.Rating"
+														   data-bs-review="@order.Review">
+															<i class="bi bi-eye-fill fs-5 text-success"></i>
+														</a>
+
+														}
+													}
+											</td>
+										</tr>
+									</table>
 								</td>
+
 							</tr>
 						}
 					</tbody>

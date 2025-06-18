@@ -29,10 +29,12 @@ namespace CanteenManage.Controllers.CanteenControllers
         {
             string panelTitle = "";
             CanteenDashboardViewDataModel model = new CanteenDashboardViewDataModel();
-            var counts = foodListingService.GetOrderCounts();
+            var counts = await foodListingService.GetOrderCounts(cancellationToken);
             model.PanelTitle = "";
-            model.TodaysCount = counts.today;
-            model.TomorowCount = counts.tomorrow;
+            model.TodaysTotalCount = counts.TodayTotal;
+            model.TodaysCompletedCount = counts.TodayTotalCompleted;
+            model.TodaysUnCompletedCount = counts.TodayTotalUnCompleted;
+            model.TomorrowCount = counts.tomorrow;
             model.AllCount = counts.all;
             if (string.IsNullOrWhiteSpace(OrderDateType))
             {
@@ -68,14 +70,15 @@ namespace CanteenManage.Controllers.CanteenControllers
         [HttpGet]
         public JsonResult GetOrderCounts()
         {
-            var counts = foodListingService.GetOrderCounts();
+            //var counts = foodListingService.GetOrderCounts();
 
-            return Json(new
-            {
-                today = counts.today,
-                tomorrow = counts.tomorrow,
-                all = counts.all
-            });
+            //return Json(new
+            //{
+            //    today = counts.today,
+            //    tomorrow = counts.tomorrow,
+            //    all = counts.all
+            //});
+            return Json(new { today = 0, tomorrow = 0, all = 0 }); // Placeholder for actual implementation
         }
 
         [HttpGet]

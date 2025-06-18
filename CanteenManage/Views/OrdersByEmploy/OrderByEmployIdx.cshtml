@@ -138,11 +138,11 @@
 		</div>
 
 		<div class="card-body">
-			<form method="get" asp-action="OrderByEmployIdx" class="row g-3 align-items-center">
+			<form method="get" asp-action="OrderByEmployIdx" id="searchForm" class="row g-3 align-items-center">
 				<input type="hidden" name="FoodType" value="@Model.FoodType" />
 
 				<div class="col-auto">
-					<input type="text" class="form-control" id="empName" name="searchTerm" value="@Model.SearchValue" placeholder="Name or Id or Orderid" />
+					<input type="text" class="form-control searchinputs" name="searchTerm" id="myInput" value="@Model.SearchValue" placeholder="Name or Id or Orderid" />
 				</div>
 
 				<div class="col-auto">
@@ -301,16 +301,16 @@
 			//msg.textContent = `${user}: ${message}`;
 			//debugger;
 			//document.getElementById("messagesList").appendChild(msg);
-			console.log("Order completed with ID: " + orderJson);
+
 				const myArr =orderJson; //JSON.parse(orderJson);
-				if(myArr.length>0)
-				{
-					$('#cardUserRequestDiv').removeClass('d-none');
-				}
-				else{
-					$('#cardUserRequestDiv').addClass('d-none');
-				}
-		console.log(myArr.length);
+				// if(myArr.length>0)
+				// {
+				// 	$('#cardUserRequestDiv').removeClass('d-none');
+				// }
+				// else{
+				// 	$('#cardUserRequestDiv').addClass('d-none');
+				// }
+
 		$('#userordergrid').empty();
 		myArr.forEach(function(item) {
 				//console.log("Order ID: " + item.orderId);
@@ -334,7 +334,7 @@
 			});
 		});
 		connection.on("OrderCompleteSuccess", function (orderJson) {
-			console.log("Order completed with ID: " + orderJson);
+
 			showInfoMessage(orderJson);
 		});
 		connection.start()
@@ -362,6 +362,27 @@
 			console.error(err);
 		}
 		});
+
+		let searchTimer; // Variable to hold the debounce timer
+		function performSearch(query) {
+			console.log("Performing search for: " + query);
+			//$('#searchForm').submit();
+		}
+
+		// $(".searchinputs").keyup(function() {
+		// 	// Code to be executed when a key is released in #myInput
+		// 	var inputValue = $(this).val(); // Get the current value of the input
+		// 	console.log("Input value on keyup: " + inputValue);
+		// });
+		// $('#searchInput').on('keyup', function() {
+		// clearTimeout(searchTimer); // Clear any existing timer
+		// const searchTerm = $(this).val(); // Get the current input value
+		// console.log(searchTerm);
+		// // Set a new timer to execute the search function after a delay (e.g., 300ms)
+		// searchTimer = setTimeout(function() {
+		// 	performSearch(searchTerm);
+		// }, 300);
+		// });
 		});
 	</script>
 

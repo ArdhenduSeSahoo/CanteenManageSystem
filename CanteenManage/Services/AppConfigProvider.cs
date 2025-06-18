@@ -46,9 +46,9 @@ namespace CanteenManage.Services
         {
             return appConfigs?.getTokenAudience();
         }
-        public string? GetLogOutURL()
+        public string GetLogOutURL()
         {
-            return appConfigs?.getLogOutURL();
+            return appConfigs?.getLogOutURL() ?? "https://econnect.esspl.com/";
         }
         public string? GetPortalAuthValidaTorBaseURL()
         {
