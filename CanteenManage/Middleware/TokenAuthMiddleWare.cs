@@ -6,6 +6,7 @@ using System.Threading;
 using CanteenManage.Middleware;
 using CanteenManage.Services;
 using CanteenManage.Utility;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 
@@ -18,13 +19,15 @@ namespace CanteenManage.CanteenMiddleWare
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly AppConfigProvider _appConfigProvider;
         private readonly ILogger<TokenAuthMiddleWare> _logger;
-        public TokenAuthMiddleWare(RequestDelegate next, SessionManager sessionManager, IHttpClientFactory httpClientFactory, ILogger<TokenAuthMiddleWare> logger, AppConfigProvider appConfigProvider)
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        public TokenAuthMiddleWare(RequestDelegate next, SessionManager sessionManager, IHttpClientFactory httpClientFactory, ILogger<TokenAuthMiddleWare> logger, AppConfigProvider appConfigProvider, IWebHostEnvironment webHostEnvironment)
         {
             _next = next;
             _sessionManager = sessionManager;
             _httpClientFactory = httpClientFactory;
             _appConfigProvider = appConfigProvider;
             _logger = logger;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -70,7 +73,7 @@ namespace CanteenManage.CanteenMiddleWare
                         {
                             //string responsbody = "";
                             //_logger.LogError($"Econnect token--" + EConnect_token);
-                            if (false) //(!_appConfigProvider.IsDevelopmentEnv())
+                            if (false) //(!_appConfigProvider.IsDevelopmentEnv() && !string.IsNullOrWhiteSpace(EConnect_token))
                             {
                                 try
                                 {
@@ -117,15 +120,31 @@ namespace CanteenManage.CanteenMiddleWare
                     else
                     {
                         //context.Response.StatusCode = 401; // Unauthorized
-                        context.Response.Redirect("/Error");
+                        //context.Response.Redirect("/Error");
+                        context.Response.Redirect(_appConfigProvider.GetLogOutURL());
                         return;
                     }
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError($"TokenAuthMiddleware failed: {ex.Message}---- for user id--{userEmpID}");
-                    context.Response.Redirect("/Error");
-                    return;
+                    //_logger.LogError($"TokenAuthMiddleware failed: {ex.Message}---- for user id--{userEmpID}");
+                    //context.Response.Redirect("/Error");
+                    //return;
+                    if (_webHostEnvironment.IsDevelopment())
+                    {
+                        _logger.LogError("An error occurred while processing the request. From ErrorHandlerMiddleWare---" + ex.Message);
+                        context.Response.StatusCode = StatusCodes.Status404NotFound;
+                        await context.Response.WriteAsJsonAsync(new { status = "Some error Found.---" + ex.Message + "---" + ex.StackTrace });
+                        return;
+                    }
+                    else
+                    {
+                        _logger.LogError("An error occurred while processing the request. From ErrorHandlerMiddleWare---" + ex.Message + "-----" + ex.StackTrace);
+                        //context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                        //context.Response.Redirect("/Error");
+                        context.Response.Redirect(_appConfigProvider.GetLogOutURL());
+                        return;
+                    }
                 }
             }
         }

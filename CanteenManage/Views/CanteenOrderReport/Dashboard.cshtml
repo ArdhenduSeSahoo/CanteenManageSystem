@@ -1,268 +1,277 @@
 ﻿@model CanteenManage.Models.CanteenDashboardViewDataModel
 @{
-    ViewData["Title"] = "Dashboard";
-    Layout = "_Layout_canteenEmploy";
+	ViewData["Title"] = "Dashboard";
+	Layout = "_Layout_canteenEmploy";
 }
 
-<div class="container mt-4">
-    <div class="row text-center mb-4">
-        <div class="col-md-4">
-            <a asp-action="Dashboard" asp-controller="CanteenOrderReport" asp-route-OrderDateType="1" class="text-decoration-none">
-            <div class="card bg-info text-white clickable-card" data-type="today">
-                <div class="card-body">
-                    <h4>Today's Orders</h4>
-                    <h2 id="todayCount">@Model.TodaysCount</h2>
-                </div>
-            </div>
+<div class="container-fluid">
 
-            </a>
-        </div>
-        <div class="col-md-4">
-            <a asp-action="Dashboard" asp-controller="CanteenOrderReport" asp-route-OrderDateType="2" class="text-decoration-none">
-            <div class="card bg-warning text-dark clickable-card" data-type="tomorrow">
-                <div class="card-body">
-                    <h4>Tomorrow's Orders</h4>
-                    <h2 id="tomorrowCount">@Model.TomorowCount</h2>
-                </div>
-            </div>
-            </a>
-        </div>
-        <div class="col-md-4">
-            <a asp-action="Dashboard" asp-controller="CanteenOrderReport" asp-route-OrderDateType="3" class="text-decoration-none">
-            <div class="card bg-success text-white clickable-card" data-type="all">
-                <div class="card-body">
-                    <h4>All Orders</h4>
-                    <h2 id="allCount">@Model.AllCount</h2>
-                </div>
-            </div>
-            </a>
-        </div>
-    </div>
-    @if(Model.SnaksFoodOrders.Count()>0||Model.BreakFastFoodOrders.Count()>0||Model.LunchFoodOrders.Count()>0)
-    {
-        <div class="card">
-            <div class="card-header">
-                <span>@Model.PanelTitle</span>
-            </div>
-            <div class="card-body">
-                <div class="row row-cols-1 row-cols-md-3">
-                    @if(Model.BreakFastFoodOrders.Count()>0)
-                    {
-                    <div class="col">
-                        <div class="card">
-                            <div class="card-header bg-white fw-bold border-0">
-                                Breakfast
-                            </div>
-                            <div class="card-body">
-                                @* <label for="myInput">Filter</label>
+	<a asp-action="Dashboard" asp-controller="CanteenOrderReport" asp-route-OrderDateType="1" class="text-decoration-none">
+		<div class="card bg-info text-black clickable-card text-center mb-2" data-type="today">
+			<div class="card-body pt-0 pb-0">
+				<h5>Today's Orders</h5>
+				<div class="d-inline-flex gap-2">
+					<h6>@Model.TodaysTotalCount</h6><h6>|</h6><h6 class="text-success">@Model.TodaysCompletedCount</h6><h6>|</h6><h6 class="text-danger">@Model.TodaysUnCompletedCount</h6>
+				</div>
+
+			</div>
+		</div>
+
+	</a>
+	<div class="row row-cols-2 text-center mb-2 gap-0">
+		<div class="col ">
+			<a asp-action="Dashboard" asp-controller="CanteenOrderReport" asp-route-OrderDateType="2" class="text-decoration-none">
+				<div class="card bg-warning text-dark clickable-card" data-type="tomorrow">
+					<div class="card-body pt-0 pb-0">
+						<h6>Tomorrow's</h6>
+						<h6 id="tomorrowCount">@Model.TomorrowCount</h6>
+					</div>
+				</div>
+			</a>
+		</div>
+		<div class="col ">
+			<a asp-action="Dashboard" asp-controller="CanteenOrderReport" asp-route-OrderDateType="3" class="text-decoration-none">
+				<div class="card bg-success text-white clickable-card" data-type="all">
+					<div class="card-body pt-0 pb-0">
+						<h6>All Orders</h6>
+						<h6 id="allCount">@Model.AllCount</h6>
+					</div>
+				</div>
+			</a>
+		</div>
+	</div>
+	<div class="row text-center row-cols-2 mb-2 gap-2">
+		<div class="col">
+		</div>
+		<div class="col">
+		</div>
+	</div>
+	@if (Model.SnaksFoodOrders.Count() > 0 || Model.BreakFastFoodOrders.Count() > 0 || Model.LunchFoodOrders.Count() > 0)
+	{
+		<div class="card">
+			<div class="card-header">
+				<div class="card-title"><h5>@Model.PanelTitle</h5></div>
+
+			</div>
+			<div class="card-body">
+				<div class="row row-cols-1 row-cols-md-3">
+					@if (Model.BreakFastFoodOrders.Count() > 0)
+					{
+						<div class="col">
+							<div class="card">
+								<div class="card-header bg-white fw-bold border-0">
+									Breakfast
+								</div>
+								<div class="card-body">
+									@* <label for="myInput">Filter</label>
                     <input class="form-control" id="breakfastInput" type="text" placeholder="Search.."> *@
-                                <table id="breakfastTables" class="table table-hover table-responsive-sm">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">Date</th>
-                                            <th scope="col">Food</th>
-                                            <th scope="col">Qnt.</th>
-                                            <th scope="col">Com.</th>
-                                            <th scope="col">UnCom.</th>
-                                            <th scope="col"></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (var order in Model.BreakFastFoodOrders)
-                                        {
-                                            <tr>
-                                                <td>@order.OrderDate.ToString("dd/MM-")@order.OrderDate.DayOfWeek</td>
-                                                <td>@order.Name</td>
-                                                <td>@order.FoodQuantity.ToString()</td>
-                                                <td style="color:green;" >@order.TotalCompleted.ToString()</td>
-                                                <td style="color:red;" >@order.TotalUnCompleted.ToString()</td>
-                                                <td></td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                    }
+									<table id="breakfastTables" class="table table-hover table-responsive-sm">
+										<thead>
+											<tr>
+												<th scope="col">Date</th>
+												<th scope="col">Food</th>
+												<th scope="col">Qnt.</th>
+												<th scope="col">Com.</th>
+												<th scope="col">UnCom.</th>
+												<th scope="col"></th>
+											</tr>
+										</thead>
+										<tbody>
+											@foreach (var order in Model.BreakFastFoodOrders)
+											{
+												<tr>
+													<td>@order.OrderDate.ToString("dd/MM-")@order.OrderDate.DayOfWeek</td>
+													<td>@order.Name</td>
+													<td>@order.FoodQuantity.ToString()</td>
+													<td style="color:green;">@order.TotalCompleted.ToString()</td>
+													<td style="color:red;">@order.TotalUnCompleted.ToString()</td>
+													<td></td>
+												</tr>
+											}
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					}
 
 
-                    @if (Model.LunchFoodOrders.Count() > 0)
-                    {
-                        <div class="col">
-                            <div class="card">
-                                <div class="card-header bg-white fw-bold border-0">
-                                    Lunch
-                                </div>
-                                <div class="card-body">
-                                    @* <label for="myInput">Filter</label>
+					@if (Model.LunchFoodOrders.Count() > 0)
+					{
+						<div class="col">
+							<div class="card">
+								<div class="card-header bg-white fw-bold border-0">
+									Lunch
+								</div>
+								<div class="card-body">
+									@* <label for="myInput">Filter</label>
                     <input class="form-control" id="breakfastInput" type="text" placeholder="Search.."> *@
-                                    <table id="breakfastTables" class="table table-hover table-responsive-sm">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">Date</th>
-                                                <th scope="col">Food</th>
-                                                <th scope="col">Qnt.</th>
-                                                <th scope="col">Com.</th>
-                                                <th scope="col">UnCom.</th>
-                                                <th scope="col"></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach (var order in Model.LunchFoodOrders)
-                                            {
-                                                <tr>
-                                                    <td>@order.OrderDate.ToString("dd/MM-")@order.OrderDate.DayOfWeek</td>
-                                                    <td>@order.Name</td>
-                                                    <td>@order.FoodQuantity.ToString()</td>
-                                                    <td style="color:green;">@order.TotalCompleted.ToString()</td>
-                                                    <td style="color:red;">@order.TotalUnCompleted.ToString()</td>
-                                                    <td></td>
-                                                </tr>
-                                            }
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    }
+									<table id="breakfastTables" class="table table-hover table-responsive-sm">
+										<thead>
+											<tr>
+												<th scope="col">Date</th>
+												<th scope="col">Food</th>
+												<th scope="col">Qnt.</th>
+												<th scope="col">Com.</th>
+												<th scope="col">UnCom.</th>
+												<th scope="col"></th>
+											</tr>
+										</thead>
+										<tbody>
+											@foreach (var order in Model.LunchFoodOrders)
+											{
+												<tr>
+													<td>@order.OrderDate.ToString("dd/MM-")@order.OrderDate.DayOfWeek</td>
+													<td>@order.Name</td>
+													<td>@order.FoodQuantity.ToString()</td>
+													<td style="color:green;">@order.TotalCompleted.ToString()</td>
+													<td style="color:red;">@order.TotalUnCompleted.ToString()</td>
+													<td></td>
+												</tr>
+											}
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					}
 
 
-                    @if (Model.SnaksFoodOrders.Count() > 0)
-                    {
-                        <div class="col">
-                            <div class="card">
-                                <div class="card-header bg-white fw-bold border-0">
-                                    Snacks
-                                </div>
-                                <div class="card-body">
-                                    @* <label for="myInput">Filter</label>
+					@if (Model.SnaksFoodOrders.Count() > 0)
+					{
+						<div class="col">
+							<div class="card">
+								<div class="card-header bg-white fw-bold border-0">
+									Snacks
+								</div>
+								<div class="card-body">
+									@* <label for="myInput">Filter</label>
                     <input class="form-control" id="breakfastInput" type="text" placeholder="Search.."> *@
-                                    <table id="breakfastTables" class="table table-hover table-responsive-sm">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">Date</th>
-                                                <th scope="col">Food</th>
-                                                <th scope="col">Qnt.</th>
-                                                <th scope="col">Com.</th>
-                                                <th scope="col">UnCom.</th>
-                                                <th scope="col"></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach (var order in Model.SnaksFoodOrders)
-                                            {
-                                                <tr>
-                                                    <td>@order.OrderDate.ToString("dd/MM-")@order.OrderDate.DayOfWeek</td>
-                                                    <td>@order.Name</td>
-                                                    <td>@order.FoodQuantity.ToString()</td>
-                                                    <td style="color:green;">@order.TotalCompleted.ToString()</td>
-                                                    <td style="color:red;">@order.TotalUnCompleted.ToString()</td>
-                                                    <td></td>
-                                                </tr>
-                                            }
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    }
+									<table id="breakfastTables" class="table table-hover table-responsive-sm">
+										<thead>
+											<tr>
+												<th scope="col">Date</th>
+												<th scope="col">Food</th>
+												<th scope="col">Qnt.</th>
+												<th scope="col">Com.</th>
+												<th scope="col">UnCom.</th>
+												<th scope="col"></th>
+											</tr>
+										</thead>
+										<tbody>
+											@foreach (var order in Model.SnaksFoodOrders)
+											{
+												<tr>
+													<td>@order.OrderDate.ToString("dd/MM-")@order.OrderDate.DayOfWeek</td>
+													<td>@order.Name</td>
+													<td>@order.FoodQuantity.ToString()</td>
+													<td style="color:green;">@order.TotalCompleted.ToString()</td>
+													<td style="color:red;">@order.TotalUnCompleted.ToString()</td>
+													<td></td>
+												</tr>
+											}
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					}
 
 
-                </div>
-            </div>
-        </div>
-        
-    }
-    <div id="ordersSection">
-        <!-- Grouped Orders will appear here -->
-    </div>
+				</div>
+			</div>
+		</div>
+
+	}
+	<div id="ordersSection">
+		<!-- Grouped Orders will appear here -->
+	</div>
 </div>
 
 @section Scripts {
-    <script>
-        $(document).ready(function () {
-            // Load order counts
-            // $.get('/CanteenOrderReport/GetOrderCounts', function (data) {
-            //     if (!data) return;
-            //     $('#todayCount').text(data.today ?? 0);
-            //     $('#tomorrowCount').text(data.tomorrow ?? 0);
-            //     $('#allCount').text(data.all ?? 0);
-            // });
+	<script>
+		$(document).ready(function () {
+			// Load order counts
+			// $.get('/CanteenOrderReport/GetOrderCounts', function (data) {
+			//     if (!data) return;
+			//     $('#todayCount').text(data.today ?? 0);
+			//     $('#tomorrowCount').text(data.tomorrow ?? 0);
+			//     $('#allCount').text(data.all ?? 0);
+			// });
 
-            // Card click
-            $('.clickable-card').click(function () {
-                const type = $(this).data('type');
-                loadOrders(type);
-            });
+			// Card click
+			$('.clickable-card').click(function () {
+				const type = $(this).data('type');
+				loadOrders(type);
+			});
 
-            function loadOrders(type) {
-                debugger;
-                $.get('/CanteenOrderReport/GetOrdersByDate', { type: type }, function (data) {
-                    let html = '';
+			function loadOrders(type) {
 
-                    if (!data || data.length === 0) {
-                        html = '<div class="alert alert-info">No orders found.</div>';
-                    } else {
-                        // ✅ Sort meal types: Breakfast -> Lunch -> Evening Snacks
-                        const sortOrder = ["Breakfast", "Lunch", "Evening Snacks"];
-                        data.sort((a, b) => {
-                            const indexA = sortOrder.indexOf(a.mealType);
-                            const indexB = sortOrder.indexOf(b.mealType);
-                            return (indexA === -1 ? 999 : indexA) - (indexB === -1 ? 999 : indexB);
-                        });
+				$.get('/CanteenOrderReport/GetOrdersByDate', { type: type }, function (data) {
+					let html = '';
 
-                        data.forEach(group => {
-                            html += `
-                                <div class="card mb-3">
-                                    <div class="card-header bg-primary text-white">
-                                        ${"Orders"}
-                                    </div>
-                                    <div class="card-body">
-                                        <table class="table table-sm table-bordered">
-                                            <thead>
-                                                <tr>
-                                                    <th>Order ID</th>
-                                                    <th>Employee ID</th>
-                                                    <th>Food</th>
-                                                    <th>Qty</th>
-                                                    <th>Price</th>
-                                                    <th>Status</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>`;
+					if (!data || data.length === 0) {
+						html = '<div class="alert alert-info">No orders found.</div>';
+					} else {
+						// ✅ Sort meal types: Breakfast -> Lunch -> Evening Snacks
+						const sortOrder = ["Breakfast", "Lunch", "Evening Snacks"];
+						data.sort((a, b) => {
+							const indexA = sortOrder.indexOf(a.mealType);
+							const indexB = sortOrder.indexOf(b.mealType);
+							return (indexA === -1 ? 999 : indexA) - (indexB === -1 ? 999 : indexB);
+						});
 
-                            group.orders.forEach(order => {
-                                html += `
-                                    <tr>
-                                        <td>${order.orderID}</td>
-                                        <td>${order.employeeId ?? '-'}</td>
-                                        <td>${order.foodName}</td>
-                                        <td>${order.quantity}</td>
-                                        <td>${order.totalPrice}</td>
-                                        <td>${getStatusText(order.orderStatus)}</td>
-                                    </tr>`;
-                            });
+						data.forEach(group => {
+							html += `
+								<div class="card mb-3">
+									<div class="card-header bg-primary text-white">
+										${"Orders"}
+									</div>
+									<div class="card-body">
+										<table class="table table-sm table-bordered">
+											<thead>
+												<tr>
+													<th>Order ID</th>
+													<th>Employee ID</th>
+													<th>Food</th>
+													<th>Qty</th>
+													<th>Price</th>
+													<th>Status</th>
+												</tr>
+											</thead>
+											<tbody>`;
 
-                            html += `</tbody></table></div></div>`;
-                        });
-                    }
+							group.orders.forEach(order => {
+								html += `
+									<tr>
+										<td>${order.orderID}</td>
+										<td>${order.employeeId ?? '-'}</td>
+										<td>${order.foodName}</td>
+										<td>${order.quantity}</td>
+										<td>${order.totalPrice}</td>
+										<td>${getStatusText(order.orderStatus)}</td>
+									</tr>`;
+							});
 
-                    $('#ordersSection').html(html);
-                });
-            }
+							html += `</tbody></table></div></div>`;
+						});
+					}
 
-            function getStatusText(status) {
-                switch (status) {
-                    case 0: return 'Pending';
-                    case 1: return 'Confirmed';
-                    case 2: return 'Delivered';
-                    case 3: return 'Cancelled';
-                    default: return 'Unknown';
-                }
-            }
-        });
-    </script>
+					$('#ordersSection').html(html);
+				});
+			}
+
+			function getStatusText(status) {
+				switch (status) {
+					case 0: return 'Pending';
+					case 1: return 'Confirmed';
+					case 2: return 'Delivered';
+					case 3: return 'Cancelled';
+					default: return 'Unknown';
+				}
+			}
+		});
+	</script>
 }
 
 

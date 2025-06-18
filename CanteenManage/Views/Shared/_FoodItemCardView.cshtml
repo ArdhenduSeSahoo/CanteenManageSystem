@@ -51,7 +51,13 @@
 					@foreach (int index in Enumerable.Range(1, Convert.ToInt32(food.Rating)))
 					{
 						<div class="d-flex">
-							<img src="~/images/emoji/starRating.png" class=" star_design" alt="rating" style="">
+							<img src="~/images/emoji/starRating.png" class=" star_design align-self-center" alt="rating" style="">
+						</div>
+					}
+					@if (food.UserRateGiven != null)
+					{
+						<div class="d-flex">
+							<span class="" style="color:gray;margin-left:4px">(@food.UserRateGiven)</span>
 						</div>
 					}
 				</div>
@@ -73,7 +79,7 @@
 						<div class="col align-self-end food_add_remove_btn_div @(food.EmployeeCarts.Count()>0?"":"d-none")" data-foodid="@food.Id">
 							<div class="btn-group" role="group" aria-label="">
 								<button type="button" style="border-radius:0px; border-bottom-left-radius:7px;border-top-left-radius:7px;
-					" class="btn btn-outline-info btn_removeItem" data-foodid="@food.Id">
+																																																																																																																																						" class="btn btn-outline-info btn_removeItem" data-foodid="@food.Id">
 									<i class="fa-solid fa-minus " style=""></i>
 								</button>
 								<div class="btn btn-outline-info btn_food_quantity" data-foodid="@food.Id" style=" border-radius:0px; color:black">@food.EmployeeCarts?.FirstOrDefault()?.Quantity</div>
