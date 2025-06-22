@@ -334,6 +334,10 @@
 			});
 		});
 		connection.on("OrderCompleteSuccess", function (orderJson) {
+			console.log("Order completed with ID: " + orderJson);
+			showInfoMessage(orderJson);
+		});
+		connection.on("OrderCompleteSuccess", function (orderJson) {
 
 			showInfoMessage(orderJson);
 		});
