@@ -27,36 +27,36 @@
 
 	<style>
 		.nav_link {
-		color: black !important;
+			color: black !important;
 		}
 
 	</style>
 	<style>
 		.navbar-toggler {
-		border-color: rgba(0, 0, 0, 0.4); /* Darker border */
+			border-color: rgba(0, 0, 0, 0.4); /* Darker border */
 		}
 
 		.navbar-toggler-icon {
-		background-image: none; /* Remove default hamburger */
-		width: 1.5em;
-		height: 1.5em;
-		position: relative;
+			background-image: none; /* Remove default hamburger */
+			width: 1.5em;
+			height: 1.5em;
+			position: relative;
 		}
 
-		.navbar-toggler-icon::before,
-		.navbar-toggler-icon::after,
-		.navbar-toggler-icon div {
-		content: "";
-		display: block;
-		height: 2px;
-		background-color: black;
-		margin: 6px 0;
-		width: 100%;
-		}
+			.navbar-toggler-icon::before,
+			.navbar-toggler-icon::after,
+			.navbar-toggler-icon div {
+				content: "";
+				display: block;
+				height: 2px;
+				background-color: black;
+				margin: 6px 0;
+				width: 100%;
+			}
 
-		.navbar-toggler-icon div {
-		height: 2px;
-		}
+			.navbar-toggler-icon div {
+				height: 2px;
+			}
 	</style>
 
 
@@ -82,7 +82,7 @@ background-color:#f5fbff
 						aria-expanded="false" aria-label="Toggle navigation">
 					<span class="navbar-toggler-icon"></span>
 				</button> *@
-			@* 	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+				@* 	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
 				aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 					<span class="navbar-toggler-icon">
 						<div></div>
@@ -102,7 +102,7 @@ background-color:#f5fbff
 							<a class="nav-link nav_link text-center" asp-area="" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
 						</li>
 						<li class="nav-item customNavItem">
-							<a class="nav-link nav_link text-center" asp-area="" asp-controller="BreakFastItems" asp-action="Index">BreakFast</a>
+							<a class="nav-link nav_link text-center" asp-area="" asp-controller="BreakFastItems" asp-action="Index">Break Fast</a>
 						</li>
 						<li class="nav-item customNavItem ">
 							<a class="nav-link text-center nav_link" asp-area="" asp-controller="LunchItems" asp-action="Index">Lunch</a>
@@ -176,6 +176,43 @@ color: white;">
 		<main role="main" class="" style="">
 			@RenderBody()
 		</main>
+		<footer>
+			<div class="fixed-bottom d-none">
+				<div class="position-relative">
+					<div class="position-absolute bottom-0 end-0">
+						<div class="d-flex">
+							<div class="row row-cols-1 row-cols-md-4 ">
+								<div class="col"></div>
+								<div class="col"></div>
+								<div class="col"></div>
+								<div class="col">
+									<div class="card mb-3 mr-2 mr-md-3 mb-md-5">
+										<div class="card-body">
+											<div class="row">
+												<div class="col">
+													<span>askdjls</span>
+												</div>
+												<div class="col">
+													<span>Go To Cart</span>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="row row-cols-1 row-cols-md-4 bg-secondary d-none">
+							<div class="col"></div>
+							<div class="col"></div>
+							<div class="col"></div>
+							<div class="col">
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</footer>
 	</div>
 
 	<!-- Modal -->

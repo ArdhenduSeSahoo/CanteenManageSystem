@@ -94,7 +94,9 @@ namespace CanteenManage.CanteenMiddleWare
                                 catch (Exception ex)
                                 {
                                     _logger.LogError($"Token validation failed: {ex.Message}---- for user id--{userEmpID}-----E connect token-----{EConnect_token}");
-                                    context.Response.Redirect("/Error");
+                                    //context.Response.Redirect("/Error");
+                                    //return;
+                                    context.Response.Redirect(_appConfigProvider.GetLogOutURL());
                                     return;
                                 }
                             }
@@ -107,7 +109,9 @@ namespace CanteenManage.CanteenMiddleWare
                         else
                         {
                             //context.Response.StatusCode = 401; // Unauthorized
-                            context.Response.Redirect("/Error");
+                            //context.Response.Redirect("/Error");
+                            //return;
+                            context.Response.Redirect(_appConfigProvider.GetLogOutURL());
                             return;
                         }
                     }

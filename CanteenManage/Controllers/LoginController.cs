@@ -57,7 +57,7 @@ namespace CanteenManage.Controllers
             //var name = jwtToken.Claims.FirstOrDefault(c => c.Type == "name")?.Value;
             //var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value;
             //var exp = jwtToken.Claims.FirstOrDefault(c => c.Type == "exp")?.Value;
-            logger.LogError(tokesss);
+            //logger.LogError(tokesss);
             return await loginUserAsync("", "", portal_token);
         }
 
@@ -142,9 +142,9 @@ namespace CanteenManage.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError("Error in reading JWT token: " + ex.Message);
-                logger.LogError($"Token--: {portal_token}");
-                logger.LogError(ex.StackTrace);
+                //logger.LogError("Error in reading JWT token: " + ex.Message);
+                //logger.LogError($"Token--: {portal_token}");
+                //logger.LogError(ex.StackTrace);
                 //return this.RedirectToAction(actionName: "Index", controllerName: "Error", new { jasowerukasj = JsonConvert.SerializeObject(ex) });
             }
 
@@ -350,7 +350,7 @@ namespace CanteenManage.Controllers
             }
             catch (Exception ex)
             {
-
+                logger.LogError("Error in LoginUser: " + ex.Message + "-------" + ex.StackTrace);
             }
             return this.RedirectToAction(actionName: "Index", controllerName: "Login");
         }

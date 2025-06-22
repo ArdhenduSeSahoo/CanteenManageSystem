@@ -238,12 +238,8 @@
 				.withUrl("/OrderingHub")
 				.build();
 			connection.on("OrderCompleteNotification", function (message) {
-				//debugger;
-
-				//showInfoMessage(message);
 				try{
 				var responsobj=JSON.parse(message);
-				console.log("Message received from hub: " + responsobj.OrderId);
 				if(responsobj.status==1)
 				{
 				var divorder=$('.myOrderActionPanel[data-orderid="'+responsobj.OrderId.toString()+'"]')
@@ -298,9 +294,7 @@
 			});
 
 			function sendRequestForCancel(orderid,foodorderid) {
-				//debugger;
 				var foodid = $(e.currentTarget).data("foodid");
-				//console.log("Add Item button clicked---"+foodid);
 				try {
 					const foodOrderdata = {
 						"orderid":orderid.toString(),
@@ -316,8 +310,6 @@
 					})
 						.then((response) => response.json())
 						.then((data) => {
-							//debugger;
-							//console.log("Success:", data);
 							if(data.isDeleted==="ok")
 							{
 								$('tr[data-orderid="'+foodorderid.toString()+'"]').remove();
@@ -335,13 +327,10 @@
 			}
 
 			$( "#removeOrderDialog" ).on('show.bs.modal', function(e){
-				//debugger;
-				console.log("I want this to appear after the modal has opened!");
+
 				var button = e.relatedTarget;
 				var foodorderid = button.getAttribute('data-bs-foodorderid');
 				var orderid = button.getAttribute('data-bs-orderid');
-				console.log("Food Order ID: " + foodorderid);
-				console.log("Order ID: " + orderid);//data-bs-foodordername itemname
 				$( "#removeOrderDialog").find('#orderid').val(button.getAttribute('data-bs-orderid'));
 				$( "#removeOrderDialog").find('#foodorderid').val(button.getAttribute('data-bs-foodorderid'));
 				$( "#removeOrderDialog").find('#panelname').val(button.getAttribute('data-bs-paneltitle'));

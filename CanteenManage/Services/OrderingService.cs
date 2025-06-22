@@ -4,6 +4,7 @@ using CanteenManage.CanteenRepository.Models;
 using CanteenManage.Utility;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace CanteenManage.Services
 {
@@ -348,13 +349,22 @@ namespace CanteenManage.Services
             return orderList;
         }
 
-        public async Task<List<FoodOrder>> GetFeedbackList(CancellationToken cancellationToken)
+        public async Task<(List<FoodOrder>, int)> GetFeedbackList(CancellationToken cancellationToken, int page, int pagesize)
         {
             var feedbacklist = await canteenManageContext.FoodOrders
                 .Include(f => f.Food)
+                .Include(f => f.Employee)
+                .AsNoTracking()
                 .Where(x => x.Review != "")
+            .OrderByDescending(x => x.RatingCreatedAt)
+            .Skip((page - 1) * pagesize)
+            .Take(pagesize)
                 .ToListAsync(cancellationToken);
-            return feedbacklist;
+            var totalcount = await canteenManageContext.FoodOrders
+                .AsNoTracking()
+                .Where(x => x.Review != "")
+                .CountAsync(cancellationToken);
+            return (feedbacklist, totalcount);
         }
         //public async Task<FoodOrder> GetByIdFeedback(int FoodOrderId, string ActionTaken, CancellationToken cancellationToken)
         //{

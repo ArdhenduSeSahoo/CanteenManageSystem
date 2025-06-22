@@ -6,19 +6,20 @@
 
 <div class="container-fluid">
 
-	<a asp-action="Dashboard" asp-controller="CanteenOrderReport" asp-route-OrderDateType="1" class="text-decoration-none">
-		<div class="card bg-info text-black clickable-card text-center mb-2" data-type="today">
-			<div class="card-body pt-0 pb-0">
-				<h5>Today's Orders</h5>
-				<div class="d-inline-flex gap-2">
-					<h6>@Model.TodaysTotalCount</h6><h6>|</h6><h6 class="text-success">@Model.TodaysCompletedCount</h6><h6>|</h6><h6 class="text-danger">@Model.TodaysUnCompletedCount</h6>
+
+	<div class="row row-cols-1 row-cols-md-3 text-center gap-2 gap-md-0">
+		<div class="col ">
+			<a asp-action="Dashboard" asp-controller="CanteenOrderReport" asp-route-OrderDateType="1" class="text-decoration-none">
+				<div class="card bg-info text-black clickable-card text-center" data-type="today">
+					<div class="card-body pt-0 pb-0">
+						<h6>Today's Orders</h6>
+						<div class="d-inline-flex gap-2">
+							<h6>@Model.TodaysTotalCount</h6><h6>|</h6><h6 class="text-success">@Model.TodaysCompletedCount</h6><h6>|</h6><h6 class="text-danger">@Model.TodaysUnCompletedCount</h6>
+						</div>
+					</div>
 				</div>
-
-			</div>
+			</a>
 		</div>
-
-	</a>
-	<div class="row row-cols-2 text-center mb-2 gap-0">
 		<div class="col ">
 			<a asp-action="Dashboard" asp-controller="CanteenOrderReport" asp-route-OrderDateType="2" class="text-decoration-none">
 				<div class="card bg-warning text-dark clickable-card" data-type="tomorrow">
