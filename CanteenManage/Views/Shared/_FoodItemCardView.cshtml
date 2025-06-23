@@ -2,7 +2,8 @@
 @using System.Globalization;
 
 @{
-	var food = Model.Food;
+	var food = Model.Food.Food;
+	var cartCount = Model.Food.FoodCountInCart;
 }
 
 <div class="card h-100 bg-white cardCustom" style=" border-radius:10px">
@@ -68,15 +69,15 @@
 				<div>
 					<div class="row align-self-end">
 
-						<div class="col align-self-end food_add_btn_div @(food.EmployeeCarts.Count()<=0?"":"d-none")" data-foodid="@food.Id">
+						<div class="col align-self-end food_add_btn_div @(cartCount<=0?"":"d-none")" data-foodid="@food.Id">
 							<button class="btn addBtn btn_addItem" data-foodid="@food.Id" type="button">Add</button>
 						</div>
-						<div class="col align-self-end food_add_remove_btn_div @(food.EmployeeCarts.Count()>0?"":"d-none")" data-foodid="@food.Id">
+						<div class="col align-self-end food_add_remove_btn_div @(cartCount>0?"":"d-none")" data-foodid="@food.Id">
 							<div class="btn-group" role="group" aria-label="">
 								<button type="button" style="border-radius:0px;border-bottom-left-radius:7px;border-top-left-radius:7px;" class="btn btn-outline-info btn_removeItem" data-foodid="@food.Id">
 									<i class="fa-solid fa-minus " style=""></i>
 								</button>
-								<div class="btn btn-outline-info btn_food_quantity" data-foodid="@food.Id" style=" border-radius:0px; color:black">@food.EmployeeCarts?.FirstOrDefault()?.Quantity</div>
+								<div class="btn btn-outline-info btn_food_quantity" data-foodid="@food.Id" style=" border-radius:0px; color:black">@cartCount</div>
 								<button type="button" class="btn btn-outline-info btn_addItem" data-foodid="@food.Id" style="border-radius:0px;border-bottom-right-radius:7px;border-top-right-radius:7px;"><i class="fa-solid fa-plus"></i></button>
 							</div>
 						</div>

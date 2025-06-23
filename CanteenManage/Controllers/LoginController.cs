@@ -88,7 +88,7 @@ namespace CanteenManage.Controllers
                 return Results.BadRequest(new { Status = "Some error happened--" + ex.Message });
             }
         }
-        public async Task<RedirectToActionResult> loginUserAsync(string? empid, string? empname, string portal_token = "")
+        public async Task<IActionResult> loginUserAsync(string? empid, string? empname, string portal_token = "")
         {
             string empEmail = "";
             string expv = "";
@@ -151,7 +151,7 @@ namespace CanteenManage.Controllers
 
             if (string.IsNullOrEmpty(empid) || string.IsNullOrEmpty(empname))
             {
-                return this.RedirectToAction(actionName: "Index", controllerName: "Error");
+                return RedirectToErrorScreen(new Exception("Employee ID or Name must be blank."));
             }
             else if (!string.IsNullOrEmpty(empid) || !string.IsNullOrEmpty(empname))
             {
@@ -186,17 +186,17 @@ namespace CanteenManage.Controllers
                     }
                     else
                     {
-                        return this.RedirectToAction(actionName: "Index", controllerName: "Error");
+                        return RedirectToErrorScreen(new Exception("Employee ID did not match to any role."));
                     }
 
                 }
                 else
                 {
-                    return this.RedirectToAction(actionName: "Index", controllerName: "Error");
+                    return RedirectToErrorScreen(new Exception("Employee ID not found."));
                 }
             }
 
-            return this.RedirectToAction(actionName: "Index", controllerName: "Error");
+            return RedirectToErrorScreen(new Exception("Employee ID or Name must be blank."));
         }
         [Authorize(Roles = "Employee")]
         public IActionResult ChoseModeOfUse(string empid, string empname, string eid, string empmail)
@@ -213,7 +213,7 @@ namespace CanteenManage.Controllers
         {
             if (string.IsNullOrEmpty(empid) || string.IsNullOrEmpty(empname) || string.IsNullOrEmpty(eid))
             {
-                return this.RedirectToAction(actionName: "Index", controllerName: "Error");
+                return RedirectToErrorScreen(new Exception("Employee ID or Name must be blank."));
             }
             else if (!string.IsNullOrEmpty(empid) || !string.IsNullOrEmpty(empname) || !string.IsNullOrEmpty(eid))
             {
@@ -232,22 +232,23 @@ namespace CanteenManage.Controllers
                 }
                 catch (Exception ex)
                 {
-                    return this.RedirectToAction(actionName: "Index", controllerName: "Error");
+                    return RedirectToErrorScreen(ex);
                 }
 
             }
             else
             {
-                return this.RedirectToAction(actionName: "Index", controllerName: "Error");
+                return RedirectToErrorScreen(new Exception("Employee ID or Name must be blank."));
             }
-            return this.RedirectToAction(actionName: "Index", controllerName: "Error");
+            return RedirectToErrorScreen(new Exception("System have some error on LoginAsEmployee"));
         }
         [Authorize]
         public IActionResult LoginAsCommitMember(string empid, string empname, string eid, string empmail)
         {
             if (string.IsNullOrEmpty(empid) || string.IsNullOrEmpty(empname) || string.IsNullOrEmpty(eid))
             {
-                return this.RedirectToAction(actionName: "Index", controllerName: "Error");
+                //return this.RedirectToAction(actionName: "Index", controllerName: "Error");
+                return RedirectToErrorScreen(new Exception("Employee ID or Name must be blank."));
             }
             else if (!string.IsNullOrEmpty(empid) || !string.IsNullOrEmpty(empname) || !string.IsNullOrEmpty(eid))
             {
@@ -263,15 +264,16 @@ namespace CanteenManage.Controllers
                 }
                 catch (Exception ex)
                 {
-                    return this.RedirectToAction(actionName: "Index", controllerName: "Error");
+                    return RedirectToErrorScreen(ex);
                 }
             }
             else
             {
-                return this.RedirectToAction(actionName: "Index", controllerName: "Error");
+                return RedirectToErrorScreen(null);
             }
 
-            return this.RedirectToAction(actionName: "Index", controllerName: "Error");
+            //return this.RedirectToAction(actionName: "Index", controllerName: "Error");
+            return RedirectToErrorScreen(new Exception("System have some error on LoginAsCommitMember"));
         }
 
 
@@ -422,6 +424,19 @@ namespace CanteenManage.Controllers
 
             }
             return this.RedirectToAction(actionName: "Index", controllerName: "Login");
+
+        }
+        public IActionResult RedirectToErrorScreen(Exception? exception)
+        {
+            if (appConfigProvider.IsDevelopmentEnv())
+            {
+                return this.RedirectToAction(actionName: "Index", controllerName: "Error", new { jasowerukasj = JsonConvert.SerializeObject(exception) });
+            }
+            else
+            {
+                var logouturl = appConfigProvider.GetLogOutURL();
+                return Redirect(logouturl);
+            }
 
         }
 

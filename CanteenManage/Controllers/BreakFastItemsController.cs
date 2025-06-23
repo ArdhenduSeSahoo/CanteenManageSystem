@@ -75,7 +75,8 @@
                                                                 FoodType,
                                                                 foodOrderByUser,
                                                                 cancellationToken,
-                                                                sessionDataModel.UserSelectedDateOrNow
+                                                                sessionDataModel.UserSelectedDateOrNow,
+                                                                sessionData: sessionDataModel
                                                                 );
             BreakFastPageDataModel breakFastPageDataModel = new BreakFastPageDataModel();
             breakFastPageDataModel.DayOfWeeks = daysOfWeek;

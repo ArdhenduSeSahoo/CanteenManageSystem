@@ -70,7 +70,8 @@ namespace CanteenManage.Controllers
                                                                 FoodID,
                                                                 foodOrderByUser,
                                                                 cancellationToken,
-                                                                sessionDataModel.UserSelectedDateOrNow
+                                                                sessionDataModel.UserSelectedDateOrNow,
+                                                                sessionData: sessionDataModel
                                                                 );
             LunchPageDataModel lunchPageDataModel = new LunchPageDataModel();
             lunchPageDataModel.DayOfWeeks = daysOfWeek;

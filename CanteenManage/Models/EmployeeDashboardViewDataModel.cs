@@ -7,6 +7,6 @@ namespace CanteenManage.Models
         public string BreakfastFoods { get; set; }
         public string LunchFoods { get; set; }
         public string SnacksFoods { get; set; }
-        public List<Food> Foods { get; set; }
+        public List<FoodDetails> Foods { get; set; }
     }
 }

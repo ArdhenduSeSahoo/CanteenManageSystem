@@ -78,7 +78,8 @@ namespace CanteenManage.Controllers
                                                                 snaksFoodID,
                                                                 foodOrderByUser,
                                                                 cancellationToken,
-                                                                sessionDataModel.UserSelectedDateOrNow
+                                                                sessionDataModel.UserSelectedDateOrNow,
+                                                                sessionData: sessionDataModel
                                                                 );
 
 
