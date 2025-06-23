@@ -6,10 +6,10 @@
 }
 
 @section HeadSection {
-	<link rel="stylesheet" href="~/css/customStyles.css">
-	<style>
+		<link rel="stylesheet" href="~/css/customStyles.css">
+		<style>
 
-	</style>
+		</style>
 }
 
 <div class=" container-fluid h-100" style="">
@@ -23,7 +23,7 @@
 				</div>
 
 			</div>
-			<p>(Last one month)</p>
+			<p style="color:gray;">(From @DateTime.Now.AddDays(-30).ToString("d") To @DateTime.Now.AddDays(-1).ToString("d"))</p>
 		</div>
 	</div>
 
@@ -31,41 +31,41 @@
 	<div class="row row-cols-1 row-cols-md-3">
 
 		@(
-				await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderHistoryListPanelView", new MyOrderListPanelViewModel()
-		{
-			PanelTitle = "Breakfast",
-			FoodOrders = Model.BreakFastFoodOrders,
-			FoodType = CanteenManage.Utility.FoodTypeEnum.Breakfast
-		})
-				)
+						await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderHistoryListPanelView", new MyOrderListPanelViewModel()
+				{
+					PanelTitle = "Breakfast",
+					FoodOrders = Model.BreakFastFoodOrders,
+					FoodType = CanteenManage.Utility.FoodTypeEnum.Breakfast
+				})
+						)
 		@(
-				await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderHistoryListPanelView", new MyOrderListPanelViewModel()
-		{
-			PanelTitle = "Lunch",
-			FoodOrders = Model.LunchFoodOrders,
-			FoodType = CanteenManage.Utility.FoodTypeEnum.Lunch
-		})
-				)
+						await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderHistoryListPanelView", new MyOrderListPanelViewModel()
+				{
+					PanelTitle = "Lunch",
+					FoodOrders = Model.LunchFoodOrders,
+					FoodType = CanteenManage.Utility.FoodTypeEnum.Lunch
+				})
+						)
 		@(
-				await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderHistoryListPanelView", new MyOrderListPanelViewModel()
-		{
-			PanelTitle = "Snacks",
-			FoodOrders = Model.SnaksFoodOrders,
-			FoodType = CanteenManage.Utility.FoodTypeEnum.Snacks
-		})
-				)
+						await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderHistoryListPanelView", new MyOrderListPanelViewModel()
+				{
+					PanelTitle = "Snacks",
+					FoodOrders = Model.SnaksFoodOrders,
+					FoodType = CanteenManage.Utility.FoodTypeEnum.Snacks
+				})
+						)
 
 	</div>
 
 	<div class="modal fade " id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
-				<div class="modal-header">
+				<div class="modal-header border-0">
 					<h1 class="modal-title fs-5" id="exampleModalLabel">Review</h1>
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
 				<form asp-action="addReview">
-					<div class="modal-body">
+					<div class="modal-body pb-0 pt-0">
 
 						<input type="hidden" name="order_id" id="order_id" value="0" />
 						<div class="form-check form-check-inline" style="margin:1px;padding:5px">
@@ -100,11 +100,11 @@
 						</div>
 						<div class="mb-3">
 							<label for="message-text" class="col-form-label">Message:</label>
-							<textarea class="form-control" name="review_text" id="message-text"></textarea>
+							<textarea class="form-control" name="review_text" id="message-text" maxlength="100"></textarea>
 						</div>
 
 					</div>
-					<div class="modal-footer">
+					<div class="modal-footer border-0 pt-0">
 						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
 						<button type="submit" class="btn btn-primary">Submit</button>
 					</div>
@@ -117,18 +117,18 @@
 	<div class="modal fade" id="viewReviewModal" tabindex="-1" aria-labelledby="viewReviewModalLabel" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
-				<div class="modal-header">
+				<div class="modal-header border-0">
 					<h5 class="modal-title" id="viewReviewModalLabel">Feedback</h5>
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
-				<div class="modal-body">
+				<div class="modal-body pb-0 pt-0">
 					<p>
 						<strong>Rating:</strong>
 						<img src="" id="ratingimg" alt="Rating Emoji" style="width: 40px; height: 40px;" />
 					</p>
 					<p><strong>Comment:</strong> <span id="reviewText"></span></p>
 				</div>
-				<div class="modal-footer">
+				<div class="modal-footer border-0 pt-0">
 					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
 				</div>
 			</div>
@@ -139,9 +139,9 @@
 </div>
 
 @section Scripts {
-	<script src="~/js/reviewModals_Min.js"></script>
-	<script>
+		<script src="~/js/reviewModals_Min.js"></script>
+		<script>
 
-	</script>
+		</script>
 }
 

@@ -57,7 +57,7 @@ namespace CanteenManage.Controllers
             //var name = jwtToken.Claims.FirstOrDefault(c => c.Type == "name")?.Value;
             //var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value;
             //var exp = jwtToken.Claims.FirstOrDefault(c => c.Type == "exp")?.Value;
-            logger.LogError(tokesss);
+            //logger.LogError(tokesss);
             return await loginUserAsync("", "", portal_token);
         }
 
@@ -115,10 +115,21 @@ namespace CanteenManage.Controllers
                 {
                     empname = name;
                 }
-                var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value;
-                if (!string.IsNullOrWhiteSpace(userId))
+                if (appConfigProvider.IsDevelopmentEnv())
                 {
-                    empid = userId;
+                    var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value;
+                    if (!string.IsNullOrWhiteSpace(userId))
+                    {
+                        empid = userId;
+                    }
+                }
+                else
+                {
+                    var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "description")?.Value;
+                    if (!string.IsNullOrWhiteSpace(userId))
+                    {
+                        empid = userId;
+                    }
                 }
                 var exp = jwtToken.Claims.FirstOrDefault(c => c.Type == "exp")?.Value;
                 if (!string.IsNullOrWhiteSpace(exp))
@@ -131,9 +142,9 @@ namespace CanteenManage.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError("Error in reading JWT token: " + ex.Message);
-                logger.LogError($"Token--: {portal_token}");
-                logger.LogError(ex.StackTrace);
+                //logger.LogError("Error in reading JWT token: " + ex.Message);
+                //logger.LogError($"Token--: {portal_token}");
+                //logger.LogError(ex.StackTrace);
                 //return this.RedirectToAction(actionName: "Index", controllerName: "Error", new { jasowerukasj = JsonConvert.SerializeObject(ex) });
             }
 
@@ -321,25 +332,25 @@ namespace CanteenManage.Controllers
 
                     return setCommitmemberSessionAndRedirect(userFound.Name, userFound.Id, userFound.EmployeeID, "", claims, DateTime.Now.AddHours(3));
                 }
-                else if (userFound.EmployeeTypeId == (int)EmployTypeEnum.Committee_Members)
+                else if (userFound.EmployeeTypeId == (int)EmployTypeEnum.Employee)
                 {
 
                     var claims = new List<Claim>
                         {
                             new Claim(ClaimTypes.Email, userFound.Email??""),
                             new Claim(ClaimTypes.Name, userFound.Name),
-                            new Claim(ClaimTypes.Role, CustomDataConstants.RoleCommitteeMember) // Add user role
+                            new Claim(ClaimTypes.Role, CustomDataConstants.RoleEmployee) // Add user role
                         };
 
                     var jwttokens = loginService.GenerateJSONWebToken(claims, DateTime.Now.AddHours(8));
-                    SetJWTCookie(jwttokens, userId, "", ((int)EmployTypeEnum.CanteenStaf).ToString());
+                    SetJWTCookie(jwttokens, userId, "", ((int)EmployTypeEnum.Employee).ToString());
 
-                    return setCommitmemberSessionAndRedirect(userFound.Name, userFound.Id, userFound.EmployeeID, "", claims, DateTime.Now.AddHours(3));
+                    return await setEmployeeSessionAndRedirect(userFound.Name, userFound.Id, userFound.EmployeeID, "", claims, DateTime.Now.AddHours(3));
                 }
             }
             catch (Exception ex)
             {
-
+                logger.LogError("Error in LoginUser: " + ex.Message + "-------" + ex.StackTrace);
             }
             return this.RedirectToAction(actionName: "Index", controllerName: "Login");
         }

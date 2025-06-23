@@ -5,15 +5,15 @@ namespace CanteenManage.Middleware
     public class ErrorHandlerMiddleWare
     {
         private readonly RequestDelegate _next;
-        //private readonly AppConfigProvider _appConfigProvider;
+        private readonly AppConfigProvider _appConfigProvider;
         private readonly ILogger<ErrorHandlerMiddleWare> _logger;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        public ErrorHandlerMiddleWare(RequestDelegate next, ILogger<ErrorHandlerMiddleWare> logger, IWebHostEnvironment webHostEnvironment)
+        public ErrorHandlerMiddleWare(RequestDelegate next, ILogger<ErrorHandlerMiddleWare> logger, IWebHostEnvironment webHostEnvironment, AppConfigProvider appConfigProvider)
         {
             _next = next;
             _logger = logger;
             _webHostEnvironment = webHostEnvironment;
-            //_appConfigProvider = appConfigProvider;
+            _appConfigProvider = appConfigProvider;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -40,7 +40,8 @@ namespace CanteenManage.Middleware
                 {
                     _logger.LogError("An error occurred while processing the request. From ErrorHandlerMiddleWare---" + ex.Message + "-----" + ex.StackTrace);
                     //context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                    context.Response.Redirect("/Error");
+                    //context.Response.Redirect("/Error");
+                    context.Response.Redirect(_appConfigProvider.GetLogOutURL());
                     return;
                 }
                 _logger.LogError("An error occurred while processing the request. From ErrorHandlerMiddleWare---" + ex);

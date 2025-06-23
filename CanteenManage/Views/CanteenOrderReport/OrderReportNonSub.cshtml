@@ -1,6 +1,7 @@
 ﻿@using CanteenManage.Utility
 @model CanteenManage.Models.CanteenOrderReportViewDataModel
 
+
 @*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
@@ -13,13 +14,13 @@
 	<div class="card">
 
 		<div class="card-header">
-			<h5 class="">Order Report</h5><span>(Subsidiary)</span>
+			<h5 class="">Order Report</h5><span>(Non Subsidiary)</span>
 		</div>
 		<div class="card-body">
 			<div class="container-fluid">
 				<div class="">
 					<div class="">
-						<form class="row g-2" asp-action="CanteenOrderReport" method="get">
+						<form class="row g-2" asp-action="OrderReportNonSub" method="get">
 
 							<div class="col-md-2">
 								<label for="inputZip" class="form-label">From</label>
@@ -63,6 +64,7 @@
 				<input type="hidden" name="fromDatePicker" value="@Model.fromDatePicker" />
 				<input type="hidden" name="toDatePicker" value="@Model.toDatePicker" />
 				<input type="hidden" name="orderStatusOptions" value="@Model.orderStatusOptions" />
+				<input type="hidden" name="IsNonSubsidiary" value="True" />
 				<button type="submit" class="btn btn-primary">Download Excel</button>
 			</form>
 			<br />
@@ -97,8 +99,8 @@
 									<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#orderDetailsModal" data-orderDate="@item.OrderDate.ToString("yyyy-MM-dd")" data-orderStatusOptions="@Model.orderStatusOptions" data-IsNonSubsidiary="true">
 										<i class="fa fa-eye"></i>
 									</button>
-									@* <a asp-action="OrderReportDetails" asp-controller="CanteenOrderReport"
-									   asp-route-orderDate="@item.OrderDate.ToString("yyyy-MM-dd")" asp-route-orderStatusOptions="@Model.orderStatusOptions" target="_blank"
+									@* <a asp-action="OrderReportDetails" asp-controller="EmployeeOrderReport"
+									   asp-route-orderDate="@item.OrderDate.ToString("yyyy-MM-dd")" asp-route-orderStatusOptions="@Model.orderStatusOptions" asp-route-IsNonSubsidiary="true" target="_blank"
 									   class="btn btn-primary">
 										<i class="fa fa-eye"></i>
 									</a> *@
@@ -110,14 +112,14 @@
 					<tfoot>
 						<tr>
 							<td style="font-weight:600">Total</td>
-							<td style="font-weight:600">@(Model.canteenOrdersReportTableViewDataModels.LastOrDefault().TotalOrderCount)</td>
+							<td style="font-weight:600">@(Model.canteenOrdersReportTableViewDataModels.LastOrDefault()?.TotalOrderCount)</td>
 							<td style="font-weight:600">
-								@(Model.canteenOrdersReportTableViewDataModels.LastOrDefault().TotalEmployeeCount)
+								@(Model.canteenOrdersReportTableViewDataModels.LastOrDefault()?.TotalEmployeeCount)
 							</td>
-							<td style="font-weight:600">@(Model.canteenOrdersReportTableViewDataModels.LastOrDefault().TotalQuantity)</td>
-							<td style="font-weight:600">@(Model.canteenOrdersReportTableViewDataModels.LastOrDefault().TotalPrice)</td>
-							<td style="font-weight:600">@(Model.canteenOrdersReportTableViewDataModels.LastOrDefault().TotalEmployeePrice)</td>
-							<td style="font-weight:600">@(Model.canteenOrdersReportTableViewDataModels.LastOrDefault().TotalSubsidyPrice)</td>
+							<td style="font-weight:600">@(Model.canteenOrdersReportTableViewDataModels.LastOrDefault()?.TotalQuantity)</td>
+							<td style="font-weight:600">@(Model.canteenOrdersReportTableViewDataModels.LastOrDefault()?.TotalPrice)</td>
+							<td style="font-weight:600">@(Model.canteenOrdersReportTableViewDataModels.LastOrDefault()?.TotalEmployeePrice)</td>
+							<td style="font-weight:600">@(Model.canteenOrdersReportTableViewDataModels.LastOrDefault()?.TotalSubsidyPrice)</td>
 						</tr>
 					</tfoot>
 				</table>
@@ -193,6 +195,7 @@
 		console.log(selectedDates);
 		},
 		});
+
 		$("#toDatePicker").flatpickr({
 
 		enableTime: false,
@@ -224,7 +227,7 @@
 							<td>..</td>
 						</tr>`);
 				try {
-					var getUrl="/CanteenOrderReport/OrderReportDetailsApi?orderDate="+orderDate+"&orderStatusOptions="+orderStatusOptions+"&IsNonSubsidiary=false";
+					var getUrl="/CanteenOrderReport/OrderReportDetailsApi?orderDate="+orderDate+"&orderStatusOptions="+orderStatusOptions+"&IsNonSubsidiary=true";
 					// Send the GET request using fetch
 					fetch(getUrl, {
 						method: "GET",
@@ -268,8 +271,6 @@
 			$( "#orderDetailsModal").find('#datefor').html("---");
 		});
 
-
 		});
 	</script>
 }
-

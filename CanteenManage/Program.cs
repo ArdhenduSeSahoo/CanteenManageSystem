@@ -129,7 +129,8 @@ try
         if (builder.Environment.IsDevelopment())
         {
             option.LogTo(Console.WriteLine, LogLevel.Information)
-                  .EnableSensitiveDataLogging()
+                  .EnableSensitiveDataLogging(true)
+                  .UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll)
                   .EnableDetailedErrors();
         }
 

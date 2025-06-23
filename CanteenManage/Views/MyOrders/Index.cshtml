@@ -131,7 +131,7 @@
 				<div></div>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
-			<div class="modal-body">
+			<div class="modal-body pb-0 pt-0">
 				<input type="hidden" id="orderid" value="" />
 				<input type="hidden" id="foodorderid" value="" />
 				<input type="hidden" id="panelname" value="" />
@@ -141,7 +141,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="modal-footer border-0">
+			<div class="modal-footer border-0 pt-0">
 				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
 				<button type="button" class="btn btn-danger" id="removemodaldelete" data-bs-dismiss="modal"> <i class="fa fa-trash" aria-hidden="true"></i> Delete</button>
 			</div>
@@ -152,12 +152,12 @@
 <div class="modal fade " id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 	<div class="modal-dialog modal-dialog-centered">
 		<div class="modal-content">
-			<div class="modal-header">
+			<div class="modal-header border-0">
 				<h1 class="modal-title fs-5" id="exampleModalLabel">Review</h1>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<form asp-action="addReview">
-				<div class="modal-body">
+				<div class="modal-body pb-0 pt-0">
 
 					<input type="hidden" name="order_id" id="order_id" value="0" />
 					<div class="form-check form-check-inline" style="margin:1px;padding:5px">
@@ -192,11 +192,11 @@
 					</div>
 					<div class="mb-3">
 						<label for="message-text" class="col-form-label">Message:</label>
-						<textarea class="form-control" name="review_text" id="message-text"></textarea>
+						<textarea class="form-control" name="review_text" id="message-text" maxlength="100"></textarea>
 					</div>
 
 				</div>
-				<div class="modal-footer">
+				<div class="modal-footer border-0 pt-0">
 					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
 					<button type="submit" class="btn btn-primary">Submit</button>
 				</div>
@@ -209,18 +209,18 @@
 <div class="modal fade" id="viewReviewModal" tabindex="-1" aria-labelledby="viewReviewModalLabel" aria-hidden="true">
 	<div class="modal-dialog modal-dialog-centered">
 		<div class="modal-content">
-			<div class="modal-header">
+			<div class="modal-header border-0">
 				<h5 class="modal-title" id="viewReviewModalLabel">Feedback</h5>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
-			<div class="modal-body">
+			<div class="modal-body pb-0 pt-0">
 				<p>
 					<strong>Rating:</strong>
 					<img src="" id="ratingimg" alt="Rating Emoji" style="width: 40px; height: 40px;" />
 				</p>
 				<p><strong>Comment:</strong> <span id="reviewText"></span></p>
 			</div>
-			<div class="modal-footer">
+			<div class="modal-footer border-0 pt-0">
 				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
 			</div>
 		</div>
@@ -238,12 +238,8 @@
 				.withUrl("/OrderingHub")
 				.build();
 			connection.on("OrderCompleteNotification", function (message) {
-				//debugger;
-
-				//showInfoMessage(message);
 				try{
 				var responsobj=JSON.parse(message);
-				console.log("Message received from hub: " + responsobj.OrderId);
 				if(responsobj.status==1)
 				{
 				var divorder=$('.myOrderActionPanel[data-orderid="'+responsobj.OrderId.toString()+'"]')
@@ -298,9 +294,7 @@
 			});
 
 			function sendRequestForCancel(orderid,foodorderid) {
-				//debugger;
 				var foodid = $(e.currentTarget).data("foodid");
-				//console.log("Add Item button clicked---"+foodid);
 				try {
 					const foodOrderdata = {
 						"orderid":orderid.toString(),
@@ -316,8 +310,6 @@
 					})
 						.then((response) => response.json())
 						.then((data) => {
-							//debugger;
-							//console.log("Success:", data);
 							if(data.isDeleted==="ok")
 							{
 								$('tr[data-orderid="'+foodorderid.toString()+'"]').remove();
@@ -335,13 +327,10 @@
 			}
 
 			$( "#removeOrderDialog" ).on('show.bs.modal', function(e){
-				//debugger;
-				console.log("I want this to appear after the modal has opened!");
+
 				var button = e.relatedTarget;
 				var foodorderid = button.getAttribute('data-bs-foodorderid');
 				var orderid = button.getAttribute('data-bs-orderid');
-				console.log("Food Order ID: " + foodorderid);
-				console.log("Order ID: " + orderid);//data-bs-foodordername itemname
 				$( "#removeOrderDialog").find('#orderid').val(button.getAttribute('data-bs-orderid'));
 				$( "#removeOrderDialog").find('#foodorderid').val(button.getAttribute('data-bs-foodorderid'));
 				$( "#removeOrderDialog").find('#panelname').val(button.getAttribute('data-bs-paneltitle'));

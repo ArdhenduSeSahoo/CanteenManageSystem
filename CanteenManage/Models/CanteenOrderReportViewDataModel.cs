@@ -3,7 +3,10 @@
     public class CanteenOrderReportViewDataModel : LayoutViewDataModel
     {
         public string ReportForMonthName { get; set; }
-        public List<ReportMonthsDDLDataModel> ReportMonthsDDLDataModel { get; set; }
+        //public List<ReportMonthsDDLDataModel> ReportMonthsDDLDataModel { get; set; }
+        public string fromDatePicker { get; set; } = "";
+        public string toDatePicker { get; set; } = "";
+        public string orderStatusOptions { get; set; } = "";
         public List<CanteenOrdersReportTableViewDataModel> canteenOrdersReportTableViewDataModels { get; set; }
     }
 
@@ -18,6 +21,7 @@
         public DateTime OrderDate { get; set; }
         public int TotalOrderCount { get; set; }
         public int TotalEmployeeCount { get; set; }
+        public int TotalQuantity { get; set; }
         public decimal TotalPrice { get; set; }
         public decimal TotalEmployeePrice { get; set; }
         public decimal TotalSubsidyPrice { get; set; }

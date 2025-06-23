@@ -15,6 +15,5 @@ namespace CanteenManage.Models
         public string EmployeeName { get; set; }
         public bool IsCompleted { get; set; }
         public string EmployeeCode { get; set; }
-        public Employee Employee { get; set; }
     }
 }

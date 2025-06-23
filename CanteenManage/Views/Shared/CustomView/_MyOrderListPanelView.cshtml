@@ -116,32 +116,18 @@
 												{
 													@if (orderShouldDelete)
 													{
-														@* <form asp-action="removeOrder" method="post">
-										<input type="hidden" name="orderId" value="@order.FoodOrder_OrderID" />
-										<input type="hidden" name="foodId" value="@order.Id" />
-										<button type="submit" class="btn btn-outline-danger btn-sm">
-											<i class="fa fa-trash" aria-hidden="true"></i>
-										</button>
-									</form> btn_Cancle_Item *@
-														@* <button type="button" class="btn btn-outline-danger btn-sm"
-																data-bs-orderid="@order.Id" data-bs-foodorderid="@order.OrderID"
-																data-bs-toggle="modal" data-bs-target="#removeOrderDialog">
-															<i class="fa fa-trash" aria-hidden="true"></i>
-														</button> *@
 														<button type="button" class="btn btn-outline-danger btn-sm"
 																data-bs-orderid="@order.Id" data-bs-foodorderid="@order.OrderID" data-bs-paneltitle="@Model.PanelTitle" data-bs-foodordername="@order.FoodName"
 																data-bs-toggle="modal" data-bs-target="#removeOrderDialog">
 															<i class="fa fa-trash" aria-hidden="true"></i>
 														</button>
 
-
-
 													}
 													else if (shouldSendRequest) //
 													{
 														<button type="submit" data-bs-orderqnt="@order.Quantity" data-bs-ordername="@order.FoodName" data-bs-foodorderid="@order.OrderID" data-bs-username="@username" data-bs-userempid="@userempId" class="btn btn-outline-success btn-sm btn_request_to_conform" data-bs-toggle="tooltip" data-bs-placement="top"
 																data-bs-custom-class="custom-tooltip"
-																data-bs-title="Send request for conformation of order.">
+																data-bs-title="Send request for confirmation of order.">
 															<i class="fa fa-paper-plane" aria-hidden="true"></i>
 														</button>
 													}
