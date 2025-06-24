@@ -118,7 +118,11 @@ namespace CanteenManage.Services
                 .Select(fo => new FoodDetails()
                 {
                     Food = fo,
-                    FoodCountInCart = fo.EmployeeCarts.Where(cf => cf.FoodId == fo.Id && cf.EmployeeId == sessionData.UserIdOrZero).Sum(cf => cf.Quantity)
+                    FoodCountInCart = fo.EmployeeCarts.Where(cf => cf.FoodId == fo.Id
+                    && cf.EmployeeId == sessionData.UserIdOrZero
+                     && cf.OutDateStatus == (int)CartFoodOutDateEnum.InOrder
+                     && cf.OrderDate.Date == userSelected_dateTime.Date
+                    ).Sum(cf => cf.Quantity)
                 })
                 .ToListAsync(cancellationToken);
             return allFoodWithUserOrderDetails;
