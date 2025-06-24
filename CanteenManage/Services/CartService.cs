@@ -103,7 +103,7 @@ namespace CanteenManage.Services
                 if (existingFoodOrder != null)
                 {
                     food_quantity = existingFoodOrder.Quantity;
-                    if (food_quantity <= 4)
+                    //if (food_quantity <= 4)
                     {
                         existingFoodOrder.Quantity = existingFoodOrder.Quantity + 1;
                         // Price is not calculating bcz it may changes in Food table after added to cart
@@ -136,17 +136,17 @@ namespace CanteenManage.Services
                 var totalFoodOrderByuser = await foodListingService.GetCartFoodQuantityOrderByUserCount(user_Id, (int)foodTypeEnum, userSelected_DateTime, cancellationToken);
 
                 var cart_count = await foodListingService.GetCartItemCount(user_Id, cancellationToken);
-                if (food_quantity >= 5)
-                {
-                    return Results.Ok(new FoodOrderApiReturnMessage()
-                    {
-                        food_quantity = food_quantity,
-                        total_quantity = totalFoodOrderByuser,
-                        total_quantity_cart = cart_count ?? 0,
-                        message = "Can't add more than 5 times."
-                    });
-                }
-                else
+                //if (food_quantity >= 5)
+                //{
+                //    return Results.Ok(new FoodOrderApiReturnMessage()
+                //    {
+                //        food_quantity = food_quantity,
+                //        total_quantity = totalFoodOrderByuser,
+                //        total_quantity_cart = cart_count ?? 0,
+                //        message = "Can't add more than 5 times."
+                //    });
+                //}
+                //else
                 {
                     return Results.Ok(new FoodOrderApiReturnMessage()
                     {
@@ -302,7 +302,7 @@ namespace CanteenManage.Services
             return existingcartOrder;
         }
         //dummy return
-        public async Task<int> CheckOutOfOrderInCart(FoodTypeEnum foodTypeEnum, SessionDataModel sessionData, CancellationToken cancellationToken)
+        public async Task<int> CheckOutOfOrderInCart(SessionDataModel sessionData, CancellationToken cancellationToken)
         {
             List<EmployeeCart>? foodOrderByUseridlist = new List<EmployeeCart>();
             foodOrderByUseridlist = await getcartfoodlistAsync(FoodTypeEnum.Breakfast, sessionData,
@@ -353,13 +353,12 @@ namespace CanteenManage.Services
                     &&
                     fo.Food.FoodTypeId == (int)foodTypeEnum
                     )
-                    .Where(fo =>
-                    (fo.OrderDate.Date < DateTime.Now.Date) || (fo.OrderDate.Date == DateTime.Now.Date && fo.OrderDate.Hour >= houreValue)
-                    )
                     .Where(fo => fo.OutDateStatus == (int)CartFoodOutDateEnum.InOrder)
-
                     .ToListAsync(cancellationToken);
-            return foodOrderByUseridlist;
+
+            ///bcz 24 hour format can not check in sql linq we are again filtering in memory
+            var foodOrderByUseridlist_24Hr = foodOrderByUseridlist.Where(fo => fo.OrderDate.Date < DateTime.Now.Date || (fo.OrderDate.Date == DateTime.Now.Date && int.Parse(DateTime.Now.ToString("HH")) >= houreValue)).ToList();
+            return foodOrderByUseridlist_24Hr;
         }
         public async Task<bool> RemoveCartItem(SessionDataModel sessionData, int foodId, CancellationToken cancellationToken)
         {

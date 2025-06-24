@@ -1,12 +1,10 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using CanteenManage.Models;
 using CanteenManage.Services;
 using CanteenManage.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using Newtonsoft.Json;
 //using NuGet.Common;
 
@@ -59,17 +57,38 @@ namespace CanteenManage.Controllers
             //var name = jwtToken.Claims.FirstOrDefault(c => c.Type == "name")?.Value;
             //var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value;
             //var exp = jwtToken.Claims.FirstOrDefault(c => c.Type == "exp")?.Value;
-
+            //logger.LogError(tokesss);
             return await loginUserAsync("", "", portal_token);
         }
 
         [AllowAnonymous]
-        public async Task<IResult> PortalLogOut(string empid)
+        public async Task<IResult> PortalLogOut()
         {
-            //await loginService.LogOutUpdateEmployee("SD1265");
-            return Results.Ok(new { Status = "Request accepted. User will sign out." });
+            try
+            {
+                var portal_token = HttpContext.Request.Headers["Authorization"];
+                var handler = new JwtSecurityTokenHandler();
+                var jwtToken = handler.ReadJwtToken(portal_token);
+                var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value;
+                if (!string.IsNullOrWhiteSpace(userId))
+                {
+                    await loginService.LogOutUpdateEmployee(userId);
+                    sessionManager.LogoutSessionUser(userId);
+                    return Results.Ok(new { Status = "Request accepted. User will sign out." });
+                }
+                else
+                {
+                    logger.LogError("PortalLogOut Error, Token--" + portal_token);
+                    return Results.BadRequest(new { Status = "Some error happened--" });
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError("PortalLogOut Error, Token--" + ex.Message + "--" + ex.StackTrace);
+                return Results.BadRequest(new { Status = "Some error happened--" + ex.Message });
+            }
         }
-        public async Task<RedirectToActionResult> loginUserAsync(string? empid, string? empname, string portal_token = "")
+        public async Task<IActionResult> loginUserAsync(string? empid, string? empname, string portal_token = "")
         {
             string empEmail = "";
             string expv = "";
@@ -96,10 +115,21 @@ namespace CanteenManage.Controllers
                 {
                     empname = name;
                 }
-                var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value;
-                if (!string.IsNullOrWhiteSpace(userId))
+                if (appConfigProvider.IsDevelopmentEnv())
                 {
-                    empid = userId;
+                    var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value;
+                    if (!string.IsNullOrWhiteSpace(userId))
+                    {
+                        empid = userId;
+                    }
+                }
+                else
+                {
+                    var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "description")?.Value;
+                    if (!string.IsNullOrWhiteSpace(userId))
+                    {
+                        empid = userId;
+                    }
                 }
                 var exp = jwtToken.Claims.FirstOrDefault(c => c.Type == "exp")?.Value;
                 if (!string.IsNullOrWhiteSpace(exp))
@@ -112,23 +142,23 @@ namespace CanteenManage.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError("Error in reading JWT token: " + ex.Message);
-                logger.LogError($"Token--: {portal_token}");
-                logger.LogError(ex.StackTrace);
-                //return this.RedirectToAction(actionName: "Index", controllerName: "Error");
+                //logger.LogError("Error in reading JWT token: " + ex.Message);
+                //logger.LogError($"Token--: {portal_token}");
+                //logger.LogError(ex.StackTrace);
+                //return this.RedirectToAction(actionName: "Index", controllerName: "Error", new { jasowerukasj = JsonConvert.SerializeObject(ex) });
             }
 
 
             if (string.IsNullOrEmpty(empid) || string.IsNullOrEmpty(empname))
             {
-                return this.RedirectToAction(actionName: "Index", controllerName: "Error");
+                return RedirectToErrorScreen(new Exception("Employee ID or Name must be blank."));
             }
             else if (!string.IsNullOrEmpty(empid) || !string.IsNullOrEmpty(empname))
             {
-                var userFound = await loginService.GetOrAddEmployee(empid, empname, empEmail);
+                var userFound = await loginService.GetOrAddEmployee(userId: empid, name: empname, EmployEmail: empEmail);
                 if (userFound != null)
                 {
-                    if (userFound.EmployTypeId == (int)EmployTypeEnum.Employee)
+                    if (userFound.EmployeeTypeId == (int)EmployTypeEnum.Employee)
                     {
                         var claims = new List<Claim>
                         {
@@ -137,9 +167,9 @@ namespace CanteenManage.Controllers
                             new Claim(ClaimTypes.Name, userFound.Name),
                             new Claim(ClaimTypes.Role, CustomDataConstants.RoleEmployee) // Add user role
                         };
-                        return await setEmployeeSessionAndRedirect(userFound.Name, userFound.Id, userFound.EmployID, portal_token, claims, DateTime.Now.AddHours(HourOfSession));
+                        return await setEmployeeSessionAndRedirect(userFound.Name, userFound.Id, userFound.EmployeeID, portal_token, claims, DateTime.Now.AddHours(HourOfSession));
                     }
-                    else if (userFound.EmployTypeId == (int)EmployTypeEnum.Committee_Members)
+                    else if (userFound.EmployeeTypeId == (int)EmployTypeEnum.Committee_Members)
                     {
                         var claims = new List<Claim>
                         {
@@ -148,25 +178,25 @@ namespace CanteenManage.Controllers
                             new Claim(ClaimTypes.Role, CustomDataConstants.RoleEmployee) // Add user role
                         };
                         var jwttokens = loginService.GenerateJSONWebToken(claims, DateTime.Now.AddHours(4));
-                        SetJWTCookie(jwttokens, userFound.EmployID, portal_token, ((int)EmployTypeEnum.Committee_Members).ToString());
+                        SetJWTCookie(jwttokens, userFound.EmployeeID, portal_token, ((int)EmployTypeEnum.Committee_Members).ToString());
 
                         HttpContext.Session.SetString(SessionConstants.UserId, userFound.Id.ToString());
                         HttpContext.Session.SetString(SessionConstants.UserName, userFound.Name.ToString());
-                        return this.RedirectToAction(actionName: "ChoseModeOfUse", controllerName: "Login", new { eid = userFound.Id, empid = userFound.EmployID, empname = userFound.Name, empmail = userFound.Email ?? "" });
+                        return this.RedirectToAction(actionName: "ChoseModeOfUse", controllerName: "Login", new { eid = userFound.Id, empid = userFound.EmployeeID, empname = userFound.Name, empmail = userFound.Email ?? "" });
                     }
                     else
                     {
-                        return this.RedirectToAction(actionName: "Index", controllerName: "Error");
+                        return RedirectToErrorScreen(new Exception("Employee ID did not match to any role."));
                     }
 
                 }
                 else
                 {
-                    return this.RedirectToAction(actionName: "Index", controllerName: "Error");
+                    return RedirectToErrorScreen(new Exception("Employee ID not found."));
                 }
             }
 
-            return this.RedirectToAction(actionName: "Index", controllerName: "Error");
+            return RedirectToErrorScreen(new Exception("Employee ID or Name must be blank."));
         }
         [Authorize(Roles = "Employee")]
         public IActionResult ChoseModeOfUse(string empid, string empname, string eid, string empmail)
@@ -183,7 +213,7 @@ namespace CanteenManage.Controllers
         {
             if (string.IsNullOrEmpty(empid) || string.IsNullOrEmpty(empname) || string.IsNullOrEmpty(eid))
             {
-                return this.RedirectToAction(actionName: "Index", controllerName: "Error");
+                return RedirectToErrorScreen(new Exception("Employee ID or Name must be blank."));
             }
             else if (!string.IsNullOrEmpty(empid) || !string.IsNullOrEmpty(empname) || !string.IsNullOrEmpty(eid))
             {
@@ -202,22 +232,23 @@ namespace CanteenManage.Controllers
                 }
                 catch (Exception ex)
                 {
-                    return this.RedirectToAction(actionName: "Index", controllerName: "Error");
+                    return RedirectToErrorScreen(ex);
                 }
 
             }
             else
             {
-                return this.RedirectToAction(actionName: "Index", controllerName: "Error");
+                return RedirectToErrorScreen(new Exception("Employee ID or Name must be blank."));
             }
-            return this.RedirectToAction(actionName: "Index", controllerName: "Error");
+            return RedirectToErrorScreen(new Exception("System have some error on LoginAsEmployee"));
         }
         [Authorize]
         public IActionResult LoginAsCommitMember(string empid, string empname, string eid, string empmail)
         {
             if (string.IsNullOrEmpty(empid) || string.IsNullOrEmpty(empname) || string.IsNullOrEmpty(eid))
             {
-                return this.RedirectToAction(actionName: "Index", controllerName: "Error");
+                //return this.RedirectToAction(actionName: "Index", controllerName: "Error");
+                return RedirectToErrorScreen(new Exception("Employee ID or Name must be blank."));
             }
             else if (!string.IsNullOrEmpty(empid) || !string.IsNullOrEmpty(empname) || !string.IsNullOrEmpty(eid))
             {
@@ -233,15 +264,16 @@ namespace CanteenManage.Controllers
                 }
                 catch (Exception ex)
                 {
-                    return this.RedirectToAction(actionName: "Index", controllerName: "Error");
+                    return RedirectToErrorScreen(ex);
                 }
             }
             else
             {
-                return this.RedirectToAction(actionName: "Index", controllerName: "Error");
+                return RedirectToErrorScreen(null);
             }
 
-            return this.RedirectToAction(actionName: "Index", controllerName: "Error");
+            //return this.RedirectToAction(actionName: "Index", controllerName: "Error");
+            return RedirectToErrorScreen(new Exception("System have some error on LoginAsCommitMember"));
         }
 
 
@@ -271,7 +303,7 @@ namespace CanteenManage.Controllers
                     return this.RedirectToAction(actionName: "Index", controllerName: "Login");
                 }
 
-                if (userFound.EmployTypeId == 2)
+                if (userFound.EmployeeTypeId == (int)EmployTypeEnum.CanteenStaf)
                 {
                     var claims = new List<Claim>
                         {
@@ -283,14 +315,44 @@ namespace CanteenManage.Controllers
                     SetJWTCookie(jwttokens, userId, "", ((int)EmployTypeEnum.CanteenStaf).ToString());
 
                     HttpContext.Session.SetString(SessionConstants.UserId, userFound.Id.ToString());
-                    HttpContext.Session.SetString(SessionConstants.UserEmpId, userFound.EmployID.ToString());
+                    HttpContext.Session.SetString(SessionConstants.UserEmpId, userFound.EmployeeID.ToString());
                     HttpContext.Session.SetString(SessionConstants.UserName, userFound.Name.ToString());
-                    return this.RedirectToAction(actionName: "Index", controllerName: "CanteenEmploy");
+                    return this.RedirectToAction(actionName: "Dashboard", controllerName: "CanteenOrderReport");
+                }
+                else if (userFound.EmployeeTypeId == (int)EmployTypeEnum.Committee_Members)
+                {
+
+                    var claims = new List<Claim>
+                        {
+                            new Claim(ClaimTypes.Email, userFound.Email??""),
+                            new Claim(ClaimTypes.Name, userFound.Name),
+                            new Claim(ClaimTypes.Role, CustomDataConstants.RoleCommitteeMember) // Add user role
+                        };
+
+                    var jwttokens = loginService.GenerateJSONWebToken(claims, DateTime.Now.AddHours(8));
+                    SetJWTCookie(jwttokens, userId, "", ((int)EmployTypeEnum.CanteenStaf).ToString());
+
+                    return setCommitmemberSessionAndRedirect(userFound.Name, userFound.Id, userFound.EmployeeID, "", claims, DateTime.Now.AddHours(3));
+                }
+                else if (userFound.EmployeeTypeId == (int)EmployTypeEnum.Employee)
+                {
+
+                    var claims = new List<Claim>
+                        {
+                            new Claim(ClaimTypes.Email, userFound.Email??""),
+                            new Claim(ClaimTypes.Name, userFound.Name),
+                            new Claim(ClaimTypes.Role, CustomDataConstants.RoleEmployee) // Add user role
+                        };
+
+                    var jwttokens = loginService.GenerateJSONWebToken(claims, DateTime.Now.AddHours(8));
+                    SetJWTCookie(jwttokens, userId, "", ((int)EmployTypeEnum.Employee).ToString());
+
+                    return await setEmployeeSessionAndRedirect(userFound.Name, userFound.Id, userFound.EmployeeID, "", claims, DateTime.Now.AddHours(3));
                 }
             }
             catch (Exception ex)
             {
-
+                logger.LogError("Error in LoginUser: " + ex.Message + "-------" + ex.StackTrace);
             }
             return this.RedirectToAction(actionName: "Index", controllerName: "Login");
         }
@@ -362,6 +424,19 @@ namespace CanteenManage.Controllers
 
             }
             return this.RedirectToAction(actionName: "Index", controllerName: "Login");
+
+        }
+        public IActionResult RedirectToErrorScreen(Exception? exception)
+        {
+            if (appConfigProvider.IsDevelopmentEnv())
+            {
+                return this.RedirectToAction(actionName: "Index", controllerName: "Error", new { jasowerukasj = JsonConvert.SerializeObject(exception) });
+            }
+            else
+            {
+                var logouturl = appConfigProvider.GetLogOutURL();
+                return Redirect(logouturl);
+            }
 
         }
 

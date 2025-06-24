@@ -10,7 +10,59 @@
 		.table tbody tr td {
 			padding: 3px;
 		}
+
+		.alert-warning {
+			font-size: 1.1rem;
+			border-radius: 6px;
+		}
 	</style>
+	<style>
+		.custom-modal {
+			display: none;
+			position: fixed;
+			z-index: 1050;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			background-color: rgba(0,0,0,0.5);
+			justify-content: center;
+			align-items: center;
+		}
+
+		.custom-modal-content {
+			background-color: #fff;
+			padding: 20px;
+			border-radius: 6px;
+			max-width: 400px;
+			width: 90%;
+			text-align: center;
+		}
+
+		.modal-actions {
+			margin-top: 20px;
+			display: flex;
+			justify-content: space-around;
+		}
+
+		.btn {
+			padding: 10px 15px;
+			border: none;
+			cursor: pointer;
+			border-radius: 4px;
+		}
+
+		.btn-success {
+			background-color: #28a745;
+			color: #fff;
+		}
+
+		.btn-secondary {
+			background-color: #6c757d;
+			color: #fff;
+		}
+	</style>
+
 }
 
 <div class=" container-fluid h-100" style="">
@@ -19,82 +71,110 @@
 		<div class="col">
 			<div class="card " style="border-radius:10px">
 				<div class="" style="margin-left:15px; margin-top:10px">
-					<h3 class="">Cart</h3>
+					<div class="col d-inline-flex">
+						<img src="~/images/cart.png" class="img-fluid" alt="My Orders" style="width: 50px; height: 50px;">
+						<h3 class="mt-2">Cart</h3>
+					</div>
 				</div>
 				<div class="card-body">
+					@if (Model.BreakFastFoodOrders.Count > 0 || Model.LunchFoodOrders.Count > 0 || Model.SnaksFoodOrders.Count > 0)
+					{
+						<div class="row row-cols-1">
+							<div class="col-2">
+								<table class="table table-hover table-responsive-sm table-borderless customTable">
+									<thead>
+										<tr>
+											<th>Name</th>
+											<th>Quantity</th>
+											<th>Price</th>
+											<th></th>
+										</tr>
+									</thead>
+									<tbody>
+										@if (Model.BreakFastFoodOrders.Count() > 0)
+										{
+											<tr>
+												<td>Breakfast</td>
+												<td class="text-center">@Model.BreakFastFoodOrders.Sum(fo => fo.Quantity)</td>
+												<td>@Model.BreakFastFoodOrders.Sum(fo => fo.TotalPrice)</td>
+												<td>
+													<form asp-action="RemoveOrder" method="post">
+														<input type="hidden" name="orderId" value="-1" />
+														<input type="hidden" name="orderType" value="1" />
+														<button type="submit" class="btn btn-outline-danger btn-sm">
+															<i class="fa fa-trash" aria-hidden="true"></i>
+														</button>
+													</form>
+												</td>
+											</tr>
+										}
+										@if (Model.LunchFoodOrders.Count() > 0)
+										{
+											<tr>
+												<td>Lunch</td>
+												<td class="text-center">@Model.LunchFoodOrders.Sum(fo => fo.Quantity)</td>
+												<td>@Model.LunchFoodOrders.Sum(fo => fo.TotalPrice)</td>
+												<td>
+													<form asp-action="RemoveOrder" method="post">
+														<input type="hidden" name="orderId" value="-1" />
+														<input type="hidden" name="orderType" value="2" />
+														<button type="submit" class="btn btn-outline-danger btn-sm">
+															<i class="fa fa-trash" aria-hidden="true"></i>
+														</button>
+													</form>
+												</td>
+											</tr>
+										}
+										@if (Model.SnaksFoodOrders.Count() > 0)
+										{
+											<tr>
+												<td>Snacks</td>
+												<td class="text-center">@Model.SnaksFoodOrders.Sum(fo => fo.Quantity)</td>
+												<td>@Model.SnaksFoodOrders.Sum(fo => fo.TotalPrice)</td>
+												<td>
+													<form asp-action="RemoveOrder" method="post">
+														<input type="hidden" name="orderId" value="-1" />
+														<input type="hidden" name="orderType" value="3" />
+														<button type="submit" class="btn btn-outline-danger btn-sm">
+															<i class="fa fa-trash" aria-hidden="true"></i>
+														</button>
+													</form>
+												</td>
+											</tr>
+										}
+									</tbody>
+								</table>
+							</div>
+							@*modal*@
+							<div id="customModal" class="custom-modal">
+								<div class="custom-modal-content">
+									<h5>Confirm Order</h5>
+									<p>Are you sure you want to place this order?</p>
+									<div class="modal-actions">
+										<button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+										<button type="button" class="btn btn-success" onclick="submitOrder()">Yes, Place Order</button>
+									</div>
+								</div>
+							</div>
+							<div class="col">
+								<form id="placeOrderForm" asp-action="PlaceOrder" method="post">
+									<button type="button" class="btn btn-success" onclick="openModal()">Place Order</button>
+								</form>
+							</div>
+						</div>
+					}
+					else
+					{
+						<div class="row row-cols-1">
+							<div class="col text-center">
+								<img src="~/images/empty-cart-flat.png" alt="cart empty" class="img img-fluid" style="height:270px;width:350px" />
 
-					<div class="row row-cols-1">
-						<div class="col-2">
-							<table class="table table-hover table-responsive-sm table-borderless customTable">
-								<thead>
-									<tr>
-										<th>Name</th>
-										<th>Quantity</th>
-										<th>Price</th>
-										<th></th>
-									</tr>
-								</thead>
-								<tbody>
-									@if (Model.BreakFastFoodOrders.Count() > 0)
-									{
-										<tr>
-											<td>Breakfast</td>
-											<td class="text-center">@Model.BreakFastFoodOrders.Sum(fo => fo.Quantity)</td>
-											<td>@Model.BreakFastFoodOrders.Sum(fo => fo.TotalPrice)</td>
-											<td>
-												<form asp-action="RemoveOrder" method="post">
-													<input type="hidden" name="orderId" value="-1" />
-													<input type="hidden" name="orderType" value="1" />
-													<button type="submit" class="btn btn-outline-danger btn-sm">
-														<i class="fa fa-trash" aria-hidden="true"></i>
-													</button>
-												</form>
-											</td>
-										</tr>
-									}
-									@if (Model.LunchFoodOrders.Count() > 0)
-									{
-										<tr>
-											<td>Lunch</td>
-											<td class="text-center">@Model.LunchFoodOrders.Sum(fo => fo.Quantity)</td>
-											<td>@Model.LunchFoodOrders.Sum(fo => fo.TotalPrice)</td>
-											<td>
-												<form asp-action="RemoveOrder" method="post">
-													<input type="hidden" name="orderId" value="-1" />
-													<input type="hidden" name="orderType" value="2" />
-													<button type="submit" class="btn btn-outline-danger btn-sm">
-														<i class="fa fa-trash" aria-hidden="true"></i>
-													</button>
-												</form>
-											</td>
-										</tr>
-									}
-									@if (Model.SnaksFoodOrders.Count() > 0)
-									{
-										<tr>
-											<td>Snacks</td>
-											<td class="text-center">@Model.SnaksFoodOrders.Sum(fo => fo.Quantity)</td>
-											<td>@Model.SnaksFoodOrders.Sum(fo => fo.TotalPrice)</td>
-											<td>
-												<form asp-action="RemoveOrder" method="post">
-													<input type="hidden" name="orderId" value="-1" />
-													<input type="hidden" name="orderType" value="3" />
-													<button type="submit" class="btn btn-outline-danger btn-sm">
-														<i class="fa fa-trash" aria-hidden="true"></i>
-													</button>
-												</form>
-											</td>
-										</tr>
-									}
-								</tbody>
-							</table>
+							</div>
+							<div class="col text-center">
+								<span class="font-weight-bolder" style="font-weight:500">Empty Cart</span>
+							</div>
 						</div>
-						<div class="col">
-							<form asp-action="PlaceOrder" method="post">
-								<button type="submit" class="btn btn-success">Place Order</button>
-							</form>
-						</div>
-					</div>
+					}
 					@if (Model.CartItemInOrders.Count > 0)
 					{
 						<div class="card border-warning mb-1 mt-2" style="">
@@ -108,6 +188,7 @@
 						</div>
 					}
 				</div>
+
 			</div>
 		</div>
 	</div>
@@ -138,7 +219,7 @@
 		@(
 				await Html.PartialAsync("__CartItemListPanel", new CartItemListPanelViewDataModel()
 		{
-			panelTitle = "Out Of Order (auto remove)",
+			panelTitle = "Outdated Order (Auto remove)",
 			employeeCarts = Model.OutOfStockOrders
 		})
 				)
@@ -181,5 +262,22 @@
 			});
 		});
 	</script>
+	<script>
+		function openModal() {
+		  document.getElementById("customModal").style.display = "flex";
+		}
+
+		function closeModal() {
+		  document.getElementById("customModal").style.display = "none";
+		}
+
+		function submitOrder() {
+		  document.getElementById("placeOrderForm").submit();
+		}
+	</script>
+
+
+
+
 }
 

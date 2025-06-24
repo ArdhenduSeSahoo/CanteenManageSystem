@@ -1,5 +1,6 @@
 ﻿@using CanteenManage.Utility
-@model CanteenManage.Models.OrderByEmployViewDataModel
+@model CanteenManage.Models.OrderByEmployViewDataModel;
+@using Newtonsoft.Json;
 @*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
@@ -97,7 +98,7 @@
 		<div class="card-body">
 			<div class="d-inline-flex">
 
-				<div class="card d-none" id="defaultcardorderdet" style="max-width:300px">
+				<div class="card mb-2 d-none " id="defaultcardorderdet" style="max-width:300px">
 					<div class="card-body p-2">
 						<div class="row row-cols-1">
 							<div class="col">
@@ -110,6 +111,9 @@
 									<div>Qnt.:<span id="orderqnt" style="font-weight:500"></span></div>
 								</div>
 
+							</div>
+							<div class="col">
+								<div>EmpId:<span id="orderid"></span></div>
 							</div>
 							<div class="col">
 								<div>EmpId:<span id="userempid"></span></div>
@@ -134,11 +138,11 @@
 		</div>
 
 		<div class="card-body">
-			<form method="get" asp-action="OrderByEmployIdx" class="row g-3 align-items-center">
+			<form method="get" asp-action="OrderByEmployIdx" id="searchForm" class="row g-3 align-items-center">
 				<input type="hidden" name="FoodType" value="@Model.FoodType" />
 
 				<div class="col-auto">
-					<input type="text" class="form-control" id="empName" name="searchTerm" value="@Model.SearchValue" placeholder="Employee Name and Id" />
+					<input type="text" class="form-control searchinputs" name="searchTerm" id="myInput" value="@Model.SearchValue" placeholder="Name or Id or Orderid" />
 				</div>
 
 				<div class="col-auto">
@@ -148,8 +152,6 @@
 				</div>
 			</form>
 		</div>
-
-
 
 
 		<div class="table-responsive">
@@ -277,15 +279,17 @@
 			</style>
 		</div>
 	</div>
-
 </div>
 
 
 @section Scripts {
 	<script src="~/js/signalr.min.js"></script>
 
-@* <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script> *@
+	@* <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script> *@
 	<script>
+		function searchData(){
+			var foodOrders=@(JsonConvert.SerializeObject(Model.FoodOrders));
+		}
 		$(document).ready(function() {
 		const connection = new signalR.HubConnectionBuilder()
 			.withUrl("/OrderingHub")
@@ -295,30 +299,33 @@
 		connection.on("OrderCompleteNotification", function (orderJson) {
 			//const msg = document.createElement("li");
 			//msg.textContent = `${user}: ${message}`;
+			//debugger;
 			//document.getElementById("messagesList").appendChild(msg);
-			//console.log("Order completed with ID: " + orderJson);
-				const myArr = JSON.parse(orderJson);
-				if(myArr.length>0)
-				{
-					$('#cardUserRequestDiv').removeClass('d-none');
-				}
-				else{
-					$('#cardUserRequestDiv').addClass('d-none');
-				}
+
+				const myArr =orderJson; //JSON.parse(orderJson);
+				// if(myArr.length>0)
+				// {
+				// 	$('#cardUserRequestDiv').removeClass('d-none');
+				// }
+				// else{
+				// 	$('#cardUserRequestDiv').addClass('d-none');
+				// }
+
 		$('#userordergrid').empty();
 		myArr.forEach(function(item) {
-				console.log("Order ID: " + item.OrderId);
+				//console.log("Order ID: " + item.orderId);
 
 				var clone_card=$("#defaultcardorderdet").clone();
 				clone_card.removeClass('d-none');
-				clone_card.find("#username").html(item.UserName);
+				clone_card.find("#username").html(item.userName);
 				//var onme=clone_card.find("#ordername");
-				clone_card.find("#ordername").html(item.OrderName);
-				clone_card.find("#orderqnt").html(item.OrderQnt);
+				clone_card.find("#ordername").html(item.orderName);
+				clone_card.find("#orderqnt").html(item.orderQnt);
 				//var unam=clone_card.find("#userempid");
-				clone_card.find("#userempid").html(item.UserEmpId);
+				clone_card.find("#orderid").html(item.orderId);
+				clone_card.find("#userempid").html(item.userEmpId);
 				var confbtn=clone_card.find(".btn_conform_order_sr");
-				confbtn.attr("data-bs-orderid", item.OrderId);
+				confbtn.attr("data-bs-orderid", item.orderId);
 				$("#userordergrid").append(clone_card);
 				//console.log("Order Name: " + item.OrderName);
 				//console.log("User Emp ID: " + item.UserEmpId);
@@ -326,32 +333,60 @@
 				//console.log("Request Date Time: " + item.RequestDateTime);
 			});
 		});
+		connection.on("OrderCompleteSuccess", function (orderJson) {
+			console.log("Order completed with ID: " + orderJson);
+			showInfoMessage(orderJson);
+		});
+		connection.on("OrderCompleteSuccess", function (orderJson) {
 
+			showInfoMessage(orderJson);
+		});
 		connection.start()
 		.then(function() {
 			connection.invoke("AssignAsCanteenEmployee", "Hi");
 		})
 		.catch(function (err) {
-			return console.error(err.toString());
+		 console.error(err.toString());
 		});
 
 
 		$(document).on('click', '.btn_conform_order_sr', function(event) {
 		  // Code to execute when the button is clicked
-		  console.log('Button clicked using .on() method!');
+		  //console.log('Button clicked using .on() method!');
 		  const button = event.currentTarget
 			var orderId = button.getAttribute('data-bs-orderid');
-			console.log(orderId);
+			//console.log(orderId);
 			try {
 			connection.invoke("ConformingOrder", orderId)
 			.catch(function (err) {
-				return console.error(err.toString());
+				//return console.error(err.toString());
 				showErrorMessage("Some error happened. Please refresh page.");
 			});
 					} catch (err) {
 			console.error(err);
 		}
 		});
+
+		let searchTimer; // Variable to hold the debounce timer
+		function performSearch(query) {
+			console.log("Performing search for: " + query);
+			//$('#searchForm').submit();
+		}
+
+		// $(".searchinputs").keyup(function() {
+		// 	// Code to be executed when a key is released in #myInput
+		// 	var inputValue = $(this).val(); // Get the current value of the input
+		// 	console.log("Input value on keyup: " + inputValue);
+		// });
+		// $('#searchInput').on('keyup', function() {
+		// clearTimeout(searchTimer); // Clear any existing timer
+		// const searchTerm = $(this).val(); // Get the current input value
+		// console.log(searchTerm);
+		// // Set a new timer to execute the search function after a delay (e.g., 300ms)
+		// searchTimer = setTimeout(function() {
+		// 	performSearch(searchTerm);
+		// }, 300);
+		// });
 		});
 	</script>
 

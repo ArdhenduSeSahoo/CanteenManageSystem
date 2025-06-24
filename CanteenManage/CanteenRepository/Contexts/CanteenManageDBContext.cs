@@ -20,6 +20,10 @@ namespace CanteenManage.CanteenRepository.Contexts
         //public DbSet<FoodOrderFoodDetail> FoodOrderFoodDetails { get; set; }
         //public DbSet<EmployeeOrder> EmployeeOrders { get; set; }
         //public DbSet<EmployeeOrderDetail> EmployeeOrderDetails { get; set; }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            base.OnConfiguring(optionsBuilder);
+        }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             //base.OnModelCreating(modelBuilder);
@@ -40,7 +44,7 @@ namespace CanteenManage.CanteenRepository.Contexts
                 new FoodType
                 {
                     Id = 3,
-                    Name = "Evening Snacks"
+                    Name = "Snacks"
                 },
                 new FoodType
                 {

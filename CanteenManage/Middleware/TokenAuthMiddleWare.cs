@@ -2,10 +2,13 @@
 
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
+using System.Threading;
 using CanteenManage.Middleware;
 using CanteenManage.Services;
 using CanteenManage.Utility;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Net.Http.Headers;
 
 namespace CanteenManage.CanteenMiddleWare
 {
@@ -13,17 +16,26 @@ namespace CanteenManage.CanteenMiddleWare
     {
         private readonly RequestDelegate _next;
         private readonly SessionManager _sessionManager;
-        public TokenAuthMiddleWare(RequestDelegate next, SessionManager sessionManager)
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly AppConfigProvider _appConfigProvider;
+        private readonly ILogger<TokenAuthMiddleWare> _logger;
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        public TokenAuthMiddleWare(RequestDelegate next, SessionManager sessionManager, IHttpClientFactory httpClientFactory, ILogger<TokenAuthMiddleWare> logger, AppConfigProvider appConfigProvider, IWebHostEnvironment webHostEnvironment)
         {
             _next = next;
             _sessionManager = sessionManager;
+            _httpClientFactory = httpClientFactory;
+            _appConfigProvider = appConfigProvider;
+            _logger = logger;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         public async Task InvokeAsync(HttpContext context)
         {
 
             //var tok = context.Request.Cookies[CustomDataConstants.jwtTokencookieName];
-            var tok = context.Session.GetString(SessionConstants.AppToken);
+            string? App_token = context.Session.GetString(SessionConstants.AppToken);
+            string? EConnect_token = context.Session.GetString(SessionConstants.EconnectToken);
             var userEmpID = context.Session.GetString(SessionConstants.UserEmpId);
             var userType = context.Session.GetString(SessionConstants.UserType);
 
@@ -42,7 +54,7 @@ namespace CanteenManage.CanteenMiddleWare
                 //return;
                 await _next(context);
             }
-            else if (string.IsNullOrEmpty(tok))
+            else if (string.IsNullOrEmpty(App_token))
             {
                 //context.Response.StatusCode = 401; // Unauthorized
                 context.Response.Redirect("/Error");
@@ -52,44 +64,93 @@ namespace CanteenManage.CanteenMiddleWare
             {
                 try
                 {
-                    var usertype_int = int.Parse(userType);
+                    var usertype_int = int.Parse(userType ?? "3");
                     if (usertype_int == (int)EmployTypeEnum.Employee)
                     {
                         if (!string.IsNullOrWhiteSpace(userEmpID)
                             && _sessionManager.IsUserLoggedIn(userEmpID)
                             )
                         {
-                            context.Request.Headers["Authorization"] = "Bearer " + tok;
-                            await _next(context);
+                            //string responsbody = "";
+                            //_logger.LogError($"Econnect token--" + EConnect_token);
+                            if (false) //(!_appConfigProvider.IsDevelopmentEnv() && !string.IsNullOrWhiteSpace(EConnect_token))
+                            {
+                                try
+                                {
+                                    var httpClient = _httpClientFactory.CreateClient(CustomDataConstants.PortalAuthValidater);
+                                    httpClient.Timeout = new TimeSpan(0, 0, 50);
+                                    httpClient.DefaultRequestHeaders.Clear();
+                                    httpClient.DefaultRequestHeaders.Add(HeaderNames.Authorization, "Bearer " + EConnect_token);
+                                    var responsdata = await httpClient.PatchAsync(_appConfigProvider.GetPortalAuthValidaTorEndpoint(), null);
+                                    //_logger.LogError($"Calling e connect auth path--{_appConfigProvider.GetPortalAuthValidaTorEndpoint()} token-{EConnect_token}");
+                                    responsdata.EnsureSuccessStatusCode();
+                                    //responsbody = await responsdata.Content.ReadAsStringAsync();
+                                    //_logger.LogError(responsbody);
+
+                                    context.Request.Headers["Authorization"] = "Bearer " + App_token;
+                                    await _next(context);
+                                    //Console.WriteLine(responsdata.ToString());
+                                }
+                                catch (Exception ex)
+                                {
+                                    _logger.LogError($"Token validation failed: {ex.Message}---- for user id--{userEmpID}-----E connect token-----{EConnect_token}");
+                                    //context.Response.Redirect("/Error");
+                                    //return;
+                                    context.Response.Redirect(_appConfigProvider.GetLogOutURL());
+                                    return;
+                                }
+                            }
+                            else
+                            {
+                                context.Request.Headers["Authorization"] = "Bearer " + App_token;
+                                await _next(context);
+                            }
                         }
                         else
                         {
                             //context.Response.StatusCode = 401; // Unauthorized
-                            context.Response.Redirect("/Error");
+                            //context.Response.Redirect("/Error");
+                            //return;
+                            context.Response.Redirect(_appConfigProvider.GetLogOutURL());
                             return;
                         }
                     }
                     else if (usertype_int == (int)EmployTypeEnum.Committee_Members || usertype_int == (int)EmployTypeEnum.CanteenStaf
                             )//check for member login and canteen employ login
                     {
-                        context.Request.Headers["Authorization"] = "Bearer " + tok;
+                        context.Request.Headers["Authorization"] = "Bearer " + App_token;
                         await _next(context);
                     }
                     else
                     {
                         //context.Response.StatusCode = 401; // Unauthorized
-                        context.Response.Redirect("/Error");
+                        //context.Response.Redirect("/Error");
+                        context.Response.Redirect(_appConfigProvider.GetLogOutURL());
                         return;
                     }
                 }
                 catch (Exception ex)
                 {
-
-                    context.Response.Redirect("/Error");
-                    return;
+                    //_logger.LogError($"TokenAuthMiddleware failed: {ex.Message}---- for user id--{userEmpID}");
+                    //context.Response.Redirect("/Error");
+                    //return;
+                    if (_webHostEnvironment.IsDevelopment())
+                    {
+                        _logger.LogError("An error occurred while processing the request. From ErrorHandlerMiddleWare---" + ex.Message);
+                        context.Response.StatusCode = StatusCodes.Status404NotFound;
+                        await context.Response.WriteAsJsonAsync(new { status = "Some error Found.---" + ex.Message + "---" + ex.StackTrace });
+                        return;
+                    }
+                    else
+                    {
+                        _logger.LogError("An error occurred while processing the request. From ErrorHandlerMiddleWare---" + ex.Message + "-----" + ex.StackTrace);
+                        //context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                        //context.Response.Redirect("/Error");
+                        context.Response.Redirect(_appConfigProvider.GetLogOutURL());
+                        return;
+                    }
                 }
             }
-
         }
 
         public bool IsAllowedURL(HttpContext context)

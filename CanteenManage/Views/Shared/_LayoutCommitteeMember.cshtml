@@ -16,12 +16,11 @@
 
 	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/CanteenManage.styles.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/lib/flatpickr/flatpickr.min.css" asp-append-version="true" />
 	<style>
 		.nav_link {
 			color: black !important;
 			font-weight: 600;
-
-
 		}
 	</style>
 	<style>
@@ -79,6 +78,12 @@ background-color: #e6f7ff; min-height:100vh;
 						<li class="nav-item customNavItem">
 							<a class="nav-link text-center nav_link " asp-controller="EmployeeOrderReport" asp-action="EmpOrderReport">Orders Reports</a>
 						</li>
+						<li class="nav-item customNavItem">
+							<a class="nav-link text-center nav_link " asp-controller="EmployeeOrderReport" asp-action="OrderReportNonSub">OrdersReportNonSub</a>
+						</li>
+						<li class="nav-item customNavItem">
+							<a class="nav-link text-center nav_link " asp-controller="EmployeeOrderReport" asp-action="OrderFeedback">Orders Feedbacks</a>
+						</li>
 
 					</ul>
 					<ul class="navbar-nav" style="">
@@ -123,9 +128,11 @@ color: white;">
 
 
 	<script src="~/lib/jquery/dist/jquery.min.js"></script>
-
+	<script src="~/js/popper.min.js"></script>
 	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 	<script src="~/lib/fontawesome-free-6.7.2-web/js/all.min.js"></script>
+
+	<script src="~/lib/flatpickr/flatpickr.min.js" asp-append-version="true"></script>
 	<script src="~/js/site.js" asp-append-version="true"></script>
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 	@await RenderSectionAsync("Scripts", required: false)

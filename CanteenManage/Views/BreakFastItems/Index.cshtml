@@ -8,7 +8,10 @@
 
 	<link rel="stylesheet" href="~/css/customStyles.css">
 	<style>
-
+		.datepicker_custom {
+			z-index: 1;
+			opacity: 0 !important;
+		}
 	</style>
 }
 
@@ -23,13 +26,6 @@
 					</div>
 				</div>
 			</div>
-			@* 
-			@(
-						await Html.PartialAsync("_ChoseDateVew", new ChoseDateViewDataModel()
-			{
-				daysOfWeekModels = Model.DayOfWeeks,
-			})
-						) *@
 
 			<div class="date-selector">
 				<label class="date-label">Choose Date:</label>
@@ -47,6 +43,12 @@
 
 				</div>
 			</div>
+
+			@* 	<div class="d-flex " style="width:250px; position:relative;">
+				<input type="text" id="myDatePicker" value="" placeholder="Select Date" class="form-control form-control-solid flatpickr-input datepicker_custom z-1">
+				<img src="~/images/datePicker.png" alt="Calendar Icon" class="calendar-icon z-0" style="width: 35px; height: 35px; cursor: pointer; position:absolute;z-index:0;">
+			</div> *@
+
 			<div class="d-flex ">
 				<div class="row">
 					<div class="col">
@@ -58,13 +60,14 @@
 	</div>
 
 	<div class="row row-cols-1 row-cols-md-5 g-2">
-		@foreach (Food food in Model.foods)
+		@foreach (FoodDetails food in Model.foods)
 		{
 			<div class="col">
 				@(
 							await Html.PartialAsync("_FoodItemCardView", new FoodItemCardDataModel()
 			{
-				food = food,
+				Food = food,
+				ShowAddToCartButton = true,
 			})
 							)
 			</div>
@@ -79,18 +82,34 @@
 	<script src="~/js/canteensystem_js.js"></script>
 	<script>
 
-				$(document).ready(function () {
+			$(document).ready(function () {
 
 			$(".btn_addItem").click( async function (e) {
-				//debugger;
+
 				addFoodItem(e,"/api/FoodOrders/breakfastFoodOrderAdd");
-				//console.log(response.json);
+
 			});
 			$(".btn_removeItem").click( async function (e) {
-				//debugger;
 				removeFoodItem(e,"/api/FoodOrders/OrderRemove");
 
 			});
+
+		// 	$("#myDatePicker").flatpickr({
+
+		// 	enableTime: false,
+		// 	disableMobile: "true",
+		// 	altInput: true,
+		// 	mode: "single",
+		// 	altFormat: "F j, D",
+		// 	minDate: "@Model.DayOfWeeks.FirstOrDefault()?.DateTime.ToString("yyyy-MM-dd")",
+		// 	maxDate:"@Model.DayOfWeeks.LastOrDefault()?.DateTime.ToString("yyyy-MM-dd")", //new Date().fp_incr(14),
+
+		// 	dateFormat: "d-m-Y",
+		// 	onChange: function(selectedDates, dateStr, instance) {
+		// 	console.log(selectedDates);
+		// },
+		// });
+
 		});
 	</script>
 }

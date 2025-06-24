@@ -10,15 +10,20 @@
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title> ESSPL Canteen</title>
-	<link rel="icon" type="image/png" href="~/images/logo12.png" asp-append-version="true" />
+
 	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
 	<link rel="stylesheet" href="~/lib/fontawesome-free-6.7.2-web/css/all.min.css" />
+
+	<link rel="icon" type="image/png" href="~/images/logo12.png" asp-append-version="true" />
+	<link rel="manifest" href="~/manifest.json">
+	<meta name="theme-color" content="#2196f3" />
 
 	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/CanteenManage.styles.css" asp-append-version="true" />
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 	<link rel="stylesheet" href="~/css/notyf.min.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/lib/flatpickr/flatpickr.min.css" asp-append-version="true" />
 
 	<style>
 		.nav_link {
@@ -69,7 +74,7 @@ background-color:#f5fbff
 			<div class="container-fluid">
 				@* <div class="bg-white rounded-3"> *@
 				<div class="rounded-3" style="background-color: transparent;">
-					<a class="navbar-brand" style="margin:0px" asp-area="" asp-controller="Dashboard" asp-action="Index">
+					<a class="navbar-brand" style="margin:0px" href="https://econnect.esspl.com/">
 						<img src="~/images/logo3.png" alt="logo" class="img-fluid" style="height:30px;width:130px">
 					</a>
 				</div>
@@ -77,21 +82,27 @@ background-color:#f5fbff
 						aria-expanded="false" aria-label="Toggle navigation">
 					<span class="navbar-toggler-icon"></span>
 				</button> *@
-				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
-						aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+				@* 	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+				aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon">
+						<div></div>
+					</span>
+				</button> *@
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+						aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
 					<span class="navbar-toggler-icon">
 						<div></div>
 					</span>
 				</button>
 
 
-				<div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+				<div class="collapse navbar-collapse d-sm-inline-flex justify-content-between" id="mainNavbar">
 					<ul class="navbar-nav flex-grow-1" style="">
 						<li class="nav-item customNavItem">
 							<a class="nav-link nav_link text-center" asp-area="" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
 						</li>
 						<li class="nav-item customNavItem">
-							<a class="nav-link nav_link text-center" asp-area="" asp-controller="BreakFastItems" asp-action="Index">BreakFast</a>
+							<a class="nav-link nav_link text-center" asp-area="" asp-controller="BreakFastItems" asp-action="Index">Break Fast</a>
 						</li>
 						<li class="nav-item customNavItem ">
 							<a class="nav-link text-center nav_link" asp-area="" asp-controller="LunchItems" asp-action="Index">Lunch</a>
@@ -112,7 +123,7 @@ background-color:#f5fbff
 					</ul>
 					<ul class="navbar-nav" style="">
 
-						<li class="nav-item customNavItem cartDiv @(page_model.CartItemCount<=0?"d-none":"")">
+						<li class="nav-item customNavItem cartDiv @(page_model.CartItemCount<=0?"d-none":"")" style="position: relative;">
 							<a class="nav-link text-center nav_link p-0" asp-action="CartIndex" asp-controller="Cart">
 
 								<div class="btn text-white position-relative m-1 p-0">
@@ -126,6 +137,7 @@ margin-top: 2px;"></i>
 							</a>
 
 						</li>
+
 						<li class="nav-item" style=" font-weight: 600;
 color: white;">
 							@* <span class="nav-link text-center nav_link ">Ardhendu</span> *@
@@ -144,16 +156,16 @@ color: white;">
 							@if (!string.IsNullOrEmpty(username))
 							{
 								<span class="nav-link text-center nav_link ">
-									@firstName
+									<i class="fas fa-user"></i> @firstName
 								</span>
 							}
 
 						</li>
 						<li>
 							<a class="nav-link text-center" asp-area="" asp-controller="Login" asp-action="LoginSignOutEmployee" title="Logout">
-								@* <img src="~/images//exit.png" /> *@
-								<i class="fa fa-sign-out" aria-hidden="true" style="font-size:30px; z-index:100; margin-right:5px; color:black;"></i>
+								<i class="fas fa-sign-out-alt" style="font-size:30px; color:black;"></i>
 							</a>
+
 						</li>
 					</ul>
 				</div>
@@ -164,6 +176,43 @@ color: white;">
 		<main role="main" class="" style="">
 			@RenderBody()
 		</main>
+		<footer>
+			<div class="fixed-bottom d-none">
+				<div class="position-relative">
+					<div class="position-absolute bottom-0 end-0">
+						<div class="d-flex">
+							<div class="row row-cols-1 row-cols-md-4 ">
+								<div class="col"></div>
+								<div class="col"></div>
+								<div class="col"></div>
+								<div class="col">
+									<div class="card mb-3 mr-2 mr-md-3 mb-md-5">
+										<div class="card-body">
+											<div class="row">
+												<div class="col">
+													<span>askdjls</span>
+												</div>
+												<div class="col">
+													<span>Go To Cart</span>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="row row-cols-1 row-cols-md-4 bg-secondary d-none">
+							<div class="col"></div>
+							<div class="col"></div>
+							<div class="col"></div>
+							<div class="col">
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</footer>
 	</div>
 
 	<!-- Modal -->
@@ -205,14 +254,15 @@ color: white;">
 
 	<script src="~/lib/jquery/dist/jquery.min.js"></script>
 	<script src="~/js/popper.min.js"></script>
-	<script src="~/js/notyf.min.js" asp-append-version="true"></script>
 	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 	<script src="~/lib/fontawesome-free-6.7.2-web/js/all.min.js"></script>
+	<script src="~/js/notyf.min.js" asp-append-version="true"></script>
+	<script src="~/lib/flatpickr/flatpickr.min.js" asp-append-version="true"></script>
+
 	<script src="~/js/site.js" asp-append-version="true"></script>
 
+
 	<script>
-
-
 
 	</script>
 

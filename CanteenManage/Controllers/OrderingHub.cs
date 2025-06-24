@@ -28,32 +28,42 @@ namespace CanteenManage.Controllers
 
         public async Task RequestForOrderComplete(string OrderId, string ordername, string orderqnt, string userempid, string username)
         {
-
-            SROrderModel order = new SROrderModel
+            try
             {
-                OrderId = OrderId,
-                OrderName = ordername,
-                OrderQnt = orderqnt,
-                UserEmpId = userempid,
-                UserName = username,
-                RequestDateTime = DateTime.Now,
-                ConnectionID = Context.ConnectionId ?? string.Empty
-            };
-            //RequestOrderList.Add(order);
-            signalRDataHolder.AddOrderRequest(order);
+
+                SROrderModel order = new SROrderModel
+                {
+                    OrderId = OrderId,
+                    OrderName = ordername,
+                    OrderQnt = orderqnt,
+                    UserEmpId = userempid,
+                    UserName = username,
+                    RequestDateTime = DateTime.Now,
+                    ConnectionID = Context.ConnectionId ?? string.Empty
+                };
+                //RequestOrderList.Add(order);
+                signalRDataHolder.AddOrderRequest(order);
 
 
-            if (signalRDataHolder.GetOrderList().Count > 0)
-            {
-                await Clients.Clients(signalRDataHolder.GetCanteenEmployeeList())
-                        .SendAsync("OrderCompleteNotification", signalRDataHolder.GetOrderList());
-                // await Clients.Clients(canteenEmpList).SendAsync("OrderCompleteNotification", JsonConvert.SerializeObject(RequestOrderList));
+                if (signalRDataHolder.GetOrderList().Count >= 0)
+                {
+                    await Clients.Clients(signalRDataHolder.GetCanteenEmployeeList())
+                            .SendAsync("OrderCompleteNotification", signalRDataHolder.GetOrderList());
+                    // await Clients.Clients(canteenEmpList).SendAsync("OrderCompleteNotification", JsonConvert.SerializeObject(RequestOrderList));
+                }
+                else
+                {
+                    // Optionally, you can handle the case where there are no canteen employees connected
+                    //await Clients.Caller.SendAsync("NoCanteenEmployeesConnected", "No canteen employees are currently available to complete the order.");
+                }
+                var respoby = new { status = 1, OrderId = OrderId };
+                //await Clients.Client(Context.ConnectionId ?? string.Empty).SendAsync("OrderCompleteNotification", JsonConvert.SerializeObject(respoby));
             }
-            else
+            catch (Exception ex)
             {
-                // Optionally, you can handle the case where there are no canteen employees connected
-                //await Clients.Caller.SendAsync("NoCanteenEmployeesConnected", "No canteen employees are currently available to complete the order.");
+
             }
+
         }
 
         public async Task AssignAsCanteenEmployee(string message)
@@ -73,13 +83,23 @@ namespace CanteenManage.Controllers
                     var removingOrder = signalRDataHolder.RemoveOrderRequest(orderId);
                     if (completeResult)
                     {
-                        await Clients.Client(removingOrder.ConnectionID).SendAsync("OrderCompleteNotification", JsonConvert.SerializeObject(removingOrder));
+                        var respoby = new { status = 1, OrderId = removingOrder.OrderId };
+                        await Clients.Client(removingOrder.ConnectionID).SendAsync("OrderCompleteNotification", JsonConvert.SerializeObject(respoby));
+                        await Clients.Clients(signalRDataHolder.GetCanteenEmployeeList())
+                      .SendAsync("OrderCompleteSuccess", $"Order Completed For {removingOrder.OrderId},user {removingOrder.UserName}");
                     }
                     else
                     {
-                        await Clients.Client(removingOrder.ConnectionID).SendAsync("OrderCompleteNotification", JsonConvert.SerializeObject(removingOrder));
-                    }
+                        var respoby = new { status = 0, OrderId = removingOrder.OrderId };
 
+                        await Clients.Client(removingOrder.ConnectionID).SendAsync("OrderCompleteNotification", JsonConvert.SerializeObject(respoby));
+                    }
+                    if (signalRDataHolder.GetOrderList().Count >= 0)
+                    {
+                        await Clients.Clients(signalRDataHolder.GetCanteenEmployeeList())
+                                .SendAsync("OrderCompleteNotification", signalRDataHolder.GetOrderList());
+                        // await Clients.Clients(canteenEmpList).SendAsync("OrderCompleteNotification", JsonConvert.SerializeObject(RequestOrderList));
+                    }
                 }
             }
             catch (Exception ex)

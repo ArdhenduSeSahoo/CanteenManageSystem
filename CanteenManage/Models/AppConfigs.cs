@@ -11,6 +11,9 @@ namespace CanteenManage.Models
         public string TokenAudience { get; set; } = "";
         public string AppEnvironment { get; set; } = "";
         public string LogOutURL { get; set; } = "";
+        public string PortalAuthValidaTorBaseURL { get; set; } = "";
+        public string PortalAuthValidaTorEndpoint { get; set; } = "";
+
         /////for Production
         public string qpiowerbzlkvywe34bdsdvx0zx { get; set; } = "";
         public string hgwf899fwMi66chz394ghz { get; set; } = "";
