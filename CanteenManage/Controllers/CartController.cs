@@ -11,16 +11,18 @@ namespace CanteenManage.Controllers
     [Authorize(Roles = "Employee")]
     public class CartController : Controller
     {
-        private readonly CanteenManageDBContext canteenManageContext;
-        private readonly OrderingService orderingService;
+        //private readonly CanteenManageDBContext canteenManageContext;
+        //private readonly OrderingService orderingService;
         private readonly CartService cartService;
         private readonly UtilityServices utilityServices;
-        public CartController(CanteenManageDBContext canteenManageContext, OrderingService ordering, CartService cartService, UtilityServices utilityServices)
+        private readonly ILogger<CartController> logger;
+        public CartController(CartService cartService, UtilityServices utilityServices, ILogger<CartController> logger)
         {
-            this.canteenManageContext = canteenManageContext;
-            this.orderingService = ordering;
+            //this.canteenManageContext = canteenManageContext;
+            //this.orderingService = ordering;
             this.cartService = cartService;
             this.utilityServices = utilityServices;
+            this.logger = logger;
         }
         public async Task<IActionResult> CartIndex(CancellationToken cancellationToken)
         {
@@ -29,7 +31,6 @@ namespace CanteenManage.Controllers
             {
                 SessionDataModel sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
                 await cartService.CheckOutOfOrderInCart(
-                                                                foodTypeEnum: FoodTypeEnum.Breakfast,
                                                                 sessionData: sessionDataModel,
                                                                 cancellationToken: cancellationToken
                                                                 );
@@ -56,7 +57,7 @@ namespace CanteenManage.Controllers
             }
             catch (Exception ex)
             {
-
+                logger.LogError(ex, "Error in CartIndex method: {Message}", ex.Message);
             }
             return View(cartViewDataModel);
         }
@@ -117,7 +118,7 @@ namespace CanteenManage.Controllers
             }
             catch (Exception ex)
             {
-
+                logger.LogError(ex, "Error in RemoveOrder method: {Message}", ex.Message);
 
             }
 
@@ -125,16 +126,20 @@ namespace CanteenManage.Controllers
         }
 
         [HttpPost]
-        public IActionResult PlaceOrder(CancellationToken cancellationToken)//IFormCollection formcollect,
+        public async Task<IActionResult> PlaceOrder(CancellationToken cancellationToken)//IFormCollection formcollect,
         {
             SessionDataModel SessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
             try
             {
+                await cartService.CheckOutOfOrderInCart(
+                                                                sessionData: SessionDataModel,
+                                                                cancellationToken: cancellationToken
+                                                                );
                 cartService.PlaceOrder(sessionData: SessionDataModel, cancellationToken: cancellationToken);
             }
             catch (Exception ex)
             {
-
+                logger.LogError(ex, "Error in PlaceOrder method: {Message}", ex.Message);
             }
             return RedirectToAction("Index", "MyOrders"); //this.RedirectToAction("CartIndex");
         }

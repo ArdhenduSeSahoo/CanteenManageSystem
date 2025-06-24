@@ -70,22 +70,15 @@
 	<div class="row mb-2">
 		<div class="col">
 			<div class="card " style="border-radius:10px">
-				@if (!Model.BreakFastFoodOrders.Any() && !Model.LunchFoodOrders.Any() && !Model.SnaksFoodOrders.Any())
-				{
-					<div class="alert alert-warning text-center" role="alert">
-						<strong>Sorry!</strong> You don't have any orders in your cart.
+				<div class="" style="margin-left:15px; margin-top:10px">
+					<div class="col d-inline-flex">
+						<img src="~/images/cart.png" class="img-fluid" alt="My Orders" style="width: 50px; height: 50px;">
+						<h3 class="mt-2">Cart</h3>
 					</div>
-				}
-
-				else
-				{
-
-
-					<div class="" style="margin-left:15px; margin-top:10px">
-						<h3 class="">Cart</h3>
-					</div>
-					<div class="card-body">
-
+				</div>
+				<div class="card-body">
+					@if (Model.BreakFastFoodOrders.Count > 0 || Model.LunchFoodOrders.Count > 0 || Model.SnaksFoodOrders.Count > 0)
+					{
 						<div class="row row-cols-1">
 							<div class="col-2">
 								<table class="table table-hover table-responsive-sm table-borderless customTable">
@@ -164,28 +157,38 @@
 								</div>
 							</div>
 							<div class="col">
-								@* <form asp-action="PlaceOrder" method="post">
-								<button type="submit" class="btn btn-success">Place Order</button>
-							</form> *@
 								<form id="placeOrderForm" asp-action="PlaceOrder" method="post">
 									<button type="button" class="btn btn-success" onclick="openModal()">Place Order</button>
 								</form>
 							</div>
 						</div>
-						@if (Model.CartItemInOrders.Count > 0)
-						{
-							<div class="card border-warning mb-1 mt-2" style="">
-								<div class="card-body p-2">
-									<p class="card-text" style="color:red"><strong>Note:-</strong></p>
-									@foreach (var item in Model.CartItemInOrders)
-									{
-										<p class="card-text m-0">Item <strong>@item.ItemName</strong> for Date <strong>@item.OrderDate.ToString("dd/MM-ddd")</strong> already exist in your Order.</p>
-									}
-								</div>
+					}
+					else
+					{
+						<div class="row row-cols-1">
+							<div class="col text-center">
+								<img src="~/images/empty-cart-flat.png" alt="cart empty" class="img img-fluid" style="height:270px;width:350px" />
+
 							</div>
-						}
-					</div>
-				}
+							<div class="col text-center">
+								<span class="font-weight-bolder" style="font-weight:500">Empty Cart</span>
+							</div>
+						</div>
+					}
+					@if (Model.CartItemInOrders.Count > 0)
+					{
+						<div class="card border-warning mb-1 mt-2" style="">
+							<div class="card-body p-2">
+								<p class="card-text" style="color:red"><strong>Note:-</strong></p>
+								@foreach (var item in Model.CartItemInOrders)
+								{
+									<p class="card-text m-0">Item <strong>@item.ItemName</strong> for Date <strong>@item.OrderDate.ToString("dd/MM-ddd")</strong> already exist in your Order.</p>
+								}
+							</div>
+						</div>
+					}
+				</div>
+
 			</div>
 		</div>
 	</div>

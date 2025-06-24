@@ -106,17 +106,17 @@ try
         {
             OnAuthenticationFailed = context =>
             {
-                Console.WriteLine("Authentication failed: " + context.Exception.Message);
-                // Handle token validation failures (e.g., invalid token)
-                //if (context.Exception is SecurityTokenInvalidSignatureException)
-                //{
-                //    context.Fail("Invalid signature");
-                //}
-                //else if (context.Exception is SecurityTokenExpiredException)
-                //{
-                //    context.Fail("Token expired");
-                //}
-                context.Response.Redirect("/Error");
+                //Console.WriteLine("Authentication failed: " + context.Exception.Message);
+                if (builder.Environment.IsDevelopment())
+                {
+                    context.Response.Redirect("/Error");
+                }
+                else
+                {
+                    var logouturl = appConfigs.getLogOutURL();
+                    context.Response.Redirect(logouturl, permanent: true);
+                }
+
                 return Task.CompletedTask;
             }
         };
