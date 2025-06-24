@@ -1,5 +1,6 @@
 ﻿namespace CanteenManage.Controllers
 {
+    using System;
     using System.Threading.Tasks;
     using CanteenManage.CanteenRepository.Contexts;
     using CanteenManage.Models;
@@ -18,14 +19,16 @@
         private readonly CartService cartService;
 
         private readonly UtilityServices utilityServices;
+        private readonly ILogger<BreakFastItemsController> logger;
 
-        public BreakFastItemsController(FoodListingService foodListingService, CartService cartService, UtilityServices utilityServices)
+        public BreakFastItemsController(FoodListingService foodListingService, CartService cartService, UtilityServices utilityServices, ILogger<BreakFastItemsController> logger)
         {
             //this.canteenManageContext = canteenManageContext;
             //this.orderingService = orderingService;
             this.foodListingService = foodListingService;
             this.cartService = cartService;
             this.utilityServices = utilityServices;
+            this.logger = logger;
         }
 
         /// <summary>
@@ -35,57 +38,67 @@
         /// <returns>The <see cref="Task{IActionResult}"/></returns>
         public async Task<IActionResult> Index(CancellationToken cancellationToken, int Dsosp = 0)
         {
-            int FoodType = (int)FoodTypeEnum.Breakfast;
-            List<DaysOfWeekModel> daysOfWeek = utilityServices.GetDaysOfWeek(hourBeforeDisable: CustomDataConstants.BreakfastTimeHour);
-            //string? Session_selectedDay = HttpContext.Session.GetString(SessionConstants.UserSelectedDay);
-            SessionDataModel sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
-
-            if (sessionDataModel.UserSelectedDay != null && Dsosp == 1)
-            {
-                var selectedDate = daysOfWeek.Where(d => d.DateShort == sessionDataModel.UserSelectedDay).FirstOrDefault();
-                if (selectedDate != null)
-                {
-                    selectedDate.IsSelected = true;
-                }
-
-            }
-            else
-            {
-                var firstActiveDay = utilityServices.getFirstActiveDate(daysOfWeek);
-                if (firstActiveDay != null)
-                {
-                    firstActiveDay.IsSelected = true;
-                    HttpContext.Session.SetString(SessionConstants.UserSelectedDay, firstActiveDay.DateShort);
-                    HttpContext.Session.SetString(SessionConstants.UserSelectedDayFull, utilityServices.DateTimeToString(firstActiveDay.DateTime));
-                }
-                sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
-            }
-            await cartService.CheckOutOfOrderInCart(
-                                                                foodTypeEnum: FoodTypeEnum.Breakfast,
-                                                                sessionData: sessionDataModel,
-                                                                cancellationToken: cancellationToken
-                                                                );
-            var foodOrderByUser = await foodListingService.GetCartFoodOrdersByUser(
-                                                                sessionDataModel.UserIdOrZero,
-                                                                FoodType,
-                                                                sessionDataModel.UserSelectedDateOrNow,
-                                                                cancellationToken
-                                                                );
-            var foodSnaksAll = await foodListingService.GetAllFoodList(
-                                                                FoodType,
-                                                                foodOrderByUser,
-                                                                cancellationToken,
-                                                                sessionDataModel.UserSelectedDateOrNow,
-                                                                sessionData: sessionDataModel
-                                                                );
             BreakFastPageDataModel breakFastPageDataModel = new BreakFastPageDataModel();
-            breakFastPageDataModel.DayOfWeeks = daysOfWeek;
-            breakFastPageDataModel.totalCountForSelectedDay = foodOrderByUser.Sum(fo => fo.Quantity);
-            breakFastPageDataModel.foods = foodSnaksAll;
-            breakFastPageDataModel.CartItemCount = await foodListingService.GetCartItemCount(
-                                                                sessionDataModel.UserId ?? 0,
-                                                                cancellationToken
-                                                                );
+            breakFastPageDataModel.DayOfWeeks = new List<DaysOfWeekModel>();
+            breakFastPageDataModel.totalCountForSelectedDay = 0;
+            breakFastPageDataModel.foods = new List<FoodDetails>();
+            breakFastPageDataModel.CartItemCount = 0;
+            try
+            {
+                int FoodType = (int)FoodTypeEnum.Breakfast;
+                List<DaysOfWeekModel> daysOfWeek = utilityServices.GetDaysOfWeek(hourBeforeDisable: CustomDataConstants.BreakfastTimeHour);
+                //string? Session_selectedDay = HttpContext.Session.GetString(SessionConstants.UserSelectedDay);
+                SessionDataModel sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
+
+                if (sessionDataModel.UserSelectedDay != null && Dsosp == 1)
+                {
+                    var selectedDate = daysOfWeek.Where(d => d.DateShort == sessionDataModel.UserSelectedDay).FirstOrDefault();
+                    if (selectedDate != null)
+                    {
+                        selectedDate.IsSelected = true;
+                    }
+
+                }
+                else
+                {
+                    var firstActiveDay = utilityServices.getFirstActiveDate(daysOfWeek);
+                    if (firstActiveDay != null)
+                    {
+                        firstActiveDay.IsSelected = true;
+                        HttpContext.Session.SetString(SessionConstants.UserSelectedDay, firstActiveDay.DateShort);
+                        HttpContext.Session.SetString(SessionConstants.UserSelectedDayFull, utilityServices.DateTimeToString(firstActiveDay.DateTime));
+                    }
+                    sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
+                }
+                await cartService.CheckOutOfOrderInCart(
+                                                                    sessionData: sessionDataModel,
+                                                                    cancellationToken: cancellationToken
+                                                                    );
+                //var foodOrderByUser = await foodListingService.GetCartFoodOrdersByUser(
+                //                                                    sessionDataModel.UserIdOrZero,
+                //                                                    FoodType,
+                //                                                    sessionDataModel.UserSelectedDateOrNow,
+                //                                                    cancellationToken
+                //                                                    );
+                var foodDetailsAll = await foodListingService.GetAllFoodList(
+                                                                    FoodType,
+                                                                    cancellationToken,
+                                                                    sessionDataModel.UserSelectedDateOrNow,
+                                                                    sessionData: sessionDataModel
+                                                                    );
+
+                breakFastPageDataModel.DayOfWeeks = daysOfWeek;
+                breakFastPageDataModel.totalCountForSelectedDay = foodDetailsAll.Sum(fo => fo.FoodCountInCart);
+                breakFastPageDataModel.foods = foodDetailsAll;
+                breakFastPageDataModel.CartItemCount = await foodListingService.GetCartItemCount(
+                                                                    sessionDataModel.UserId ?? 0,
+                                                                    cancellationToken
+                                                                    );
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error in BreakFastItemsController Index method: {Message}", ex.Message);
+            }
             return View(breakFastPageDataModel);
         }
 

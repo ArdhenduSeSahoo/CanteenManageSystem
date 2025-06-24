@@ -76,9 +76,13 @@ namespace CanteenManage.Services
         }
 
 
-        public async Task<List<FoodDetails>> GetAllFoodList(int foodType, List<EmployeeCart> foodOrdersByUser, CancellationToken cancellationToken, DateTime userSelected_dateTime, SessionDataModel sessionData)
+        public async Task<List<FoodDetails>> GetAllFoodList(int foodType, CancellationToken cancellationToken, DateTime userSelected_dateTime, SessionDataModel sessionData)
         {
-            var dayOfWeek = (int)userSelected_dateTime.DayOfWeek;
+            var dayOfWeek = (int?)sessionData.UserSelectedDate?.DayOfWeek;
+            if (dayOfWeek == null)
+            {
+                throw new Exception("DayOfWeek in session cant be null");
+            }
             var weekOfMonth = GetWeekOfMonth(userSelected_dateTime);
 
             //replacing weekOfMonth with 1 if it is 5 because week 5 and 1 are same
@@ -103,20 +107,7 @@ namespace CanteenManage.Services
                 }
             }
 
-            //allFoodWithUserOrderDetails = await contextCM.Foods
-            //   .Include(f => f.EmployeeCarts.Where(fo => foodOrdersByUser.Select(fo => fo.Id).Contains(fo.Id)))
-            //   //.Include(f => f.FoodAvailabilityDays)
-            //   .AsNoTracking()
-            //   .Where(f => f.FoodTypeId == foodType)
-            //   .Where(f => f.IsAvailable)
-            //   .Where(f => f.FoodAvailabilityDays.Any(fa =>
-            //   (fa.DayOfWeek == dayOfWeek) &&
-            //   (fa.WeekOfMonth == weekOfMonth)
-            //   ))
-            //   .ToListAsync(cancellationToken);
             allFoodWithUserOrderDetails = await contextCM.Foods
-                //.Include(f => f.EmployeeCarts.Where(fo => foodOrdersByUser.Select(fo => fo.Id).Contains(fo.Id)))
-                //.Include(f => f.FoodAvailabilityDays)
                 .AsNoTracking()
                 .Where(f => f.FoodTypeId == foodType)
                 .Where(f => f.IsAvailable)

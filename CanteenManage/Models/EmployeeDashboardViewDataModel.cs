@@ -4,9 +4,9 @@ namespace CanteenManage.Models
 {
     public class EmployeeDashboardViewDataModel : LayoutViewDataModel
     {
-        public string BreakfastFoods { get; set; }
-        public string LunchFoods { get; set; }
-        public string SnacksFoods { get; set; }
-        public List<FoodDetails> Foods { get; set; }
+        public string BreakfastFoods { get; set; } = string.Empty;
+        public string LunchFoods { get; set; } = string.Empty;
+        public string SnacksFoods { get; set; } = string.Empty;
+        public List<FoodDetails> Foods { get; set; } = new List<FoodDetails>();
     }
 }

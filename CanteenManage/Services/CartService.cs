@@ -302,7 +302,7 @@ namespace CanteenManage.Services
             return existingcartOrder;
         }
         //dummy return
-        public async Task<int> CheckOutOfOrderInCart(FoodTypeEnum foodTypeEnum, SessionDataModel sessionData, CancellationToken cancellationToken)
+        public async Task<int> CheckOutOfOrderInCart(SessionDataModel sessionData, CancellationToken cancellationToken)
         {
             List<EmployeeCart>? foodOrderByUseridlist = new List<EmployeeCart>();
             foodOrderByUseridlist = await getcartfoodlistAsync(FoodTypeEnum.Breakfast, sessionData,
