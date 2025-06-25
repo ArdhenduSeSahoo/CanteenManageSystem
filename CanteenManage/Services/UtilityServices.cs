@@ -69,14 +69,26 @@ namespace CanteenManage.Services
             //{
             //    firstActiveDay.IsSelected = true;
             //}
-
+            var blockedDates = new List<DateTime>
+              {
+               new DateTime(2025, 6, 27),  // Rath yatra
+               new DateTime(2025, 8, 15),  // Independence day
+               new DateTime(2025, 9, 30),  // Maha Astami
+               new DateTime(2025, 10, 2),  // Dushhera
+               new DateTime(2025, 10, 21), //Diwali
+              };
             //var testing = false;
             //if (!testing)
             {
                 foreach (var item in daysOfWeek)
                 {
                     item.IsSelected = false;
-                    var hourss = int.Parse(DateTime.Now.ToString("HH"));
+                    //var hourss = int.Parse(DateTime.Now.ToString("HH"));
+                    if (blockedDates.Any(d => d.Date == item.DateTime.Date))
+                    {
+                        item.IsActiveDay = false;
+                        continue;
+                    }
                     if (item.DateTime.Date < DateTime.Now.Date) //(((int)item.DateTime.DayOfWeek) < ((int)DateTime.Now.DayOfWeek))
                     {
                         item.IsActiveDay = false;
