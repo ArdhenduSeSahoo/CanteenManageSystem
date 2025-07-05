@@ -20,15 +20,6 @@ namespace CanteenManage.Services
             this.utilityServices = utilityServices;
         }
 
-        //public async Task<int?> GetCartItemCount(int userId, CancellationToken cancellationToken)
-        //{
-        //    var foodOrderByUsercount = await DbContext.EmployeeCarts
-        //        .Where(fo => fo.EmployeeId == userId)
-        //        .SumAsync(fo => fo.Quantity, cancellationToken);
-        //    return foodOrderByUsercount;
-        //}
-
-
         public async Task<IResult> AddToCart(
             FoodTypeEnum foodTypeEnum,
             FoodOrdersFormBodyModel foodOrdersFormBodyModel,
@@ -50,14 +41,21 @@ namespace CanteenManage.Services
                 var foodid = int.Parse(selectedFoodId);
                 var user_Id = userid ?? 0;
 
+                var existingFoodOrder_default = await contextDB.EmployeeCarts
+                  .Where(fo => fo.FoodId == foodid)
+                  .Where(fo => fo.EmployeeId == user_Id)
+                  .Where(fo => fo.OrderDate.Date == userSelected_DateTime.Date)
+                  .FirstOrDefaultAsync(cancellationToken);
+                var totalFoodOrderByuser_default = await foodListingService.GetCartFoodQuantityOrderByUserCount(user_Id, (int)foodTypeEnum, userSelected_DateTime, cancellationToken);
+
+                var cart_count_default = await foodListingService.GetCartItemCount(user_Id, cancellationToken);
                 if (userSelected_DateTime_null?.Date < DateTime.Now.Date)
                 {
-                    var cart_counts = await foodListingService.GetCartItemCount(user_Id, cancellationToken);
                     return Results.Ok(new FoodOrderApiReturnMessage()
                     {
-                        food_quantity = 0,
-                        total_quantity = 0,
-                        total_quantity_cart = cart_counts ?? 0,
+                        food_quantity = existingFoodOrder_default?.Quantity ?? 0,
+                        total_quantity = totalFoodOrderByuser_default,
+                        total_quantity_cart = cart_count_default ?? 0,
                         message = "Can not order on back date.",
                     });
                 }
@@ -82,15 +80,25 @@ namespace CanteenManage.Services
                     }
                     if (cannotplaceorder)
                     {
-                        var cart_counts = await foodListingService.GetCartItemCount(user_Id, cancellationToken);
                         return Results.Ok(new FoodOrderApiReturnMessage()
                         {
-                            food_quantity = 0,
-                            total_quantity = 0,
-                            total_quantity_cart = cart_counts ?? 0,
+                            food_quantity = existingFoodOrder_default?.Quantity ?? 0,
+                            total_quantity = totalFoodOrderByuser_default,
+                            total_quantity_cart = cart_count_default ?? 0,
                             message = errormessage,
                         });
                     }
+                }
+                if (await ValidateFoodForSelectedDate(foodTypeEnum, foodid, sessionData, cancellationToken) == false)
+                {
+                    var cart_counts = await foodListingService.GetCartItemCount(user_Id, cancellationToken);
+                    return Results.Ok(new FoodOrderApiReturnMessage()
+                    {
+                        food_quantity = existingFoodOrder_default?.Quantity ?? 0,
+                        total_quantity = totalFoodOrderByuser_default,
+                        total_quantity_cart = cart_count_default ?? 0,
+                        message = "Food is not available for selected date.",
+                    });
                 }
 
                 var existingFoodOrder = await contextDB.EmployeeCarts
@@ -230,6 +238,65 @@ namespace CanteenManage.Services
             }
         }
 
+        public async Task<bool> ValidateFoodForSelectedDate(FoodTypeEnum foodType, int foodID, SessionDataModel sessionData, CancellationToken cancellationToken)
+        {
+            if (sessionData.UserSelectedDate == null)
+            {
+                return false;
+            }
+            var userSelected_DateTime = sessionData.UserSelectedDate.Value;
+
+            if (userSelected_DateTime.Date < DateTime.Now.Date)
+            {
+                return false;
+            }
+            if (userSelected_DateTime.Date == DateTime.Now.Date)
+            {
+                if (foodType == FoodTypeEnum.Breakfast && int.Parse(DateTime.Now.ToString("HH")) >= CustomDataConstants.BreakfastTimeHourEnd)
+                {
+                    return false;
+                }
+                else if (foodType == FoodTypeEnum.Lunch && int.Parse(DateTime.Now.ToString("HH")) >= CustomDataConstants.LunchTimeHourEnd)
+                {
+                    return false;
+                }
+                else if (foodType == FoodTypeEnum.Snacks && int.Parse(DateTime.Now.ToString("HH")) >= CustomDataConstants.SnacksTimeHour)
+                {
+                    return false;
+                }
+            }
+            var dayOfWeek = (int?)sessionData.UserSelectedDate?.DayOfWeek;
+            var weekOfMonth = GetWeekOfMonth(userSelected_DateTime);
+            if (weekOfMonth == 5)
+            {
+                weekOfMonth = 1;
+            }
+            var food = await contextDB.Foods.Where(fo => fo.Id == foodID && fo.FoodAvailabilityDays.Any(fa =>
+                (fa.DayOfWeek == dayOfWeek) &&
+                (fa.WeekOfMonth == weekOfMonth)
+                )).FirstOrDefaultAsync(cancellationToken);
+            if (food != null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+            return false;
+        }
+
+        public int GetWeekOfMonth(DateTime date)
+        {
+            // Find the first day of the month
+            DateTime firstOfMonth = new DateTime(date.Year, date.Month, 1);
+
+            // Get the offset (how many days before the first Sunday)
+            int offset = (int)firstOfMonth.DayOfWeek;
+
+            // Calculate week number (Sunday as first day of week)
+            return ((date.Day + offset - 1) / 7) + 1;
+        }
         public async Task<List<EmployeeCart>> getCartList(int foodTypeId, int? employeId, CancellationToken cancellationToken)
         {
             var orderList = await contextDB.EmployeeCarts
@@ -282,23 +349,7 @@ namespace CanteenManage.Services
                     OrderDate = x.cart.OrderDate,
                 })
                 .ToListAsync(cancellationToken);
-            //var existintorder = contextDB.EmployeeCarts.LeftJoin(
-            //        contextDB.FoodOrders,
-            //        cart => cart.FoodId,
-            //        order => order.FoodId,
-            //        (cart, order) => new { cart, order }
-            //    )
-            //    .Where(x => x.order.EmployeeId == employeId
-            //    && x.order.IsCanceled == false
-            //    && x.order.IsCompleted == false
-            //    && x.cart.OrderDate.Date == x.order.OrderDateCustom.Date
-            //    )
-            //    .Select(x => new CartItemInOrder
-            //    {
-            //        ItemName = x.cart.Food.Name,
-            //        OrderDate = x.cart.OrderDate,
-            //    })
-            //    .ToList();
+
             return existingcartOrder;
         }
         //dummy return
@@ -468,17 +519,6 @@ namespace CanteenManage.Services
                 {
                     OrderID_inc++;
                     FoodOrder foodOrder = GetFoodOrderObj(item, sessionData.UserIdOrZero, ts, orderPlacedID, OrderID_inc);
-                    //FoodOrder foodOrder = new FoodOrder();
-                    //foodOrder.FoodId = item.Food.Id;
-                    //foodOrder.FoodName = item.Food.Name;
-                    //foodOrder.EmployeeId = sessionData.UserIdOrZero;
-                    //foodOrder.OrderDate = item.OrderDate.Date + ts;
-                    //foodOrder.OrderUpdateDate = DateTime.Now;
-                    //foodOrder.Quantity = item.Quantity;
-                    //foodOrder.OrderCompleteStatus = (int)OrderCompleteStatusEnum.Pending;
-                    //foodOrder.TotalPrice = foodOrder.Quantity * item.Food.Price;
-                    //foodOrder.TotalEmployeePrice = foodOrder.Quantity * item.Food.EmployeePrice;
-                    //foodOrder.TotalSubsidyPrice = foodOrder.Quantity * item.Food.SubsidyPrice;
 
                     contextDB.FoodOrders.Add(foodOrder);
 
@@ -492,20 +532,9 @@ namespace CanteenManage.Services
                 {
                     OrderID_inc++;
                     FoodOrder foodOrder = GetFoodOrderObj(item, sessionData.UserIdOrZero, ts, orderPlacedID, OrderID_inc);
-                    //FoodOrder foodOrder = new FoodOrder();
-                    //foodOrder.FoodId = item.Food.Id;
-                    //foodOrder.FoodName = item.Food.Name;
-                    //foodOrder.EmployeeId = sessionData.UserIdOrZero;
-                    //foodOrder.OrderDate = item.OrderDate.Date + ts;
-                    //foodOrder.OrderUpdateDate = DateTime.Now;
-                    //foodOrder.Quantity = item.Quantity;
-
-                    //foodOrder.TotalPrice = foodOrder.Quantity * item.Food.Price;
-                    //foodOrder.TotalEmployeePrice = foodOrder.Quantity * item.Food.EmployeePrice;
-                    //foodOrder.TotalSubsidyPrice = foodOrder.Quantity * item.Food.SubsidyPrice;
 
                     contextDB.FoodOrders.Add(foodOrder);
-                    //OrderID_inc++;
+
                 }
                 contextDB.EmployeeCarts.RemoveRange(LunchFoodItems);
                 ////// snacks orders
@@ -515,20 +544,9 @@ namespace CanteenManage.Services
                 {
                     OrderID_inc++;
                     FoodOrder foodOrder = GetFoodOrderObj(item, sessionData.UserIdOrZero, ts, orderPlacedID, OrderID_inc);
-                    //FoodOrder foodOrder = new FoodOrder();
-                    //foodOrder.FoodId = item.Food.Id;
-                    //foodOrder.FoodName = item.Food.Name;
-                    //foodOrder.EmployeeId = sessionData.UserIdOrZero;
-                    //foodOrder.OrderDate = item.OrderDate.Date + ts;
-                    //foodOrder.OrderUpdateDate = DateTime.Now;
-                    //foodOrder.Quantity = item.Quantity;
-
-                    //foodOrder.TotalPrice = foodOrder.Quantity * item.Food.Price;
-                    //foodOrder.TotalEmployeePrice = foodOrder.Quantity * item.Food.EmployeePrice;
-                    //foodOrder.TotalSubsidyPrice = foodOrder.Quantity * item.Food.SubsidyPrice;
 
                     contextDB.FoodOrders.Add(foodOrder);
-                    //OrderID_inc++;
+
                 }
                 contextDB.EmployeeCarts.RemoveRange(SnacksFoodItems);
             }
@@ -539,12 +557,7 @@ namespace CanteenManage.Services
 
         private FoodOrder GetFoodOrderObj(EmployeeCart item, int UserID, TimeSpan ts, string OrderPlacedID, int orderID_int)
         {
-            //var last_serialNo = contextDB.FoodOrders.Select(fo => fo.OrderSerialNumber).DefaultIfEmpty().Max();
-            //var datetimenow = DateTime.Now;
-            //if ((last_serialNo) == 0)
-            //{
-            //    last_serialNo = 1000000;
-            //}
+
             var orderID = "ORD" + (orderID_int).ToString();
             FoodOrder foodOrder = new FoodOrder()
             { OrderID = orderID, OrderPlacedID = OrderPlacedID };
@@ -567,150 +580,6 @@ namespace CanteenManage.Services
             foodOrder.TotalSubsidyPrice = foodOrder.Quantity * item.Food.SubsidyPrice;
             return foodOrder;
         }
-
-        //public async Task PlaceOrderNew(SessionDataModel sessionData, CancellationToken cancellationToken)
-        //{
-        //    List<EmployeeCart> employeeCarts = await contextDB.EmployeeCarts
-        //        .Include(f => f.Food)
-        //        .Where(f => f.EmployeeId == sessionData.UserId)
-
-        //        .ToListAsync(cancellationToken);
-        //    if (sessionData.UserIdOrZero == 0 || sessionData.UserEmpIdOrNull == null)
-        //    {
-        //        return;
-        //    }
-        //    if (employeeCarts.Count <= 0)
-        //    {
-        //        return;
-        //    }
-        //    var getOrdersNotCanceled = employeeCarts.Where(f => f.OutDateStatus == (int)CartFoodOutDateEnum.InOrder).ToList();
-        //    if (getOrdersNotCanceled.Count > 0)
-        //    {
-
-        //        ///////////get food order object
-        //        FoodOrder foodOrder = await GetFoodOrderObjAsync(contextDB, cancellationToken, sessionData.UserIdOrZero);
-        //        ///////////add breakfast orders
-        //        ///
-        //        TimeSpan ts = utilityServices.GetSpecificTimeSpan(FoodTypeEnum.Breakfast);
-        //        var breakfastFoodItems = employeeCarts.Where(f => f.Food.FoodTypeId == (int)FoodTypeEnum.Breakfast && f.OutDateStatus == (int)CartFoodOutDateEnum.InOrder);
-        //        List<FoodOrderFoodDetail> foodOrderFoodDetails_breakfast = new List<FoodOrderFoodDetail>();
-        //        foreach (EmployeeCart item in breakfastFoodItems)
-        //        {
-        //            var foodOrderFoodDetail = GetFoodOrderFoodDetail(foodOrder, item, ts, sessionData.UserIdOrZero, sessionData.UserEmpIdOrNull, cancellationToken);
-        //            foodOrderFoodDetails_breakfast.Add(foodOrderFoodDetail);
-
-        //        }
-        //        foreach (var foodOrderFoodDetail in foodOrderFoodDetails_breakfast)
-        //        {
-        //            foodOrder.FoodOrderFoodDetails?.Add(foodOrderFoodDetail);
-        //        }
-        //        //Context.EmployeeCarts.RemoveRange(breakfastFoodItems);
-        //        ////////////////////lunch orders
-        //        ///
-        //        ts = utilityServices.GetSpecificTimeSpan(FoodTypeEnum.Lunch);
-        //        var LunchFoodItems = employeeCarts.Where(f => f.Food.FoodTypeId == (int)FoodTypeEnum.Lunch && f.OutDateStatus == (int)CartFoodOutDateEnum.InOrder);
-        //        List<FoodOrderFoodDetail> foodOrderFoodDetails_lunch = new List<FoodOrderFoodDetail>();
-        //        foreach (EmployeeCart item in LunchFoodItems)
-        //        {
-        //            var foodOrderFoodDetail = GetFoodOrderFoodDetail(foodOrder, item, ts, sessionData.UserIdOrZero, sessionData.UserEmpIdOrNull, cancellationToken);
-        //            foodOrderFoodDetails_lunch.Add(foodOrderFoodDetail);
-
-        //        }
-        //        foreach (var foodOrderFoodDetail in foodOrderFoodDetails_lunch)
-        //        {
-        //            foodOrder.FoodOrderFoodDetails?.Add(foodOrderFoodDetail);
-        //        }
-
-        //        //Context.EmployeeCarts.RemoveRange(LunchFoodItems);
-        //        ////// snacks orders
-        //        ts = utilityServices.GetSpecificTimeSpan(FoodTypeEnum.Snacks);
-        //        var SnacksFoodItems = employeeCarts.Where(f => f.Food.FoodTypeId == (int)FoodTypeEnum.Snacks && f.OutDateStatus == (int)CartFoodOutDateEnum.InOrder);
-        //        List<FoodOrderFoodDetail> foodOrderFoodDetails_snacks = new List<FoodOrderFoodDetail>();
-        //        foreach (EmployeeCart item in SnacksFoodItems)
-        //        {
-        //            var foodOrderFoodDetail = GetFoodOrderFoodDetail(foodOrder, item, ts, sessionData.UserIdOrZero, sessionData.UserEmpIdOrNull, cancellationToken);
-        //            foodOrderFoodDetails_snacks.Add(foodOrderFoodDetail);
-
-        //        }
-        //        //Context.EmployeeCarts.RemoveRange(SnacksFoodItems);
-        //        foreach (var foodOrderFoodDetail in foodOrderFoodDetails_snacks)
-        //        {
-        //            foodOrder.FoodOrderFoodDetails?.Add(foodOrderFoodDetail);
-        //        }
-
-
-        //        var totalPrice = foodOrder.FoodOrderFoodDetails?.Sum(f => f.TotalPrice);
-        //        var totalEmployeePrice = foodOrder.FoodOrderFoodDetails?.Sum(f => f.TotalEmployeePrice);
-        //        var totalSubsidyPrice = foodOrder.FoodOrderFoodDetails?.Sum(f => f.TotalSubsidyPrice);
-        //        var totalQuantity = foodOrder.FoodOrderFoodDetails?.Sum(_ => _.Quantity);
-        //        foodOrder.TotalPrice = totalPrice ?? 0;
-        //        foodOrder.TotalEmployeePrice = totalEmployeePrice ?? 0;
-        //        foodOrder.TotalSubsidyPrice = totalSubsidyPrice ?? 0;
-        //        foodOrder.Quantity = totalQuantity ?? 0;
-
-
-        //        if (foodOrder.FoodOrderFoodDetails?.Count > 0)
-        //        {
-        //            contextDB.FoodOrders.Add(foodOrder);
-        //        }
-
-        //    }
-        //    contextDB.EmployeeCarts.RemoveRange(employeeCarts);
-
-        //    await contextDB.SaveChangesAsync();
-        //}
-
-        //private async Task<FoodOrder> GetFoodOrderObjAsync(CanteenManageDBContext canteenManageDB, CancellationToken cancellationToken, int userID)
-        //{
-        //    var last_serialNo = await canteenManageDB.FoodOrders.Select(fo => fo.OrderSerialNumber).DefaultIfEmpty().MaxAsync();
-        //    var datetimenow = DateTime.Now;
-        //    var orderid = "ORD" + datetimenow.ToString("ddMMyy") + (last_serialNo + 1).ToString();
-        //    FoodOrder foodOrder = new FoodOrder()
-        //    {
-        //        OrderID = orderid,
-        //        OrderPlacedID = "",
-        //        FoodId = 32,
-        //        EmployeeId = userID,
-        //        OrderDate = DateTime.Now,
-        //        OrderUpdateDate = DateTime.Now,
-        //        //Quantity = item.Quantity,
-        //        //OrderCompleteStatus = (int)OrderCompleteStatusEnum.Pending,
-        //        //TotalPrice = item.Quantity * item.Food.Price,
-        //        //TotalEmployeePrice = item.Quantity * item.Food.EmployeePrice,
-        //        //TotalSubsidyPrice = item.Quantity * item.Food.SubsidyPrice,
-        //        OrderSerialNumber = last_serialNo + 1,
-        //        IsCanceled = false,
-        //        IsCompleted = false,
-        //    };
-        //    return foodOrder;
-        //}
-
-        //private FoodOrderFoodDetail GetFoodOrderFoodDetail(FoodOrder foodOrder, EmployeeCart CartItem, TimeSpan ts, int employId, string employEid, CancellationToken cancellationToken)
-        //{
-        //    FoodOrderFoodDetail foodOrderFoodDetail = new FoodOrderFoodDetail()
-        //    {
-        //        FoodOrder = foodOrder,
-        //        FoodOrder_OrderID = foodOrder.OrderID,
-        //        FoodId = CartItem.Food.Id,
-        //        FoodName = CartItem.Food.Name,
-        //        FoodTypeId = CartItem.Food.FoodTypeId,
-        //        EmployeeId = employId,
-        //        EmployeeEId = employEid,
-        //        Quantity = CartItem.Quantity,
-        //        TotalPrice = CartItem.Quantity * CartItem.Food.Price,
-        //        TotalEmployeePrice = CartItem.Quantity * CartItem.Food.EmployeePrice,
-        //        TotalSubsidyPrice = CartItem.Quantity * CartItem.Food.SubsidyPrice,
-        //        IsCompleted = false,
-        //        CompletedAt = null,
-        //        IsCanceled = false,
-        //        CanceledAt = null,
-        //        OrderDateCustom = CartItem.OrderDate.Date + ts,
-        //        OrderDate = DateTime.Now,
-        //        OrderUpdateDate = DateTime.Now
-        //    };
-        //    return foodOrderFoodDetail;
-
-        //}
 
     }
 }

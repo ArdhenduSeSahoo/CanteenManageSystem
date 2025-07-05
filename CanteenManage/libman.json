@@ -5,6 +5,10 @@
     {
       "library": "flatpickr@4.6.13",
       "destination": "wwwroot/lib/flatpickr/"
+    },
+    {
+      "library": "rxjs-jquery@1.1.6",
+      "destination": "wwwroot/js/rxjs-jquery/"
     }
   ]
 }

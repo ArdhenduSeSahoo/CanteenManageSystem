@@ -85,12 +85,12 @@
 
 			$(".btn_addItem").click( async function (e) {
 				//debugger;
-				addFoodItem(e,"/api/FoodOrders/SnacksFoodOrderAdd");
+				addFoodItem(e,"FoodOrderingAPI/AddSnacksFoodOrder");
 				//console.log(response.json);
 			});
 			$(".btn_removeItem").click( async function (e) {
 				//debugger;
-				removeFoodItem(e,"/api/FoodOrders/OrderRemove");
+				removeFoodItem(e,"FoodOrderingAPI/OrderRemove");
 
 			});
 		});

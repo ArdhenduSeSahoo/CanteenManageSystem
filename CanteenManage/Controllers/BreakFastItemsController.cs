@@ -50,14 +50,13 @@
                 //string? Session_selectedDay = HttpContext.Session.GetString(SessionConstants.UserSelectedDay);
                 SessionDataModel sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
 
-                if (sessionDataModel.UserSelectedDay != null && Dsosp == 1)
+                if (!string.IsNullOrEmpty(sessionDataModel.UserSelectedDay) && Dsosp == 1)
                 {
                     var selectedDate = daysOfWeek.Where(d => d.DateShort == sessionDataModel.UserSelectedDay).FirstOrDefault();
                     if (selectedDate != null)
                     {
                         selectedDate.IsSelected = true;
                     }
-
                 }
                 else
                 {
@@ -102,32 +101,13 @@
             return View(breakFastPageDataModel);
         }
 
-
-        public IActionResult SelectDaysOfWeek(string selectedDate, string selectedFullDate)
-        {
-            //Console.WriteLine(formcollect["selecteddate"]);
-            try
-            {
-                utilityServices.SetDateTimeToSession(CustomDataConstants.BreakfastTimeHour, HttpContext.Session,
-                    selectedDate,
-                    selectedFullDate
-                    );
-            }
-            catch (Exception ex)
-            {
-
-            }
-
-            return RedirectToAction("Index", new { Dsosp = 1 });
-        }
-
         /// <summary>
         /// The SelectDaysOfWeek
         /// </summary>
         /// <param name="formcollect">The formcollect<see cref="IFormCollection"/></param>
         /// <returns>The <see cref="IActionResult"/></returns>
         [HttpPost]
-        public IActionResult SelectDaysOfWeek(IFormCollection formcollect)
+        public IActionResult SelectDaysOfWeek(string selecteddate, string selecteddatefull)
         {
             //Console.WriteLine(formcollect["selecteddate"]);
             try
@@ -135,12 +115,13 @@
                 utilityServices.SetDateTimeToSession(
                     CustomDataConstants.BreakfastTimeHour,
                     HttpContext.Session,
-                    formcollect["selecteddate"].ToString(),
-                    formcollect["selecteddatefull"].ToString());
+                    selectedDay: selecteddate,
+                    selectedDate: selecteddatefull
+                    );
             }
             catch (Exception ex)
             {
-
+                logger.LogError(ex, "Error in BreakFastItemsController SelectDaysOfWeek method: {Message}", ex.Message);
             }
 
             return RedirectToAction("Index", new { Dsosp = 1 });

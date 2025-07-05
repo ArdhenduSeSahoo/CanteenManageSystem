@@ -1,21 +1,20 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
+﻿
 using CanteenManage.CanteenRepository.Contexts;
 using CanteenManage.CanteenRepository.Models;
 using CanteenManage.Models;
 using CanteenManage.Utility;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using NuGet.Protocol;
-
 namespace CanteenManage.Services
 {
     public class FoodListingService
     {
         private readonly CanteenManageDBContext contextCM;
-        public FoodListingService(CanteenManageDBContext canteenManageContext)
+
+        private readonly OrderDataCaching orderDataCaching;
+        public FoodListingService(CanteenManageDBContext canteenManageContext, OrderDataCaching orderDataCaching)
         {
             this.contextCM = canteenManageContext;
+            this.orderDataCaching = orderDataCaching;
         }
         public async Task<List<FoodOrder>> GetFoodOrdersByUserId(int userId, int foodType, DateTime orderDateTime, CancellationToken cancellationToken)
         {
@@ -202,8 +201,56 @@ namespace CanteenManage.Services
                 .ToListAsync(cancellationToken);
             return foodOrders;
         }
+
         public async Task<List<EmployeeFoodOrdersTableDataModel>> GetFoodOrdersToday_CU(FoodTypeEnum foodTypeEnum, CancellationToken cancellationToken, string SearchVal = "")
         {
+            var foodOrders = orderDataCaching.OrderCacheDataDictionary.Where(fo =>
+                fo.Value.FoodType == (int)foodTypeEnum
+                &&
+                (fo.Value.EmployeeName.ToLower().Contains(SearchVal)
+                || fo.Value.FoodOrderId.ToLower().Contains(SearchVal) || fo.Value.EmployeeCode.ToLower().Contains(SearchVal))
+                )
+                .Select(fo => fo.Value)
+                .ToList();
+            //var foodOrders = await contextCM.FoodOrders
+            //    //.Include(f => f.Food)
+            //    //.Include(f => f.Employee)
+            //    .AsNoTracking()
+            //    .Where(fo =>
+            //    fo.OrderDateCustom.Date >= DateTime.Now.Date
+            //    && fo.Food.FoodTypeId == (int)foodTypeEnum
+            //    && fo.IsCanceled == false
+            //    &&
+            //    (fo.Employee.Name.ToLower().Contains(SearchVal) ||
+            //    fo.Employee.EmployeeID.ToLower().Contains(SearchVal) ||
+            //    fo.OrderID.ToLower().Contains(SearchVal)
+            //    )
+            //    )
+            //    .OrderBy(fo => fo.IsCompleted)
+            //    //.Take(10)
+            //    .Select(fo => new EmployeeFoodOrdersTableDataModel()
+            //    {
+            //        FoodId = fo.Id,
+            //        FoodOrderId = fo.OrderID,
+            //        EmployeeId = fo.EmployeeId ?? 0,
+            //        EmployeeCode = fo.Employee.EmployeeID,
+            //        FoodName = fo.Food.Name,
+            //        OrderDate = fo.OrderDateCustom,
+            //        Quantity = fo.Quantity,
+            //        TotalPrice = fo.TotalPrice,
+            //        FoodType = fo.Food.FoodTypeId,
+            //        EmployeeName = fo.Employee.Name,
+            //        IsCompleted = fo.IsCompleted,
+
+            //    })
+            //    .ToListAsync(cancellationToken);
+            //cache.GetOrCreateAsync
+            return foodOrders;
+        }
+
+        public async Task<List<EmployeeFoodOrdersTableDataModel>> GetFoodOrdersToday(FoodTypeEnum foodTypeEnum, CancellationToken cancellationToken)
+        {
+
             var foodOrders = await contextCM.FoodOrders
                 //.Include(f => f.Food)
                 //.Include(f => f.Employee)
@@ -212,11 +259,11 @@ namespace CanteenManage.Services
                 fo.OrderDateCustom.Date == DateTime.Now.Date
                 && fo.Food.FoodTypeId == (int)foodTypeEnum
                 && fo.IsCanceled == false
-                &&
-                (fo.Employee.Name.ToLower().Contains(SearchVal) ||
-                fo.Employee.EmployeeID.ToLower().Contains(SearchVal) ||
-                fo.OrderID.ToLower().Contains(SearchVal)
-                )
+                //&&
+                //(fo.Employee.Name.ToLower().Contains(SearchVal) ||
+                //fo.Employee.EmployeeID.ToLower().Contains(SearchVal) ||
+                //fo.OrderID.ToLower().Contains(SearchVal)
+                //)
                 )
                 .OrderBy(fo => fo.IsCompleted)
                 //.Take(10)
@@ -237,8 +284,36 @@ namespace CanteenManage.Services
                 })
                 .ToListAsync(cancellationToken);
 
+            var onlyfoodOrderIds = foodOrders.Select(fo => fo.FoodOrderId).ToList();
+            //await cache.RemoveAsync(foodOrders.Select(foodOrders => foodOrders.FoodOrderId).ToList(), cancellationToken);
+            EmployeeFoodOrdersTableDataModel outobj = new EmployeeFoodOrdersTableDataModel();
+            DateTime todayDate = DateTime.Now.Date;
+
+            //get old order to be remove
+            foreach (var item in orderDataCaching.OrderCacheDataDictionary)
+            {
+                if (item.Value.OrderDate.Date < todayDate)
+                {
+                    onlyfoodOrderIds.Add(item.Key);
+                }
+            }
+
+            //remove all old and existing orders from cache
+            foreach (var item in onlyfoodOrderIds)
+            {
+                orderDataCaching.OrderCacheDataDictionary.TryRemove(item, out outobj);
+            }
+
+            // add new data to catch
+            foreach (var item in foodOrders)
+            {
+                orderDataCaching.OrderCacheDataDictionary.TryAdd(item.FoodOrderId, item);
+            }
+
+
             return foodOrders;
         }
+
 
         public async Task<List<EmployeeFoodOrdersTableDataModel>> GetFoodOrdersOld_CU(CancellationToken cancellationToken, string SearchVal = "")
         {
@@ -273,17 +348,15 @@ namespace CanteenManage.Services
 
         public async Task<bool> CompleteFoodOrder(string foodorderID)
         {
-            try
+
+            var oldfoodorder = orderDataCaching.OrderCacheDataDictionary.Where(fo => fo.Value.FoodOrderId == foodorderID).Select(fo => fo.Value).FirstOrDefault();
+            if (oldfoodorder != null)
             {
-                await contextCM.FoodOrders.Where(fo => fo.OrderID == foodorderID)
-                                            .ExecuteUpdateAsync(fo => fo.SetProperty(f => f.IsCompleted, true));
-                await contextCM.SaveChangesAsync();
-                return true;
+                oldfoodorder.IsCompleted = true;
+                orderDataCaching.OrderCacheDataDictionary.Remove(oldfoodorder.FoodOrderId, out _);
+                orderDataCaching.OrderCacheDataDictionary.TryAdd(oldfoodorder.FoodOrderId, oldfoodorder);
             }
-            catch (Exception ex)
-            {
-                return false;
-            }
+
             return false;
         }
 

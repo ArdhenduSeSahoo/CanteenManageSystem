@@ -35,18 +35,19 @@ function addFoodItem(e, api_Url) {
         const foodOrderdata = {
             foodOrderId: foodid.toString()
         };
+        api_Url = api_Url + "?foodid=" + foodid.toString(); // Append the foodOrderId to the URL
         // Send the POST request using fetch
         fetch(api_Url, {
-            method: "POST",
+            method: "Get",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(foodOrderdata)
+            //body: JSON.stringify(foodOrderdata)
         })
             .then((response) => response.json())
             .then((data) => {
                 //debugger;
-                console.log("Success:", data);
+                //console.log("Success:", data);
                 if (data.error != null && data.error != "") {
                     // your code here.
                     showErrorMessage(data.error);
@@ -87,16 +88,17 @@ function removeFoodItem(e, api_Url) {
     var foodid = $(e.currentTarget).data("foodid");
     //console.log("Add Item button clicked---"+foodid);
     try {
-        const foodOrderdata = {
-            foodOrderId: foodid.toString()
-        };
+        //const foodOrderdata = {
+        //    foodOrderId: foodid.toString()
+        //};
+        api_Url = api_Url + "?foodid=" + foodid.toString(); // Append the foodOrderId to the URL
         // Send the POST request using fetch
         fetch(api_Url, {
-            method: "POST",
+            method: "GET",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(foodOrderdata)
+            //body: JSON.stringify(foodOrderdata)
         })
             .then((response) => response.json())
             .then((data) => {

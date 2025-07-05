@@ -1,0 +1,70 @@
+﻿@using CanteenManage.Models;
+@model OrderListViewTodaysDataModel;
+
+
+<div class="table-responsive">
+	<table class="table table-hover table-responsive-sm table-borderless customTable">
+		<thead>
+			<tr>
+				<th>Order Date</th>
+				<th>Order Id</th>
+				<th>Employee Code</th>
+				<th>Employee Name</th>
+				<th>Food Name</th>
+				<th>Quantity</th>
+				<th>Price</th>
+				<th>Status</th>
+				<th>Action</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var order in Model.EmployeeFoodOrdersTableData.OrderBy(fo => fo.IsCompleted))
+			{
+				<tr>
+					<td data-label="Order Date">@order.OrderDate.ToString("dd/MM/yyyy")</td>
+					<td data-label="Order Id">@order.FoodOrderId</td>
+					<td data-label="Employ Code">@order.EmployeeCode</td>
+					<td data-label="Employ Name"><span style="font-weight:500">@order.EmployeeName</span></td>
+					<td data-label="Food Name"><span style="font-weight:500">@order.FoodName</span></td>
+					<td data-label="Quantity">@order.Quantity</td>
+					<td data-label="Price">@order.TotalPrice.ToString()</td>
+					<td data-label="Status">
+						@if (!order.IsCompleted)
+						{
+							@* <span class="badge rounded-pill bg-warning">Pending</span> *@
+							<span class="badge bg-warning text-dark rounded-pill px-3 py-2 shadow-sm d-inline-flex align-items-center">
+								<i class="bi bi-hourglass-split me-1"></i> Pending
+							</span>
+
+						}
+						else
+						{
+							@* <span class="badge rounded-pill bg-success">Completed</span> *@
+							<span class="badge bg-success rounded-pill px-3 py-2 shadow-sm d-inline-flex align-items-center">
+								<i class="bi bi-check-circle me-1"></i> Completed
+							</span>
+
+						}
+					</td>
+					<td data-label="Action">
+						<button type="button" class="btn btn-primary btn-sm d-inline-flex align-items-center px-3 py-2 shadow-sm btn_order_complete" data-bs-FoodOrderId="@order.FoodOrderId" data-bs-foodtype="@Model.FoodType">
+							<i class="bi bi-hand-thumbs-up-fill me-2"></i> Complete
+						</button>
+						@if (false) //(!order.IsCompleted)
+						{
+							<form method="post" asp-action="CompleteFoodOrder" asp-controller="OrdersByEmploy">
+								<input type="hidden" value="@order.FoodOrderId" name="foodId" />
+								<input type="hidden" value="@Model.FoodType" name="foodtype" />
+								@* <button type="submit" class="btn btn-primary btn-sm">Complete</button> *@
+								<button type="submit" class="btn btn-primary btn-sm d-inline-flex align-items-center px-3 py-2 shadow-sm">
+									<i class="bi bi-hand-thumbs-up-fill me-2"></i> Complete
+								</button>
+							</form>
+						}
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+</div>
+

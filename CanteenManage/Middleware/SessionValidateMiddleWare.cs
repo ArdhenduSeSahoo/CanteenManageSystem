@@ -1,4 +1,5 @@
 ﻿using CanteenManage.Models;
+using CanteenManage.Services;
 using CanteenManage.Utility;
 
 namespace CanteenManage.Middleware
@@ -6,9 +7,11 @@ namespace CanteenManage.Middleware
     public class SessionValidateMiddleWare
     {
         private readonly RequestDelegate _next;
-        public SessionValidateMiddleWare(RequestDelegate next)
+        private readonly AppConfigProvider _appConfigProvider;
+        public SessionValidateMiddleWare(RequestDelegate next, AppConfigProvider appConfigProvider)
         {
             _next = next;
+            _appConfigProvider = appConfigProvider;
         }
         public async Task InvokeAsync(HttpContext context)
         {
@@ -32,7 +35,9 @@ namespace CanteenManage.Middleware
             }
             else if (string.IsNullOrEmpty(empEid) || string.IsNullOrEmpty(empEid))
             {
-                context.Response.Redirect("/Error"); return;
+                //context.Response.Redirect("/Error");
+                context.Response.Redirect(_appConfigProvider.GetLogOutURL());
+                return;
             }
             else
             {

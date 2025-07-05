@@ -57,7 +57,8 @@ namespace CanteenManage.CanteenMiddleWare
             else if (string.IsNullOrEmpty(App_token))
             {
                 //context.Response.StatusCode = 401; // Unauthorized
-                context.Response.Redirect("/Error");
+                //context.Response.Redirect("/Error");
+                context.Response.Redirect(_appConfigProvider.GetLogOutURL());
                 return;
             }
             else
@@ -111,8 +112,18 @@ namespace CanteenManage.CanteenMiddleWare
                             //context.Response.StatusCode = 401; // Unauthorized
                             //context.Response.Redirect("/Error");
                             //return;
-                            context.Response.Redirect(_appConfigProvider.GetLogOutURL());
-                            return;
+                            if (_appConfigProvider.IsDevelopmentEnv())
+                            {
+                                context.Response.Redirect("/Error");
+                                return;
+                            }
+                            else
+                            {
+                                //context.Response.Redirect("/Error");
+                                context.Response.Redirect(_appConfigProvider.GetLogOutURL());
+                                return;
+                            }
+
                         }
                     }
                     else if (usertype_int == (int)EmployTypeEnum.Committee_Members || usertype_int == (int)EmployTypeEnum.CanteenStaf

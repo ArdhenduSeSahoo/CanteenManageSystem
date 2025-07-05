@@ -51,7 +51,7 @@ namespace CanteenManage.Controllers
                 SessionDataModel sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
                 int Session_selectedDay_On_SamePage = Convert.ToInt32(HttpContext.Session.GetString(SessionConstants.UserSelectedDayOnSamePage));
 
-                if (sessionDataModel.UserSelectedDay != null && Dsosp == 1)
+                if (!string.IsNullOrEmpty(sessionDataModel.UserSelectedDay) && Dsosp == 1)
                 {
                     var selectedDate = daysOfWeek.Where(d => d.DateShort == sessionDataModel.UserSelectedDay).FirstOrDefault();
                     //utilityServices.getFirstActiveDate(daysOfWeek);
@@ -107,41 +107,23 @@ namespace CanteenManage.Controllers
             return View(snaksItemPageDataModel);
         }
 
-        public IActionResult SelectDaysOfWeek(string selectedDate, string selectedFullDate)
+
+        [HttpPost]
+        public IActionResult SelectDaysOfWeek(string selecteddate, string selecteddatefull)
         {
             //Console.WriteLine(formcollect["selecteddate"]);
             try
             {
                 utilityServices.SetDateTimeToSession(
-                    CustomDataConstants.SnacksTimeHour,
+                    CustomDataConstants.BreakfastTimeHour,
                     HttpContext.Session,
-                    selectedDate,
-                    selectedFullDate
+                    selectedDay: selecteddate,
+                    selectedDate: selecteddatefull
                     );
             }
             catch (Exception ex)
             {
-
-            }
-
-            return RedirectToAction("Index", new { Dsosp = 1 });
-        }
-
-        [HttpPost]
-        public IActionResult SelectDaysOfWeek(IFormCollection formcollect)
-        {
-            //Console.WriteLine(formcollect["selecteddate"]);
-            try
-            {
-                utilityServices.SetDateTimeToSession(
-                    CustomDataConstants.SnacksTimeHour,
-                    HttpContext.Session,
-                    formcollect["selecteddate"].ToString(),
-                    formcollect["selecteddatefull"].ToString());
-            }
-            catch (Exception ex)
-            {
-
+                logger.LogError(ex, "Error in BreakFastItemsController SelectDaysOfWeek method: {Message}", ex.Message);
             }
 
             return RedirectToAction("Index", new { Dsosp = 1 });

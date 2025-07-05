@@ -35,7 +35,9 @@
 			.customTable td {
 				display: flex;
 				justify-content: space-between;
-				padding: 0.5rem;
+				padding: 0;
+				padding-right:2px;
+				padding-left:2px;
 				border: none;
 				border-bottom: 1px solid #dee2e6;
 			}
@@ -55,18 +57,77 @@
 				}
 		}
 	</style>
+	<style>
+		/* Mobile-first table styles */
+		@@media (max-width: 767.98px) {
+			tr .border-bottom {
+				border: 1px solid #dee2e6;
+				border-radius: 0.25rem;
+				display: block;
+				margin-bottom: 1rem;
+				padding: 0.75rem;
+			}
+
+			td {
+				display: flex;
+				justify-content: space-between;
+				padding: 0;
+				border: none !important;
+			}
+
+				td:before {
+					content: attr(data-label);
+					font-weight: bold;
+					margin-right: 1rem;
+				}
+
+				td[data-label]:before {
+					content: attr(data-label) ":";
+				}
+
+			thead th {
+				border: none !important;
+			}
+		}
+
+		/* Desktop styles */
+		@@media (min-width: 768px) {
+			.table-responsive {
+				overflow-x: auto;
+			}
+
+			tr.border-bottom {
+				border-bottom: 1px solid #dee2e6;
+			}
+		}
+	</style>
+
+	<style>
+		.customTable {
+			border-collapse: collapse;
+		}
+
+			.customTable tr {
+				border-bottom: 1px solid #dee2e6; /* Bootstrap's default border color */
+			}
+
+				.customTable tr:last-child {
+					border-bottom: none; /* Remove border from last row */
+					padding: 0;
+				}
+	</style>
 }
 <div class="container-fluid">
-	<div class="card">
+	<div class="card mb-2">
 		<div class="card-body">
 			<div class="container-fluid">
 				<div class="row">
-					<div class="col-12">
-						<h5 class="mt-4 mb-3 pb-2 border-bottom fw-semibold text-primary">
+					<div class="col-12 p-0">
+						<h5 class=" mb-3 pb-2 border-bottom fw-semibold text-primary">
 							<i class="bi bi-person-lines-fill me-2"></i> Orders By Employee
 						</h5>
 
-						<div class="d-flex gap-3 mb-3 flex-wrap">
+						<div class="d-flex gap-3 ml-2 flex-wrap">
 							<a class="btn btn-outline-primary d-flex align-items-center px-4 py-2 shadow-sm"
 							   asp-controller="OrdersByEmploy" asp-action="OrderByEmployIdx" asp-route-FoodType="1">
 								<i class="bi bi-sunrise-fill me-2"></i> Breakfast
@@ -142,7 +203,7 @@
 				<input type="hidden" name="FoodType" value="@Model.FoodType" />
 
 				<div class="col-auto">
-					<input type="text" class="form-control searchinputs" name="searchTerm" id="myInput" value="@Model.SearchValue" placeholder="Name or Id or Orderid" />
+					<input type="text" class="form-control searchinputs" name="searchTerm" id="searchinput" value="@Model.SearchValue" placeholder="Name or Id or Orderid" />
 				</div>
 
 				<div class="col-auto">
@@ -151,227 +212,257 @@
 					</button>
 				</div>
 			</form>
+			<button type="button" id="searchbtn" class="btn btn-outline-primary d-flex align-items-center">
+				<i class="bi bi-search me-2"></i> Search
+			</button>
+		</div>
+		<div class="row orderlistviewcontainer">
+
+			@(
+						await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_OrderListViewTodays", new OrderListViewTodaysDataModel()
+			{
+				EmployeeFoodOrdersTableData = Model.FoodOrders,
+				FoodType = Model.FoodType,
+			})
+						)
+
 		</div>
 
 
-		<div class="table-responsive">
-			<div class="table-responsive">
-				<table class="table table-hover table-responsive-sm table-borderless customTable">
-					<thead>
-						<tr>
-							<th>Order Date</th>
-							<th>Order Id</th>
-							<th>Employee Code</th>
-							<th>Employee Name</th>
-							<th>Food Name</th>
-							<th>Quantity</th>
-							<th>Price</th>
-							<th>Status</th>
-							<th>Action</th>
-						</tr>
-					</thead>
-					<tbody>
-						@foreach (var order in Model.FoodOrders)
-						{
-							<tr>
-								<td data-label="Order Date">@order.OrderDate.ToString("dd/MM/yyyy")</td>
-								<td data-label="Order Id">@order.FoodOrderId</td>
-								<td data-label="Employ Code">@order.EmployeeCode</td>
-								<td data-label="Employ Name">@order.EmployeeName</td>
-								<td data-label="Food Name">@order.FoodName</td>
-								<td data-label="Quantity">@order.Quantity</td>
-								<td data-label="Price">@order.TotalPrice.ToString()</td>
-								<td data-label="Status">
-									@if (!order.IsCompleted)
-									{
-										@* <span class="badge rounded-pill bg-warning">Pending</span> *@
-										<span class="badge bg-warning text-dark rounded-pill px-3 py-2 shadow-sm d-inline-flex align-items-center">
-											<i class="bi bi-hourglass-split me-1"></i> Pending
-										</span>
-
-									}
-									else
-									{
-										@* <span class="badge rounded-pill bg-success">Completed</span> *@
-										<span class="badge bg-success rounded-pill px-3 py-2 shadow-sm d-inline-flex align-items-center">
-											<i class="bi bi-check-circle me-1"></i> Completed
-										</span>
-
-									}
-								</td>
-								<td data-label="Action">
-									@if (!order.IsCompleted)
-									{
-										<form method="post" asp-action="CompleteFoodOrder" asp-controller="OrdersByEmploy">
-											<input type="hidden" value="@order.FoodOrderId" name="foodId" />
-											<input type="hidden" value="@Model.FoodType" name="foodtype" />
-											@* <button type="submit" class="btn btn-primary btn-sm">Complete</button> *@
-											<button type="submit" class="btn btn-primary btn-sm d-inline-flex align-items-center px-3 py-2 shadow-sm">
-												<i class="bi bi-hand-thumbs-up-fill me-2"></i> Complete
-											</button>
-
-										</form>
-									}
-								</td>
-							</tr>
-						}
-					</tbody>
-				</table>
-			</div>
-
-			<style>
-				/* Mobile-first table styles */
-				@@media (max-width: 767.98px) {
-					tr .border-bottom {
-						border: 1px solid #dee2e6;
-						border-radius: 0.25rem;
-						display: block;
-						margin-bottom: 1rem;
-						padding: 0.75rem;
-					}
-
-					td {
-						display: flex;
-						justify-content: space-between;
-						padding: 0.5rem 0;
-						border: none !important;
-					}
-
-						td:before {
-							content: attr(data-label);
-							font-weight: bold;
-							margin-right: 1rem;
-						}
-
-						td[data-label]:before {
-							content: attr(data-label) ":";
-						}
-
-					thead th {
-						border: none !important;
-					}
-				}
-
-				/* Desktop styles */
-				@@media (min-width: 768px) {
-					.table-responsive {
-						overflow-x: auto;
-					}
-
-					tr.border-bottom {
-						border-bottom: 1px solid #dee2e6;
-					}
-				}
-			</style>
-
-			<style>
-				.customTable {
-					border-collapse: collapse;
-				}
-
-					.customTable tr {
-						border-bottom: 1px solid #dee2e6; /* Bootstrap's default border color */
-					}
-
-						.customTable tr:last-child {
-							border-bottom: none; /* Remove border from last row */
-						}
-			</style>
-		</div>
 	</div>
 </div>
 
 
 @section Scripts {
-	<script src="~/js/signalr.min.js"></script>
+	@* <script src="~/js/signalr.min.js"></script> *@
 
 	@* <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script> *@
+
+	@* 	<script src="https://npmcdn.com/@reactivex/rxjs@5.0.0-beta.3/dist/global/Rx.umd.js"></script> *@
+
+	<script src="https://unpkg.com/rxjs@7/dist/bundles/rxjs.umd.min.js"></script>
+	@* <script src="~/js/todays_order.js"></script> *@
 	<script>
-		function searchData(){
-			var foodOrders=@(JsonConvert.SerializeObject(Model.FoodOrders));
-		}
+
+
+
+	</script>
+
+	<script type="text/javascript">
 		$(document).ready(function() {
-		const connection = new signalR.HubConnectionBuilder()
-			.withUrl("/OrderingHub")
-			.build();
-
-
-		connection.on("OrderCompleteNotification", function (orderJson) {
-			//const msg = document.createElement("li");
-			//msg.textContent = `${user}: ${message}`;
-			//debugger;
-			//document.getElementById("messagesList").appendChild(msg);
-
-				const myArr =orderJson; //JSON.parse(orderJson);
-				// if(myArr.length>0)
-				// {
-				// 	$('#cardUserRequestDiv').removeClass('d-none');
-				// }
-				// else{
-				// 	$('#cardUserRequestDiv').addClass('d-none');
-				// }
-
-		$('#userordergrid').empty();
-		myArr.forEach(function(item) {
-				//console.log("Order ID: " + item.orderId);
-
-				var clone_card=$("#defaultcardorderdet").clone();
-				clone_card.removeClass('d-none');
-				clone_card.find("#username").html(item.userName);
-				//var onme=clone_card.find("#ordername");
-				clone_card.find("#ordername").html(item.orderName);
-				clone_card.find("#orderqnt").html(item.orderQnt);
-				//var unam=clone_card.find("#userempid");
-				clone_card.find("#orderid").html(item.orderId);
-				clone_card.find("#userempid").html(item.userEmpId);
-				var confbtn=clone_card.find(".btn_conform_order_sr");
-				confbtn.attr("data-bs-orderid", item.orderId);
-				$("#userordergrid").append(clone_card);
-				//console.log("Order Name: " + item.OrderName);
-				//console.log("User Emp ID: " + item.UserEmpId);
-				//console.log("User Name: " + item.UserName);
-				//console.log("Request Date Time: " + item.RequestDateTime);
-			});
+			const foodtype=''+@(Model.FoodType)+'';
+			const { range, filter, map,fromEvent,debounceTime,distinctUntilChanged,switchMap,catchError,from,of,Subject} = rxjs;
+		const {fromFetch}=rxjs.fetch;
+		const {ajax}=rxjs.ajax;
+		let searchval="";
+		const searchInput = document.getElementById('searchinput');
+		const searchInputObs = fromEvent(searchInput, 'input').pipe(
+			map(event => event.target.value), // Extract the value from the event
+			debounceTime(300), // Wait for 300ms of inactivity before emitting
+			distinctUntilChanged(), // Only emit if the value has changed
+		);
+		const searchResultObs=searchInputObs.pipe(
+			switchMap(searchValue =>
+					{searchval=searchValue;
+						return	fromFetch(`/OrderListView?FoodType=${foodtype}&searchTerm=${searchValue}`).pipe(
+							switchMap(response => from(response.text())),
+								   catchError(err => {
+										console.error(err);
+										return of("");
+									})
+				)}
+		)
+		);
+		// Subscribe to the typeahead Observable
+		const searchResultSubscriber=searchResultObs.subscribe(searchTerm => {
+			$(".orderlistviewcontainer").html(searchTerm);
+			//console.log(foodtype+'--Search term:', searchTerm);
 		});
-		connection.on("OrderCompleteSuccess", function (orderJson) {
-			console.log("Order completed with ID: " + orderJson);
-			showInfoMessage(orderJson);
-		});
-		connection.on("OrderCompleteSuccess", function (orderJson) {
+		//////////////////////////////////////////////////////////////
+		//const conformBtn=$(".btn_order_complete");
+		const subjectConformBtn = new Subject();
 
-			showInfoMessage(orderJson);
-		});
-		connection.start()
-		.then(function() {
-			connection.invoke("AssignAsCanteenEmployee", "Hi");
-		})
-		.catch(function (err) {
-		 console.error(err.toString());
+		// $(".btn_order_complete").click(function() {
+		// 	const button = event.currentTarget;
+		// 		const orderId = button.getAttribute('data-bs-FoodOrderId');
+		// 		const foodtypeId = button.getAttribute('data-bs-foodtype');
+		// 		//console.log(foodtypeId+"---"+orderId);
+		// 		const foodorderdtl = {
+		// 			foodorderid:orderId,foodtype:foodtypeId
+		// 		}
+		// 		console.log(foodorderdtl);
+		// 	//subjectConformBtn.next(foodorderdtl);
+		// });
+		$('.orderlistviewcontainer').on('click', '.btn_order_complete', function(event) {
+		  const button = event.currentTarget;
+				const orderId = button.getAttribute('data-bs-FoodOrderId');
+				const foodtypeId = button.getAttribute('data-bs-foodtype');
+				//console.log(foodtypeId+"---"+orderId);
+				const foodorderdtl = {
+					foodorderid:orderId,foodtype:foodtypeId
+				}
+				//console.log(foodorderdtl);
+				subjectConformBtn.next(foodorderdtl);
 		});
 
+		const subjectconformclickObs=subjectConformBtn.pipe(
+			debounceTime(300), // Wait for 300ms of inactivity before emitting
+			distinctUntilChanged(), // Only emit if the value has changed
+		);
 
-		$(document).on('click', '.btn_conform_order_sr', function(event) {
-		  // Code to execute when the button is clicked
-		  //console.log('Button clicked using .on() method!');
-		  const button = event.currentTarget
-			var orderId = button.getAttribute('data-bs-orderid');
-			//console.log(orderId);
-			try {
-			connection.invoke("ConformingOrder", orderId)
-			.catch(function (err) {
-				//return console.error(err.toString());
-				showErrorMessage("Some error happened. Please refresh page.");
-			});
-					} catch (err) {
-			console.error(err);
-		}
+		// const conformBtnObs=fromEvent(conformBtn, 'click').pipe(
+		// 	map(event => {
+		// 		console.log(event);
+
+		// 		return "Ardhendu";
+		// 	}),
+		// 	debounceTime(300), // Wait for 300ms of inactivity before emitting
+		// 	distinctUntilChanged(), // Only emit if the value has changed
+		// ).subscribe(searchTerm => {
+		// 	//$(".orderlistviewcontainer").html(searchTerm);
+		// 	console.log(foodtype+'--Search term:', searchTerm);
+		// });
+
+		const conformResultObs=subjectconformclickObs.pipe(
+			switchMap(data =>fromFetch(`/OrderListView/CompleteFoodOrder?foodorderid=${data.foodorderid}&foodtype=${data.foodtype}&searchTerm=${searchval}`).pipe(
+					switchMap(response => from(response.text())),
+					catchError(err => {
+						console.error(err);
+						return of("");
+					})
+
+				)
+			)
+		);
+		// Subscribe to the typeahead Observable
+		const conformbtnsubscription=conformResultObs.subscribe(searchTerm => {
+			$(".orderlistviewcontainer").html(searchTerm);
+			//console.log(foodtype+'--Search term:', searchTerm);
 		});
+		/////////////////////////////////////////////////////////////////
+		const searchbtn=$("#searchbtn");
+		const searchbtnobs=fromEvent(searchbtn, 'click').subscribe(event => console.log('Clicked'))
 
-		let searchTimer; // Variable to hold the debounce timer
-		function performSearch(query) {
-			console.log("Performing search for: " + query);
-			//$('#searchForm').submit();
-		}
+
+
+		});
+	</script>
+	<script type="text/javascript">
+		window.addEventListener('beforeunload', function (e) {
+			//alert("I am the 1s1t one…");
+			//e.preventDefault();
+			//e.returnValue = '';
+
+		});
+		window.addEventListener('unload', function (e) {
+			//alert("I am the 1s1t one…");
+			//e.preventDefault();
+			//e.returnValue = '';
+		});
+	</script>
+	<script>
+		// function searchData(){
+		// 	var foodOrders=@(JsonConvert.SerializeObject(Model.FoodOrders));
+		// }
+		const foodtype=@(Model.FoodType);
+		const { range, filter, map,fromEvent,debounceTime,distinctUntilChanged,switchMap,catchError } = rxjs;
+		const {fromFetch}=rxjs.fetch;
+		$(document).ready(function() {
+		  const searchInput = document.getElementById('searchinput');
+			  const searchInputObs = fromEvent(searchInput, 'input').pipe(
+			map(event => event.target.value), // Extract the value from the event
+			debounceTime(300), // Wait for 300ms of inactivity before emitting
+			distinctUntilChanged(), // Only emit if the value has changed
+
+		);
+
+
+		// Subscribe to the typeahead Observable
+		// typeahead.subscribe(searchTerm => {
+		// 	//console.log(foodtype+'--Search term:', searchTerm);
+		// 	// In a real application, you would trigger an API call here
+		// });
+		// const connection = new signalR.HubConnectionBuilder()
+		// 	.withUrl("/OrderingHub")
+		// 	.build();
+
+
+		// connection.on("OrderCompleteNotification", function (orderJson) {
+		// 	//const msg = document.createElement("li");
+		// 	//msg.textContent = `${user}: ${message}`;
+		// 	//debugger;
+		// 	//document.getElementById("messagesList").appendChild(msg);
+
+		// 		const myArr =orderJson; //JSON.parse(orderJson);
+		// 		// if(myArr.length>0)
+		// 		// {
+		// 		// 	$('#cardUserRequestDiv').removeClass('d-none');
+		// 		// }
+		// 		// else{
+		// 		// 	$('#cardUserRequestDiv').addClass('d-none');
+		// 		// }
+
+		// $('#userordergrid').empty();
+		// myArr.forEach(function(item) {
+		// 		//console.log("Order ID: " + item.orderId);
+
+		// 		var clone_card=$("#defaultcardorderdet").clone();
+		// 		clone_card.removeClass('d-none');
+		// 		clone_card.find("#username").html(item.userName);
+		// 		//var onme=clone_card.find("#ordername");
+		// 		clone_card.find("#ordername").html(item.orderName);
+		// 		clone_card.find("#orderqnt").html(item.orderQnt);
+		// 		//var unam=clone_card.find("#userempid");
+		// 		clone_card.find("#orderid").html(item.orderId);
+		// 		clone_card.find("#userempid").html(item.userEmpId);
+		// 		var confbtn=clone_card.find(".btn_conform_order_sr");
+		// 		confbtn.attr("data-bs-orderid", item.orderId);
+		// 		$("#userordergrid").append(clone_card);
+		// 		//console.log("Order Name: " + item.OrderName);
+		// 		//console.log("User Emp ID: " + item.UserEmpId);
+		// 		//console.log("User Name: " + item.UserName);
+		// 		//console.log("Request Date Time: " + item.RequestDateTime);
+		// 	});
+		// });
+		// connection.on("OrderCompleteSuccess", function (orderJson) {
+		// 	console.log("Order completed with ID: " + orderJson);
+		// 	showInfoMessage(orderJson);
+		// });
+		// connection.on("OrderCompleteSuccess", function (orderJson) {
+
+		// 	showInfoMessage(orderJson);
+		// });
+		// connection.start()
+		// .then(function() {
+		// 	connection.invoke("AssignAsCanteenEmployee", "Hi");
+		// })
+		// .catch(function (err) {
+		//  console.error(err.toString());
+		// });
+
+
+		// $(document).on('click', '.btn_conform_order_sr', function(event) {
+		//   // Code to execute when the button is clicked
+		//   //console.log('Button clicked using .on() method!');
+		//   const button = event.currentTarget
+		// 	var orderId = button.getAttribute('data-bs-orderid');
+		// 	//console.log(orderId);
+		// 	try {
+		// 	connection.invoke("ConformingOrder", orderId)
+		// 	.catch(function (err) {
+		// 		//return console.error(err.toString());
+		// 		showErrorMessage("Some error happened. Please refresh page.");
+		// 	});
+		// 			} catch (err) {
+		// 	console.error(err);
+		// }
+		// });
+
+		// let searchTimer; // Variable to hold the debounce timer
+		// function performSearch(query) {
+		// 	console.log("Performing search for: " + query);
+		// 	//$('#searchForm').submit();
+		// }
 
 		// $(".searchinputs").keyup(function() {
 		// 	// Code to be executed when a key is released in #myInput

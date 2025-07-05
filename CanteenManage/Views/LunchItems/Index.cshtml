@@ -76,16 +76,16 @@
 	<script src="~/js/canteensystem_js.js"></script>
 	<script>
 
-				$(document).ready(function () {
+		$(document).ready(function () {
 
 			$(".btn_addItem").click( async function (e) {
 				//debugger;
-				addFoodItem(e,"/api/FoodOrders/LunchFoodOrderAdd");
+				addFoodItem(e,"FoodOrderingAPI/AddLunchFoodOrder");
 				//console.log(response.json);
 			});
 			$(".btn_removeItem").click( async function (e) {
 				//debugger;
-				removeFoodItem(e,"/api/FoodOrders/OrderRemove");
+				removeFoodItem(e,"FoodOrderingAPI/OrderRemove");
 
 			});
 		});

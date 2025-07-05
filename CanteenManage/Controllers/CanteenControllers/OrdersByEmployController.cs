@@ -32,15 +32,19 @@ namespace CanteenManage.Controllers.CanteenControllers
                 if (!string.IsNullOrEmpty(FoodType))
                 {
                     var foodtype_qp = Convert.ToInt32(FoodType);
-                    if (foodtype_qp < 1)
+                    foodType = (FoodTypeEnum)foodtype_qp;
+                    //if (foodtype_qp < 1)
+                    //{
+                    //    //searchTerm = searchTerm.Trim().ToLower();
+                    //    //foodOrders = await foodListingService.GetFoodOrdersOld_CU(cancellationToken, searchTerm);
+                    //}
+                    if (string.IsNullOrWhiteSpace(searchTerm))
                     {
-                        searchTerm = searchTerm.Trim().ToLower();
-
-                        foodOrders = await foodListingService.GetFoodOrdersOld_CU(cancellationToken, searchTerm);
+                        foodOrders = await foodListingService.GetFoodOrdersToday(foodType, cancellationToken);
                     }
                     else
                     {
-                        foodType = (FoodTypeEnum)foodtype_qp;
+
                         searchTerm = searchTerm.Trim().ToLower();
 
                         foodOrders = await foodListingService.GetFoodOrdersToday_CU(foodType, cancellationToken, searchTerm);
@@ -71,18 +75,6 @@ namespace CanteenManage.Controllers.CanteenControllers
             return View(model);
         }
 
-        //public async Task<IActionResult> OrderByEmployBreakfast()
-        //{
-        //    return this.RedirectToAction("OrderByEmployIdx", new { FoodType = "1" });
-        //}
-        //public async Task<IActionResult> OrderByEmployLunch()
-        //{
-        //    return this.RedirectToAction("OrderByEmployIdx", new { FoodType = "2" });
-        //}
-        //public async Task<IActionResult> OrderByEmploySnacks()
-        //{
-        //    return this.RedirectToAction("OrderByEmployIdx", new { FoodType = "3" });
-        //}
         public async Task<IActionResult> CompleteFoodOrder(IFormCollection formcollect)
         {
             var foodOrderId = formcollect["foodId"];

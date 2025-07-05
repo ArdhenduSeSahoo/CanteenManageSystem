@@ -10,6 +10,8 @@ using CanteenManage.Utility;
 using Serilog;
 using CanteenManage.Controllers;
 using Serilog.Events;
+using Microsoft.Extensions.Caching.Hybrid;
+using System.Threading.Channels;
 
 
 
@@ -78,6 +80,19 @@ try
     builder.Services.AddControllersWithViews();
     builder.Services.AddDistributedMemoryCache();
     builder.Services.AddProgressiveWebApp();
+    builder.Services.AddHybridCache(options =>
+    {
+        // Maximum size of cached items
+        //options.MaximumPayloadBytes = 1024 * 1024 * 10; // 10MB
+        //options.MaximumKeyLength = 512;
+
+        // Default timeouts
+        options.DefaultEntryOptions = new HybridCacheEntryOptions
+        {
+            Expiration = TimeSpan.FromHours(8),
+            LocalCacheExpiration = TimeSpan.FromMinutes(8)
+        };
+    });
 
 
 
@@ -146,6 +161,11 @@ try
     builder.Services.AddSingleton<SignalRDataHolder>();
     builder.Services.AddSingleton<SessionManager>();
     builder.Services.AddSingleton<AppConfigProvider>();
+    builder.Services.AddSingleton<OrderDataCaching>();
+    builder.Services.AddSingleton<Channel<OrderConformingChanelRequest>>(_ => Channel.CreateUnbounded<OrderConformingChanelRequest>(new UnboundedChannelOptions
+    {
+        AllowSynchronousContinuations = false,
+    }));
     builder.Services.AddSignalR(e =>
     {
         e.EnableDetailedErrors = true;
@@ -156,11 +176,12 @@ try
         builder.Services.AddHostedService<SignalRBackgroundService>();
     }
 
+    builder.Services.AddHostedService<OrderProcessingBackgroundServices>();
+
     builder.Services.AddScoped<CanteenManageContextFactory>();
     builder.Services.AddScoped(sp => sp.GetRequiredService<CanteenManageContextFactory>().CreateDbContext());
 
     builder.Services.AddScoped<UtilityServices>();
-
     builder.Services.AddTransient<LoginService>();
     builder.Services.AddScoped<FoodListingService>();
     builder.Services.AddScoped<OrderingService>();
@@ -169,7 +190,8 @@ try
     builder.Services.AddHttpContextAccessor();
     builder.Services.AddSession(options =>
     {
-        options.IdleTimeout = TimeSpan.FromMinutes(120);
+        options.Cookie.Name = "jabvzarubjvfaweuporfzbvzfalkf";
+        options.IdleTimeout = TimeSpan.FromHours(1);
         options.Cookie.HttpOnly = true;
         options.Cookie.IsEssential = true;
     });

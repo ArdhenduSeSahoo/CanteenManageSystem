@@ -8,7 +8,7 @@ namespace CanteenManage.Services
     {
 
         public string FMT = "O";
-        public List<DaysOfWeekModel> GetDaysOfWeek(int? hourBeforeDisable = null)
+        public List<DaysOfWeekModel> GetDaysOfWeek(int hourBeforeDisable)
         {
 
             var daysOfWeek = new List<DaysOfWeekModel>();
@@ -54,8 +54,8 @@ namespace CanteenManage.Services
                     DateFull = DateTimeToString(day),
                     DateTime = day,
                     DaysOfWeekName = day.ToString("ddd"),//.DayOfWeek.ToString(),
-                    IsSelected = DateTime.Now.DayOfWeek == day.DayOfWeek,
-                    IsActiveDay = ((int)day.DayOfWeek) >= ((int)DateTime.Now.DayOfWeek)
+                    IsSelected = false,//DateTime.Now.DayOfWeek == day.DayOfWeek,
+                    IsActiveDay = false//((int)day.DayOfWeek) >= ((int)DateTime.Now.DayOfWeek)
                 });
             }
             //if(daysOfWeek.Where(x => x.IsActiveDay).Count() <= 0)
@@ -95,7 +95,7 @@ namespace CanteenManage.Services
                     }
                     else if (item.DateTime.Date == DateTime.Now.Date) //(((int)item.DateTime.DayOfWeek) == ((int)DateTime.Now.DayOfWeek))
                     {
-                        if (hourBeforeDisable != null && int.Parse(DateTime.Now.ToString("HH")) < hourBeforeDisable)
+                        if (int.Parse(DateTime.Now.ToString("HH")) < hourBeforeDisable)
                         {
                             item.IsActiveDay = true;
                         }
@@ -117,7 +117,7 @@ namespace CanteenManage.Services
         public DaysOfWeekModel? getFirstActiveDate(List<DaysOfWeekModel> daysOfWeekModels)
         {
 
-            var firstActiveDay = daysOfWeekModels.Where(d => d.IsActiveDay).OrderBy(d => d.DateTime).FirstOrDefault();
+            var firstActiveDay = daysOfWeekModels.Where(d => d.IsActiveDay).OrderBy(d => d.DateTime.Date).FirstOrDefault();
             return firstActiveDay;
         }
 
@@ -161,7 +161,8 @@ namespace CanteenManage.Services
             //var selectedDate = formcollect["selecteddate"].ToString();
             if (string.IsNullOrEmpty(selectedDate))
             {
-                SetSessionData(session, DateTime.Now.Day.ToString(), DateTimeToString(DateTime.Now));
+                //SetSessionData(session, DateTime.Now.Day.ToString(), DateTimeToString(DateTime.Now));
+                throw new Exception("Selected date cannot be null or empty.");
             }
             else
             {

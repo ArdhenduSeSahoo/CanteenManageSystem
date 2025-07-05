@@ -44,11 +44,6 @@
 				</div>
 			</div>
 
-			@* 	<div class="d-flex " style="width:250px; position:relative;">
-				<input type="text" id="myDatePicker" value="" placeholder="Select Date" class="form-control form-control-solid flatpickr-input datepicker_custom z-1">
-				<img src="~/images/datePicker.png" alt="Calendar Icon" class="calendar-icon z-0" style="width: 35px; height: 35px; cursor: pointer; position:absolute;z-index:0;">
-			</div> *@
-
 			<div class="d-flex ">
 				<div class="row">
 					<div class="col">
@@ -86,29 +81,13 @@
 
 			$(".btn_addItem").click( async function (e) {
 
-				addFoodItem(e,"/api/FoodOrders/breakfastFoodOrderAdd");
+				addFoodItem(e,"FoodOrderingAPI/AddBreakFastFoodOrder");
 
 			});
 			$(".btn_removeItem").click( async function (e) {
-				removeFoodItem(e,"/api/FoodOrders/OrderRemove");
+				removeFoodItem(e,"FoodOrderingAPI/OrderRemove");
 
 			});
-
-		// 	$("#myDatePicker").flatpickr({
-
-		// 	enableTime: false,
-		// 	disableMobile: "true",
-		// 	altInput: true,
-		// 	mode: "single",
-		// 	altFormat: "F j, D",
-		// 	minDate: "@Model.DayOfWeeks.FirstOrDefault()?.DateTime.ToString("yyyy-MM-dd")",
-		// 	maxDate:"@Model.DayOfWeeks.LastOrDefault()?.DateTime.ToString("yyyy-MM-dd")", //new Date().fp_incr(14),
-
-		// 	dateFormat: "d-m-Y",
-		// 	onChange: function(selectedDates, dateStr, instance) {
-		// 	console.log(selectedDates);
-		// },
-		// });
 
 		});
 	</script>

@@ -1,0 +1,13 @@
+﻿@using CanteenManage.Utility;
+@model OrderListViewTodaysDataModel;
+@{
+	Layout = "";
+}
+@(
+await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_OrderListViewTodays", new OrderListViewTodaysDataModel()
+{
+	EmployeeFoodOrdersTableData = Model.EmployeeFoodOrdersTableData,
+	FoodType = Model.FoodType,
+})
+)
+

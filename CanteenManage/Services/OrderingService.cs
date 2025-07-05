@@ -431,7 +431,8 @@ namespace CanteenManage.Services
                     canteenManageContext.FoodReviewDetails.Update(foodReviewDetails);
                 }
                 foodOrder.Rating = rating;
-                foodOrder.Review = review; //string.IsNullOrWhiteSpace(review) ? "" : review.Substring(0, 100);
+                var substringEnd = review.Length > 100 ? 100 : review.Length;
+                foodOrder.Review = string.IsNullOrWhiteSpace(review) ? "" : review.Substring(0, substringEnd);
                 foodOrder.RatingCreatedAt = DateTime.Now;
                 foodOrder.Food.Rating = (foodReviewDetails.TotalRating / foodReviewDetails.TotalUserCount);
                 foodOrder.Food.UserRateGiven = foodReviewDetails.TotalUserCount;
