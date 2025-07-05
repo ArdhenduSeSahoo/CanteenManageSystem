@@ -79,7 +79,24 @@
 							<div class="border rounded bg-light h-100 p-3">
 								<h5 class="text-secondary">@day.DayOfWeek</h5>
 								<ul class="list-unstyled">
-									@foreach (var food in day.Foods)
+									<li>Breakfast</li>
+									@foreach (var food in day.Foods.Where(f => f.FoodTypeId == (int)FoodTypeEnum.Breakfast))
+									{
+										<li class="mb-1 d-flex justify-content-between align-items-center">
+											<span><i class="bi bi-dot text-danger"></i> @food.Name</span>
+											<span class="text-danger fw-semibold">₹@food.Price</span>
+										</li>
+									}
+									<li>Lunch</li>
+									@foreach (var food in day.Foods.Where(f => f.FoodTypeId == (int)FoodTypeEnum.Lunch))
+									{
+										<li class="mb-1 d-flex justify-content-between align-items-center">
+											<span><i class="bi bi-dot text-danger"></i> @food.Name</span>
+											<span class="text-danger fw-semibold">₹@food.Price</span>
+										</li>
+									}
+									<li>Snacks</li>
+									@foreach (var food in day.Foods.Where(f => f.FoodTypeId == (int)FoodTypeEnum.Snacks))
 									{
 										<li class="mb-1 d-flex justify-content-between align-items-center">
 											<span><i class="bi bi-dot text-danger"></i> @food.Name</span>
@@ -113,7 +130,24 @@
 							<div class="border rounded bg-light h-100 p-3">
 								<h5 class="text-secondary">@day.DayOfWeek</h5>
 								<ul class="list-unstyled">
-									@foreach (var food in day.Foods)
+									<li>Breakfast</li>
+									@foreach (var food in day.Foods.Where(f => f.FoodTypeId == (int)FoodTypeEnum.Breakfast))
+									{
+										<li class="mb-1 d-flex justify-content-between align-items-center">
+											<span><i class="bi bi-dot text-danger"></i> @food.Name</span>
+											<span class="text-danger fw-semibold">₹@food.Price</span>
+										</li>
+									}
+									<li>Lunch</li>
+									@foreach (var food in day.Foods.Where(f => f.FoodTypeId == (int)FoodTypeEnum.Lunch))
+									{
+										<li class="mb-1 d-flex justify-content-between align-items-center">
+											<span><i class="bi bi-dot text-danger"></i> @food.Name</span>
+											<span class="text-danger fw-semibold">₹@food.Price</span>
+										</li>
+									}
+									<li>Snacks</li>
+									@foreach (var food in day.Foods.Where(f => f.FoodTypeId == (int)FoodTypeEnum.Snacks))
 									{
 										<li class="mb-1 d-flex justify-content-between align-items-center">
 											<span><i class="bi bi-dot text-danger"></i> @food.Name</span>
@@ -147,7 +181,24 @@
 							<div class="border rounded bg-light h-100 p-3">
 								<h5 class="text-secondary">@day.DayOfWeek</h5>
 								<ul class="list-unstyled">
-									@foreach (var food in day.Foods)
+									<li>Breakfast</li>
+									@foreach (var food in day.Foods.Where(f => f.FoodTypeId == (int)FoodTypeEnum.Breakfast))
+									{
+										<li class="mb-1 d-flex justify-content-between align-items-center">
+											<span><i class="bi bi-dot text-danger"></i> @food.Name</span>
+											<span class="text-danger fw-semibold">₹@food.Price</span>
+										</li>
+									}
+									<li>Lunch</li>
+									@foreach (var food in day.Foods.Where(f => f.FoodTypeId == (int)FoodTypeEnum.Lunch))
+									{
+										<li class="mb-1 d-flex justify-content-between align-items-center">
+											<span><i class="bi bi-dot text-danger"></i> @food.Name</span>
+											<span class="text-danger fw-semibold">₹@food.Price</span>
+										</li>
+									}
+									<li>Snacks</li>
+									@foreach (var food in day.Foods.Where(f => f.FoodTypeId == (int)FoodTypeEnum.Snacks))
 									{
 										<li class="mb-1 d-flex justify-content-between align-items-center">
 											<span><i class="bi bi-dot text-danger"></i> @food.Name</span>
@@ -181,7 +232,24 @@
 							<div class="border rounded bg-light h-100 p-3">
 								<h5 class="text-secondary">@day.DayOfWeek</h5>
 								<ul class="list-unstyled">
-									@foreach (var food in day.Foods)
+									<li>Breakfast</li>
+									@foreach (var food in day.Foods.Where(f => f.FoodTypeId == (int)FoodTypeEnum.Breakfast))
+									{
+										<li class="mb-1 d-flex justify-content-between align-items-center">
+											<span><i class="bi bi-dot text-danger"></i> @food.Name</span>
+											<span class="text-danger fw-semibold">₹@food.Price</span>
+										</li>
+									}
+									<li>Lunch</li>
+									@foreach (var food in day.Foods.Where(f => f.FoodTypeId == (int)FoodTypeEnum.Lunch))
+									{
+										<li class="mb-1 d-flex justify-content-between align-items-center">
+											<span><i class="bi bi-dot text-danger"></i> @food.Name</span>
+											<span class="text-danger fw-semibold">₹@food.Price</span>
+										</li>
+									}
+									<li>Snacks</li>
+									@foreach (var food in day.Foods.Where(f => f.FoodTypeId == (int)FoodTypeEnum.Snacks))
 									{
 										<li class="mb-1 d-flex justify-content-between align-items-center">
 											<span><i class="bi bi-dot text-danger"></i> @food.Name</span>
