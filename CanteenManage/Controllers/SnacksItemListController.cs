@@ -115,7 +115,7 @@ namespace CanteenManage.Controllers
             try
             {
                 utilityServices.SetDateTimeToSession(
-                    CustomDataConstants.BreakfastTimeHour,
+                    CustomDataConstants.SnacksTimeHour,
                     HttpContext.Session,
                     selectedDay: selecteddate,
                     selectedDate: selecteddatefull
