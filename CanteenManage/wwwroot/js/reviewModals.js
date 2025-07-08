@@ -9,7 +9,7 @@
             // Extract info from data-bs-* attributes
             var orderId = button.getAttribute('data-bs-orderid');
             //console.log(orderId);
-            debugger;
+            
             var modalOrderID_Hidden = exampleModal.querySelector('#order_id');
             modalOrderID_Hidden.value = orderId;
 

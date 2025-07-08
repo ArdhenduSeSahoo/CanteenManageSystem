@@ -12,21 +12,20 @@ namespace CanteenManage.Controllers
     [Authorize(Roles = "Employee")]
     public class OrderHistoryController : Controller
     {
-        private readonly CanteenManageDBContext canteenManageContext;
+        
         private readonly OrderingService orderingService;
         private readonly UtilityServices utilityServices;
-        public OrderHistoryController(CanteenManageDBContext canteenManageContext, OrderingService ordering, UtilityServices utilityServices)
+        private readonly ILogger<OrderHistoryController> logger;
+        public OrderHistoryController(OrderingService ordering, UtilityServices utilityServices,ILogger<OrderHistoryController> logger)
         {
-            this.canteenManageContext = canteenManageContext;
+            
             this.orderingService = ordering;
             this.utilityServices = utilityServices;
+            this.logger = logger;
         }
         public async Task<IActionResult> Index()
         {
-            //if (utilityServices.getSessionUserId(HttpContext.Session) is null)
-            //{
-            //    return RedirectToAction("Login", "Index");
-            //}
+
             OrderHistoryPageDataModel myOrderViewDataModel = new OrderHistoryPageDataModel();
             try
             {
@@ -47,7 +46,7 @@ namespace CanteenManage.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                logger.LogError(ex, "orderHistoryControler");
             }
             return View(myOrderViewDataModel);
         }
@@ -64,13 +63,13 @@ namespace CanteenManage.Controllers
                 if (!string.IsNullOrEmpty(options) || !string.IsNullOrEmpty(review) || !string.IsNullOrEmpty(orderId))
                 {
                     SessionDataModel sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
-                    await orderingService.addReview(sessionDataModel, int.Parse(orderId), int.Parse(options), review);
+                    await orderingService.addReview(sessionDataModel, (orderId), int.Parse(options), review);
                 }
 
             }
             catch (Exception ex)
             {
-
+                logger.LogError(ex, "orderHistoryControler add review");
             }
             return RedirectToAction("Index");
         }

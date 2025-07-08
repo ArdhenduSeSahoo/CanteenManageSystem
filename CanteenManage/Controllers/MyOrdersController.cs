@@ -8,6 +8,7 @@ using CanteenManage.Services;
 using Microsoft.AspNetCore.Authorization;
 using CanteenManage.CanteenRepository.Models;
 using System.Threading;
+using CanteenManage.Models.DTO;
 
 namespace CanteenManage.Controllers
 {
@@ -40,10 +41,10 @@ namespace CanteenManage.Controllers
                 SessionDataModel sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
                 //DateTime snacks_dateTime = DateTime.Now.Date;
 
-                List<FoodOrder> _snacksorders = new List<FoodOrder>();
+                List<FoodOrderDto> _snacksorders = new List<FoodOrderDto>();
 
-                List<FoodOrder> _lunchorders = new List<FoodOrder>();
-                List<FoodOrder> _breakfastorders = new List<FoodOrder>();
+                List<FoodOrderDto> _lunchorders = new List<FoodOrderDto>();
+                List<FoodOrderDto> _breakfastorders = new List<FoodOrderDto>();
                 bool cameFromOtherPage = false;
                 if (ShowAllOrder == null)
                 {
@@ -209,7 +210,7 @@ namespace CanteenManage.Controllers
                 if (!string.IsNullOrEmpty(options) || !string.IsNullOrEmpty(review) || !string.IsNullOrEmpty(orderId))
                 {
                     SessionDataModel sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
-                    await orderingService.addReview(sessionDataModel, int.Parse(orderId), int.Parse(options), review);
+                    await orderingService.addReview(sessionDataModel, (orderId), int.Parse(options), review);
                 }
             }
             catch (Exception ex)

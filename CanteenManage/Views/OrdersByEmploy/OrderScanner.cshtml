@@ -1,0 +1,93 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    Layout = "_Layout_canteenEmploy";
+}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-center">
+        <div class="card text-center">
+            <div class="card-header">
+                <h4>Scann Order</h4>
+            </div>
+            <div class="card-body">
+                <div class="" style="min-width:500px">
+                <div class="position-relative d-none" id="qr-container">
+                    <div id="qr-reader" class="rounded-2" style="width:500px;"></div>
+                    <div class="position-absolute bottom-0 end-0 bg-white w-100" style="height:45px;"></div>
+                </div>
+                </div>
+                <div id="qr-reader-results"></div>
+                <br />
+                <div class="d-inline-flex gap-2">
+                    <button class="btn btn-success" id="scannqr">Scann</button>
+                    
+                    <button class="btn btn-danger" id="stopqr">Stop</button>
+                </div>
+                
+                <div class="card mt-2">
+                    <div class="card-body">
+                        <div class="d-flex"><strong>Name:</strong></div>
+                        <div class="d-flex"><strong>EmpId:</strong></div>
+                        <div class="d-flex"><strong>Item:</strong></div>
+                        <div class="d-flex"><strong>OrderId:</strong></div>
+                        <div class="d-flex"><strong>Quantity:</strong></div>
+                        <div class="d-flex"><strong>Item:</strong></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+<script src="~/js/html5-qrcode.min.js"></script>
+
+<script type="text/javascript">
+    $(function(){
+    
+        var resultContainer = document.getElementById('qr-reader-results');
+
+        const formatsToSupport = [
+        Html5QrcodeSupportedFormats.QR_CODE
+        ];
+
+        var html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: 250
+            ,supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA],
+             showTorchButtonIfSupported:true,
+             formatsToSupport: formatsToSupport
+        });
+        function onScanSuccess(decodedText, decodedResult) {
+        // Handle on success condition with the decoded text or result.
+        console.log(`Scan result: ${decodedText}`, decodedResult);
+            html5QrcodeScanner.clear();
+                $("#qr-container").addClass("d-none");
+        }
+
+        function onScanError(errorMessage) {
+            // handle on error condition, with error message
+            //console.log(errorMessage);
+        }
+            
+        $('#scannqr').click(function() {
+            // Code to execute when the element is clicked
+                        $("#qr-container").removeClass("d-none");
+                html5QrcodeScanner.render(onScanSuccess,onScanError);
+        });
+        $('#stopqr').click(function() {
+                html5QrcodeScanner.clear();
+                        $("#qr-container").addClass("d-none");
+        });
+
+            
+    }
+    );
+
+</script>
+}
+
+
+

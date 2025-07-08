@@ -91,7 +91,7 @@ namespace CanteenManage.Controllers.CanteenControllers
                     //else
                     {
                         searchTerm = searchTerm.Trim().ToLower();
-                        foodOrders = await _foodListingService.GetFoodOrdersToday_CU(foodType, cancellationToken, searchTerm);
+                        foodOrders = await _foodListingService.GetFoodOrdersToday_Filter(foodType, cancellationToken, searchTerm);
                     }
                 }
             }

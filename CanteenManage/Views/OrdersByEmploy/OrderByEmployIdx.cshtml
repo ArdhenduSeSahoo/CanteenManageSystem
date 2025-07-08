@@ -142,6 +142,10 @@
 							   asp-controller="OrdersByEmploy" asp-action="OrderByEmployIdx" asp-route-FoodType="3">
 								<i class="bi bi-cup-straw me-2"></i> Snacks
 							</a>
+							<a class="btn btn-outline-warning d-flex align-items-center px-4 py-2 shadow-sm text-dark"
+							   asp-controller="OrdersByEmploy" asp-action="OrderScanner" asp-route-FoodType="3">
+								<i class="bi bi-cup-straw me-2"></i>Scann Order
+							</a>
 							@* <a class="btn btn-outline-warning d-flex align-items-center px-4 py-2 shadow-sm text-dark"
 							   asp-controller="OrdersByEmploy" asp-action="OrderByEmployIdx" asp-route-FoodType="-1">
 								<i class="bi bi-cup-straw me-2"></i> Old Orders
@@ -240,7 +244,7 @@
 
 	@* 	<script src="https://npmcdn.com/@reactivex/rxjs@5.0.0-beta.3/dist/global/Rx.umd.js"></script> *@
 
-	<script src="https://unpkg.com/rxjs@7/dist/bundles/rxjs.umd.min.js"></script>
+	@* <script src="https://unpkg.com/rxjs@7/dist/bundles/rxjs.umd.min.js"></script> *@
 	@* <script src="~/js/todays_order.js"></script> *@
 	<script>
 
@@ -347,19 +351,7 @@
 
 		});
 	</script>
-	<script type="text/javascript">
-		window.addEventListener('beforeunload', function (e) {
-			//alert("I am the 1s1t one…");
-			//e.preventDefault();
-			//e.returnValue = '';
-
-		});
-		window.addEventListener('unload', function (e) {
-			//alert("I am the 1s1t one…");
-			//e.preventDefault();
-			//e.returnValue = '';
-		});
-	</script>
+	
 	<script>
 		// function searchData(){
 		// 	var foodOrders=@(JsonConvert.SerializeObject(Model.FoodOrders));
@@ -480,6 +472,18 @@
 		// });
 		});
 	</script>
+	<script type="text/javascript">
+		window.addEventListener('beforeunload', function (e) {
+			//alert("I am the 1s1t one…");
+			//e.preventDefault();
+			//e.returnValue = '';
 
+		});
+		window.addEventListener('unload', function (e) {
+			//alert("I am the 1s1t one…");
+			//e.preventDefault();
+			//e.returnValue = '';
+		});
+	</script>
 
 }

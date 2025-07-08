@@ -2,6 +2,7 @@
 using CanteenManage.CanteenRepository.Contexts;
 using CanteenManage.CanteenRepository.Models;
 using CanteenManage.Models;
+using CanteenManage.Models.DTO;
 using CanteenManage.Utility;
 using Microsoft.EntityFrameworkCore;
 namespace CanteenManage.Services
@@ -139,9 +140,9 @@ namespace CanteenManage.Services
             return ((date.Day + offset - 1) / 7) + 1;
         }
 
-        public async Task<List<FoodOrder>> GetFoodOrdersToday(int employeeId, FoodTypeEnum foodTypeEnum, CancellationToken cancellationToken)
+        public async Task<List<FoodOrderDto>> GetFoodOrdersToday(int employeeId, FoodTypeEnum foodTypeEnum, CancellationToken cancellationToken)
         {
-            List<FoodOrder> foodOrders = new List<FoodOrder>();
+            List<FoodOrderDto> foodOrders = new List<FoodOrderDto>();
             //var foodOrders = await contextCM.FoodOrders
             //    .Include(fo => fo.FoodOrderFoodDetails.Where(fd => !fd.IsCanceled
             //    && fd.FoodTypeId == (int)foodTypeEnum && fd.EmployeeId == employeeId)
@@ -166,28 +167,28 @@ namespace CanteenManage.Services
                 && fo.Food.FoodTypeId == (int)foodTypeEnum
                 )
                 .OrderBy(fo => fo.OrderDateCustom)
+                .Select(fo=>new FoodOrderDto() { 
+                    OrderID = fo.OrderID,
+                    FoodId = fo.FoodId,
+                    FoodName = fo.FoodName,
+                    OrderDate = fo.OrderDate,
+                    OrderDateCustom = fo.OrderDateCustom,
+                    IsCanceled=fo.IsCanceled,
+                    IsCompleted=fo.IsCompleted,
+                    Quantity = fo.Quantity,
+                    TotalEmployeePrice = fo.TotalEmployeePrice,
+                    Rating = fo.Rating,
+                    Review= fo.Review,
+                    QrCodeText = fo.OrderID,//encryptionDecryptions.EncryptString(fo.OrderID),
+                })
                 .ToListAsync(cancellationToken);
 
             return foodOrders;
         }
 
-        public async Task<List<FoodOrder>> GetFoodOrdersAll(int employeeId, FoodTypeEnum foodTypeEnum, CancellationToken cancellationToken)
+        public async Task<List<FoodOrderDto>> GetFoodOrdersAll(int employeeId, FoodTypeEnum foodTypeEnum, CancellationToken cancellationToken)
         {
-            //var foodOrders = await contextCM.FoodOrders
-            //    .Include(fo => fo.FoodOrderFoodDetails.Where(fd => !fd.IsCanceled
-            //    && fd.FoodTypeId == (int)foodTypeEnum && fd.EmployeeId == employeeId)
-            //    .OrderBy(fo => fo.OrderDate)
-            //    )
-            //    .AsNoTracking()
-            //    .Where(fo => fo.EmployeeId == employeeId
-            //    && fo.FoodOrderFoodDetails.Any(fd =>
-            //    fd.FoodTypeId == (int)foodTypeEnum
-            //    && !fd.IsCanceled
-            //    //&& fd.OrderDateCustom.Date == DateTime.Now.Date
-            //    )
-            //    )
-            //    .OrderBy(fo => fo.OrderDate)
-            //    .ToListAsync(cancellationToken);
+            EncryptionDecryptions encryptionDecryptions = new EncryptionDecryptions();
             var foodOrders = await contextCM.FoodOrders
                 //.Include(f => f.Food)
                 //.Include(f => f.Employee)
@@ -198,11 +199,26 @@ namespace CanteenManage.Services
                 && fo.Food.FoodTypeId == (int)foodTypeEnum
                 )
                 .OrderBy(fo => fo.OrderDateCustom)
+                .Select(fo => new FoodOrderDto()
+                {
+                    OrderID = fo.OrderID,
+                    FoodId = fo.FoodId,
+                    FoodName = fo.FoodName,
+                    OrderDate = fo.OrderDate,
+                    OrderDateCustom = fo.OrderDateCustom,
+                    IsCanceled = fo.IsCanceled,
+                    IsCompleted = fo.IsCompleted,
+                    Quantity = fo.Quantity,
+                    TotalEmployeePrice = fo.TotalEmployeePrice,
+                    Rating = fo.Rating,
+                    Review = fo.Review,
+                    QrCodeText=fo.OrderID,//encryptionDecryptions.EncryptString(fo.OrderID),
+                })
                 .ToListAsync(cancellationToken);
             return foodOrders;
         }
 
-        public async Task<List<EmployeeFoodOrdersTableDataModel>> GetFoodOrdersToday_CU(FoodTypeEnum foodTypeEnum, CancellationToken cancellationToken, string SearchVal = "")
+        public async Task<List<EmployeeFoodOrdersTableDataModel>> GetFoodOrdersToday_Filter(FoodTypeEnum foodTypeEnum, CancellationToken cancellationToken, string SearchVal = "")
         {
             var foodOrders = orderDataCaching.OrderCacheDataDictionary.Where(fo =>
                 fo.Value.FoodType == (int)foodTypeEnum
@@ -256,7 +272,7 @@ namespace CanteenManage.Services
                 //.Include(f => f.Employee)
                 .AsNoTracking()
                 .Where(fo =>
-                fo.OrderDateCustom.Date == DateTime.Now.Date
+                fo.OrderDateCustom.Date >= DateTime.Now.Date
                 && fo.Food.FoodTypeId == (int)foodTypeEnum
                 && fo.IsCanceled == false
                 //&&

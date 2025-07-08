@@ -1,11 +1,12 @@
 ﻿using CanteenManage.CanteenRepository.Models;
+using CanteenManage.Models.DTO;
 
 namespace CanteenManage.Models
 {
     public class OrderHistoryPageDataModel : LayoutViewDataModel
     {
-        public List<FoodOrder> BreakFastFoodOrders { get; set; }
-        public List<FoodOrder> LunchFoodOrders { get; set; }
-        public List<FoodOrder> SnaksFoodOrders { get; set; }
+        public List<FoodOrderDto> BreakFastFoodOrders { get; set; }
+        public List<FoodOrderDto> LunchFoodOrders { get; set; }
+        public List<FoodOrderDto> SnaksFoodOrders { get; set; }
     }
 }

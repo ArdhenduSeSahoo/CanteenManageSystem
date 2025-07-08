@@ -47,7 +47,7 @@ namespace CanteenManage.Controllers.CanteenControllers
 
                         searchTerm = searchTerm.Trim().ToLower();
 
-                        foodOrders = await foodListingService.GetFoodOrdersToday_CU(foodType, cancellationToken, searchTerm);
+                        foodOrders = await foodListingService.GetFoodOrdersToday_Filter(foodType, cancellationToken, searchTerm);
                     }
                 }
             }
@@ -105,6 +105,11 @@ namespace CanteenManage.Controllers.CanteenControllers
         {
             var results = await foodListingService.SearchOrdersByEmployee(query);
             return View("OrderByEmployIdx", results);
+        }
+
+        public async Task<IActionResult> OrderScanner()
+        {
+            return View();
         }
     }
 }

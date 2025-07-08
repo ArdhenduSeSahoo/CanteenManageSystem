@@ -8,8 +8,8 @@
 @{
 	//ViewData["Title"] = "My Orders";
 
-	var username = HttpContextAccessor.HttpContext?.Session.GetString(SessionConstants.UserName) ?? "";
-	var userempId = HttpContextAccessor.HttpContext?.Session.GetString(SessionConstants.UserEmpId) ?? "";
+	var username = "";//HttpContextAccessor.HttpContext?.Session.GetString(SessionConstants.UserName) ?? "";
+	var userempId = ""; //HttpContextAccessor.HttpContext?.Session.GetString(SessionConstants.UserEmpId) ?? "";
 
 }
 
@@ -131,7 +131,11 @@
 															<i class="fa fa-paper-plane" aria-hidden="true"></i>
 														</button>
 													}
-
+													<button type="button" class="btn btn-outline-info btn-sm p-1 pt-0 pb-0"
+															data-bs-foodorderid="@order.OrderID"  data-bs-codetext="@order.QrCodeText"
+															data-bs-toggle="modal" data-bs-target="#viewQrCodeModal">
+														<i class="bi bi-qr-code" style="font-size:17px;color:black"></i>
+													</button>
 												}
 												else
 												{
@@ -140,7 +144,7 @@
 														<a href="javascript:void(0);"
 														   data-bs-toggle="modal"
 														   data-bs-target="#exampleModal"
-														   data-bs-orderid="@order.Id"
+														   data-bs-orderid="@order.OrderID"
 														   title="Add Review">
 															<i class="bi bi-chat-left-text-fill fs-5 text-primary"></i>
 														</a>
