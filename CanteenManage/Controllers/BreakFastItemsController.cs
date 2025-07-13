@@ -65,7 +65,7 @@
                     {
                         firstActiveDay.IsSelected = true;
                         HttpContext.Session.SetString(SessionConstants.UserSelectedDay, firstActiveDay.DateShort);
-                        HttpContext.Session.SetString(SessionConstants.UserSelectedDayFull, utilityServices.DateTimeToString(firstActiveDay.DateTime));
+                        HttpContext.Session.SetString(SessionConstants.UserSelectedDayFull, firstActiveDay.DateFull);
                     }
                     sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
                 }

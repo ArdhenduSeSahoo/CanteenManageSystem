@@ -77,7 +77,7 @@
 					</div>
 				</div>
 				<div class="card-body">
-					@if (Model.BreakFastFoodOrders.Count > 0 || Model.LunchFoodOrders.Count > 0 || Model.SnaksFoodOrders.Count > 0)
+					@if (Model.BreakFastFoodOrders.Count > 0 || Model.LunchFoodOrders.Count > 0 || Model.SnacksFoodOrders.Count > 0)
 					{
 						<div class="row row-cols-1">
 							<div class="col-2">
@@ -125,12 +125,12 @@
 												</td>
 											</tr>
 										}
-										@if (Model.SnaksFoodOrders.Count() > 0)
+										@if (Model.SnacksFoodOrders.Count() > 0)
 										{
 											<tr>
 												<td>Snacks</td>
-												<td class="text-center">@Model.SnaksFoodOrders.Sum(fo => fo.Quantity)</td>
-												<td>@Model.SnaksFoodOrders.Sum(fo => fo.TotalPrice)</td>
+												<td class="text-center">@Model.SnacksFoodOrders.Sum(fo => fo.Quantity)</td>
+												<td>@Model.SnacksFoodOrders.Sum(fo => fo.TotalPrice)</td>
 												<td>
 													<form asp-action="RemoveOrder" method="post">
 														<input type="hidden" name="orderId" value="-1" />
@@ -157,9 +157,12 @@
 								</div>
 							</div>
 							<div class="col">
-								<form id="placeOrderForm" asp-action="PlaceOrder" method="post">
-									<button type="button" class="btn btn-success" onclick="openModal()">Place Order</button>
-								</form>
+								@if (Model.MaxCartItemInOrders.Count == 0)
+								{
+									<form id="placeOrderForm" asp-action="PlaceOrder" method="post">
+										<button type="button" class="btn btn-success" onclick="openModal()">Place Order</button>
+									</form>
+								}
 							</div>
 						</div>
 					}
@@ -183,6 +186,20 @@
 								@foreach (var item in Model.CartItemInOrders)
 								{
 									<p class="card-text m-0">Item <strong>@item.ItemName</strong> for Date <strong>@item.OrderDate.ToString("dd/MM-ddd")</strong> already exist in your Order.</p>
+								}
+							</div>
+						</div>
+					}
+
+					@if (Model.MaxCartItemInOrders.Count > 0)
+					{
+						<div class="alert alert-danger d-flex align-items-center" role="alert">
+							<i class="bi bi-exclamation-triangle-fill align-self-start mr-2"></i>
+							<br />
+							<div>
+								@foreach (var item in Model.MaxCartItemInOrders)
+								{
+									<p class="card-text m-0">Item <strong>@item.ItemName </strong> for Date <strong>@item.OrderDate.ToString("dd/MM-ddd")</strong> can't be order more than 2 times.</p>
 								}
 							</div>
 						</div>
@@ -213,7 +230,7 @@
 				await Html.PartialAsync("__CartItemListPanel", new CartItemListPanelViewDataModel()
 		{
 			panelTitle = "Snacks",
-			employeeCarts = Model.SnaksFoodOrders
+			employeeCarts = Model.SnacksFoodOrders
 		})
 				)
 		@(

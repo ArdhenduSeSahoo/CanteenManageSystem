@@ -47,19 +47,19 @@
 						}
 					</td>
 					<td data-label="Action">
-						<button type="button" class="btn btn-primary btn-sm d-inline-flex align-items-center px-3 py-2 shadow-sm btn_order_complete" data-bs-FoodOrderId="@order.FoodOrderId" data-bs-foodtype="@Model.FoodType">
-							<i class="bi bi-hand-thumbs-up-fill me-2"></i> Complete
-						</button>
-						@if (false) //(!order.IsCompleted)
+
+						@if (!order.IsCompleted)
 						{
-							<form method="post" asp-action="CompleteFoodOrder" asp-controller="OrdersByEmploy">
+							<button type="button" class="btn btn-primary btn-sm d-inline-flex align-items-center px-3 py-2 shadow-sm btn_order_complete" data-bs-FoodOrderId="@order.FoodOrderId" data-bs-foodtype="@Model.FoodType">
+								<i class="bi bi-hand-thumbs-up-fill me-2"></i> Complete
+							</button>
+							@* <form method="post" asp-action="CompleteFoodOrder" asp-controller="OrdersByEmploy">
 								<input type="hidden" value="@order.FoodOrderId" name="foodId" />
 								<input type="hidden" value="@Model.FoodType" name="foodtype" />
-								@* <button type="submit" class="btn btn-primary btn-sm">Complete</button> *@
 								<button type="submit" class="btn btn-primary btn-sm d-inline-flex align-items-center px-3 py-2 shadow-sm">
 									<i class="bi bi-hand-thumbs-up-fill me-2"></i> Complete
 								</button>
-							</form>
+							</form> *@
 						}
 					</td>
 				</tr>

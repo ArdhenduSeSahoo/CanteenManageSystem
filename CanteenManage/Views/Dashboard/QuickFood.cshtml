@@ -1,6 +1,17 @@
 ﻿@model EmployeeDashboardViewDataModel
 @using CanteenManage.Models.parcialViewModel
 
+@section HeadSection {
+
+	<link rel="stylesheet" href="~/css/customStyles.css">
+	<style>
+		.datepicker_custom {
+			z-index: 1;
+			opacity: 0 !important;
+		}
+	</style>
+}
+
 <div class="container-fluid">
 	<div class="card mb-1" style="border-radius:15px">
 		<div class="card-body">

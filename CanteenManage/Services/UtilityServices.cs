@@ -6,58 +6,17 @@ namespace CanteenManage.Services
 {
     public class UtilityServices
     {
+        private readonly OrderDataCaching orderDataCaching;
 
         public string FMT = "O";
+        public UtilityServices(OrderDataCaching orderDataCaching)
+        {
+            this.orderDataCaching = orderDataCaching;
+        }
         public List<DaysOfWeekModel> GetDaysOfWeek(int hourBeforeDisable)
         {
 
-            var daysOfWeek = new List<DaysOfWeekModel>();
-
-            List<DateTime> TwoWeekdates = new List<DateTime>();
-
-
-            DateTime today = DateTime.Now;
-
-
-            DayOfWeek firstDayOfWeek = CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek;
-            //if(firstDayOfWeek==DayOfWeek.Sunday)
-            //{
-            //    firstDayOfWeek = DayOfWeek.Monday; // Adjust to Monday if Sunday is the first day of the week
-            //}
-            firstDayOfWeek = DayOfWeek.Monday;
-
-            int diff = (7 + (today.DayOfWeek - firstDayOfWeek)) % 7;
-            DateTime startOfCurrentWeek = today.AddDays(-1 * diff);
-
-
-            List<DateTime> currentWeekDates = new List<DateTime>();
-            List<DateTime> nextWeekDates = new List<DateTime>();
-
-            //list range is 0 to 7 but
-            // Fill lists start from 1 is monday end with 6 is fryday
-            for (int i = 0; i < 5; i++)
-            {
-                currentWeekDates.Add(startOfCurrentWeek.AddDays(i));
-                nextWeekDates.Add(startOfCurrentWeek.AddDays(i + 7));
-            }
-
-            TwoWeekdates.AddRange(currentWeekDates);
-            TwoWeekdates.AddRange(nextWeekDates);
-
-
-            foreach (var day in TwoWeekdates)
-            {
-                daysOfWeek.Add(new DaysOfWeekModel
-                {
-                    DaysOfWeek = (int)day.DayOfWeek,
-                    DateShort = day.ToString("dd"),
-                    DateFull = DateTimeToString(day),
-                    DateTime = day,
-                    DaysOfWeekName = day.ToString("ddd"),//.DayOfWeek.ToString(),
-                    IsSelected = false,//DateTime.Now.DayOfWeek == day.DayOfWeek,
-                    IsActiveDay = false//((int)day.DayOfWeek) >= ((int)DateTime.Now.DayOfWeek)
-                });
-            }
+            var daysOfWeek = orderDataCaching.GetDayOfWeeks();
             //if(daysOfWeek.Where(x => x.IsActiveDay).Count() <= 0)
             //{
             //    daysOfWeek[0].IsActiveDay = true;
@@ -69,6 +28,7 @@ namespace CanteenManage.Services
             //{
             //    firstActiveDay.IsSelected = true;
             //}
+
             var blockedDates = new List<DateTime>
               {
                new DateTime(2025, 6, 27),  // Rath yatra
@@ -125,10 +85,10 @@ namespace CanteenManage.Services
         {
             return dateTime.ToString(FMT);
         }
-        public DateTime DateTimeFromString(string dateTime)
-        {
-            return DateTime.ParseExact(dateTime, FMT, CultureInfo.InvariantCulture);
-        }
+        //public DateTime DateTimeFromString(string dateTime)
+        //{
+        //    return DateTime.ParseExact(dateTime, FMT, CultureInfo.InvariantCulture);
+        //}
 
         public TimeSpan GetSpecificTimeSpan(FoodTypeEnum foodTypeEnum)
         {
@@ -166,7 +126,7 @@ namespace CanteenManage.Services
             }
             else
             {
-                var selectedDateObj = DateTimeFromString(selectedDate);// Convert.ToInt32(selectedDay);
+                var selectedDateObj = new DateCalculationHelper().DateTimeFromString(selectedDate);// Convert.ToInt32(selectedDay);
                 if (selectedDateObj == null)
                 {
                     var firstactivedate = getFirstActiveDate(GetDaysOfWeek(DisableHour));
@@ -233,10 +193,10 @@ namespace CanteenManage.Services
             sessionDataModel.UserSelectedDay = session.GetString(SessionConstants.UserSelectedDay);
             sessionDataModel.UserEmpIdOrNull = session.GetString(SessionConstants.UserEmpId);
             sessionDataModel.UserSelectedDate = string.IsNullOrEmpty(userSelectedDatetime_string) ? null :
-                DateTimeFromString(userSelectedDatetime_string)
+                new DateCalculationHelper().DateTimeFromString(userSelectedDatetime_string)
                 ;
             sessionDataModel.UserSelectedDateOrNow = string.IsNullOrEmpty(userSelectedDatetime_string) ? DateTime.Now :
-    DateTimeFromString(userSelectedDatetime_string);
+    new DateCalculationHelper().DateTimeFromString(userSelectedDatetime_string);
             return sessionDataModel;
         }
         public static string? getSessionUserName(ISession session)
@@ -250,7 +210,7 @@ namespace CanteenManage.Services
             {
                 return null;
             }
-            return DateTimeFromString(userSelectedDatetime_string);
+            return new DateCalculationHelper().DateTimeFromString(userSelectedDatetime_string);
         }
     }
 }

@@ -2,6 +2,7 @@
 {
     public class CustomDataConstants
     {
+        public static readonly int MaxCartItemCount = 2;
         public static int BreakfastTimeHour = 8;
         public static int LunchTimeHour = 11;
         public static int SnacksTimeHour = 16;

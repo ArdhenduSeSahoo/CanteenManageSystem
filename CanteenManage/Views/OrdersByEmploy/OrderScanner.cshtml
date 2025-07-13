@@ -2,91 +2,239 @@
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
-    Layout = "_Layout_canteenEmploy";
+	Layout = "_Layout_canteenEmploy";
 }
+@section HeadSection
+{
+	<style>
 
+		#html5-qrcode-button-camera-stop {
+			visibility: hidden;
+			display: none;
+		}
+	</style>
+
+}
 <div class="container-fluid">
 
-    <div class="d-flex justify-content-center">
-        <div class="card text-center">
-            <div class="card-header">
-                <h4>Scann Order</h4>
-            </div>
-            <div class="card-body">
-                <div class="" style="min-width:500px">
-                <div class="position-relative d-none" id="qr-container">
-                    <div id="qr-reader" class="rounded-2" style="width:500px;"></div>
-                    <div class="position-absolute bottom-0 end-0 bg-white w-100" style="height:45px;"></div>
-                </div>
-                </div>
-                <div id="qr-reader-results"></div>
-                <br />
-                <div class="d-inline-flex gap-2">
-                    <button class="btn btn-success" id="scannqr">Scann</button>
-                    
-                    <button class="btn btn-danger" id="stopqr">Stop</button>
-                </div>
-                
-                <div class="card mt-2">
-                    <div class="card-body">
-                        <div class="d-flex"><strong>Name:</strong></div>
-                        <div class="d-flex"><strong>EmpId:</strong></div>
-                        <div class="d-flex"><strong>Item:</strong></div>
-                        <div class="d-flex"><strong>OrderId:</strong></div>
-                        <div class="d-flex"><strong>Quantity:</strong></div>
-                        <div class="d-flex"><strong>Item:</strong></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+	<div class="d-flex justify-content-center">
+		<div class="card text-center">
+			<div class="card-header">
+				<div class="d-flex justify-content-between">
+					<a class="" asp-controller="OrdersByEmploy" asp-action="OrderByEmployIdx" asp-route-FoodType="1">
+						<i class="bi bi-arrow-left-circle-fill" style="font-size:20px"></i> Back
+					</a>
+					<h4>Scan Order</h4>
+					<div>.</div>
+				</div>
+
+			</div>
+			<div class="card-body">
+				<div class="" style="min-width:350px">
+					<div class="position-relative d-none" id="qr-container">
+						<div id="qr-reader" class="rounded-2" style=""></div>
+						@* <div class="position-absolute bottom-0 end-0 bg-white w-100" style="height:45px;"></div> *@
+					</div>
+				</div>
+				<div id="qr-reader-results"></div>
+				<br />
+				<div class="d-inline-flex gap-2">
+					<button class="btn btn-success" id="scanqr">Scan</button>
+
+					<button class="btn btn-danger" id="stopqr">Stop</button>
+				</div>
+				@* 	<div class="alert alert-warning alert-dismissible fade show" role="alert">
+					<strong>Holy guacamole!</strong> You should check in on some of those fields below.
+					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+				</div> *@
+				<div class="card mt-2 d-none" id="ord_Details_Container">
+					<div class="card-body">
+						<div class="spinner-border text-info" role="status">
+							<span class="visually-hidden">Loading...</span>
+						</div>
+						<div>
+							<div class="d-flex">Name:<strong><span id="oname"></span></strong></div>
+							<div class="d-flex">EmpId:<span id="oempid"></span></div>
+							<div class="d-flex">Item:<strong><span id="oitem"></span></strong></div>
+							<div class="d-flex">OrderId:<span id="oorderid"></span></div>
+							<div class="d-flex">Quantity:<strong><span id="oquantity"></span></strong></div>
+							<div class="d-flex">Status:<strong><span id="ostatus"></span></strong></div>
+							<button class="btn btn-primary" id="btn_conform">Conform</button>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+	<input type="hidden" id="scanedid" value="" />
 </div>
 
 @section Scripts {
 
-<script src="~/js/html5-qrcode.min.js"></script>
+	<script src="~/js/html5-qrcode.min.js"></script>
 
-<script type="text/javascript">
-    $(function(){
-    
-        var resultContainer = document.getElementById('qr-reader-results');
+	<script type="text/javascript">
+		$(function(){
 
-        const formatsToSupport = [
-        Html5QrcodeSupportedFormats.QR_CODE
-        ];
+		async function checkCameraPermission() {
+		  try {
+			const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+			stream.getTracks().forEach(track => track.stop());
+			return true;
+		  } catch (error) {
 
-        var html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: 250
-            ,supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA],
-             showTorchButtonIfSupported:true,
-             formatsToSupport: formatsToSupport
-        });
-        function onScanSuccess(decodedText, decodedResult) {
-        // Handle on success condition with the decoded text or result.
-        console.log(`Scan result: ${decodedText}`, decodedResult);
-            html5QrcodeScanner.clear();
-                $("#qr-container").addClass("d-none");
-        }
+			console.error("Error accessing camera:", error);
+			return false;
 
-        function onScanError(errorMessage) {
-            // handle on error condition, with error message
-            //console.log(errorMessage);
-        }
-            
-        $('#scannqr').click(function() {
-            // Code to execute when the element is clicked
-                        $("#qr-container").removeClass("d-none");
-                html5QrcodeScanner.render(onScanSuccess,onScanError);
-        });
-        $('#stopqr').click(function() {
-                html5QrcodeScanner.clear();
-                        $("#qr-container").addClass("d-none");
-        });
+		  }
+		}
 
-            
-    }
-    );
+		const { range, filter, map,fromEvent,debounceTime,distinctUntilChanged,switchMap,catchError,from,of,Subject} = rxjs;
+		const {fromFetch}=rxjs.fetch;
+		const {ajax}=rxjs.ajax;
 
-</script>
+			var resultContainer = document.getElementById('qr-reader-results');
+
+			const formatsToSupport = [
+			Html5QrcodeSupportedFormats.QR_CODE
+			];
+			const subjectOrderDetails = new Subject();
+			const subjectOrderConform = new Subject();
+
+			var html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: 200
+				,supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA],
+				 showTorchButtonIfSupported:true,
+				 formatsToSupport: formatsToSupport
+			});
+			function onScanSuccess(decodedText, decodedResult) {
+
+			console.log(`Scan result: ${decodedText}`, decodedResult);
+			html5QrcodeScanner.clear();
+			$("#qr-container").addClass("d-none");
+			$('#scanedid').val(decodedText);
+			subjectOrderDetails.next(decodedText);
+			$("#ord_Details_Container").addClass("d-none");
+			}
+
+			function onScanError(errorMessage) {
+				// handle on error condition, with error message
+				//console.log(errorMessage);
+			}
+
+			$('#scanqr').click(function() {
+
+			checkCameraPermission().then(hasPermission => {
+			  if (hasPermission) {
+				// Proceed with camera-related functionality
+				$("#qr-container").removeClass("d-none");
+				html5QrcodeScanner.render(onScanSuccess,onScanError);
+			  } else {
+				// Handle the case where permission is not granted
+				alert("Camera permission is required to scan QR codes. Please allow camera access in your browser settings.");
+			  }
+			});
+
+			// $('#scanedid').val("encodeorder");
+			// subjectOrderDetails.next("orderid35345");
+			// $("#ord_Details_Container").addClass("d-none");
+			});
+
+			$('#stopqr').click(function() {
+					html5QrcodeScanner.clear();
+							$("#qr-container").addClass("d-none");
+							$("#ord_Details_Container").addClass("d-none");
+			});
+
+			$('#btn_conform').click(function() {
+				subjectOrderConform.next($('#scanedid').val());
+					console.log($('#scanedid').val());
+			});
+			const subjectOrderDetailsPipe=subjectOrderDetails.pipe(
+			debounceTime(300), // Wait for 300ms of inactivity before emitting
+			//distinctUntilChanged(), // Only emit if the value has changed
+			);
+
+			const subjectOrderDetailsPipe2=subjectOrderDetailsPipe.pipe(
+				switchMap(data =>fromFetch(`/OrdersByEmploy/SingleOrderDetail?encodedDetails=${data}`).pipe(
+					switchMap(response => from(response.json())),
+					catchError(err => {
+						console.error(err);
+						return of("");
+					})
+				)
+			)
+			);
+		  const subjectOrderdetailssubscrib=subjectOrderDetailsPipe2.subscribe((orderData) => {
+				// Process the order details here
+
+				console.log("Action Details:", orderData);
+
+				var errormessage=orderData.error??"";
+
+				$("#ord_Details_Container").addClass("d-none");
+				if(errormessage === "")
+				{
+				$('#oname').html(orderData.detail.employeeName);
+				$('#oempid').html(orderData.detail.employeeCode);
+				$('#oorderid').html(orderData.detail.foodOrderId);
+				$('#oquantity').html(orderData.detail.quantity);
+				if(orderData.detail.isCompleted==true)
+				{
+					$('#ostatus').html("Completed");
+					$("#btn_conform").addClass("d-none");
+				}else{
+					$('#ostatus').html("Not completed");
+					$("#btn_conform").removeClass("d-none");
+				}
+
+				$('#oitem').html(orderData.detail.foodName);
+				$("#ord_Details_Container").removeClass("d-none");
+				}
+				else{
+					$("#ord_Details_Container").addClass("d-none");
+					showErrorMessage(errormessage);
+				}
+			});
+			////////////////////////////////////////////////////////////////
+			const subjectOrderConformPipe=subjectOrderConform.pipe(
+			debounceTime(300), // Wait for 300ms of inactivity before emitting
+			);
+
+			const subjectOrderConformPipe2=subjectOrderConformPipe.pipe(
+				switchMap(data =>fromFetch(`/OrdersByEmploy/SingleOrderConform?encodedDetails=${data}`).pipe(
+					switchMap(response => from(response.json())),
+					catchError(err => {
+						console.error(err);
+						return of("{}");
+					})
+				)
+			)
+			);
+		  const subjectOrderConformsubscrib=subjectOrderConformPipe2.subscribe((orderDetails) => {
+				// Process the order details here
+				console.log("Action Details:", orderDetails);
+				// You can update the UI or perform any other actions with the order details
+
+				if(orderDetails.error==='')
+				{
+				showInfoMessage("Item Conformed!!!!");
+				$("#ord_Details_Container").addClass("d-none");
+				$('#oname').html("");
+				$('#oempid').html("");
+				$('#oorderid').html("");
+				$('#oquantity').html("");
+				$('#ostatus').html("");
+				$('#oitem').html('');
+				}
+				else{
+					showErrorMessage(orderDetails.error);
+				}
+			});
+		}
+		);
+
+	</script>
 }
 
 

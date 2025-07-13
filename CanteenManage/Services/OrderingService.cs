@@ -25,7 +25,7 @@ namespace CanteenManage.Services
         {
             if (!string.IsNullOrEmpty(foodOrderID) && !string.IsNullOrEmpty(foodOrderID))
             {
-                var foodID = int.Parse(foodId);
+                //var foodID = int.Parse(foodId);
                 using var transaction = await canteenManageContext.Database.BeginTransactionAsync(cancellationToken);
                 try
                 {
@@ -35,7 +35,7 @@ namespace CanteenManage.Services
                             .Include(fo => fo.Food)
                             .Where(fo => fo.OrderID == foodOrderID &&
                             fo.EmployeeId == sessionData.UserIdOrZero
-                            && fo.Id == foodID
+                            //&& fo.Id == foodID
                             && !fo.IsCanceled
                             ).FirstOrDefaultAsync(cancellationToken);
                     if (foodOrder != null)
@@ -59,9 +59,18 @@ namespace CanteenManage.Services
                             //foodOrder.TotalEmployeePrice = 0;
                             //foodOrder.TotalSubsidyPrice = 0;
                             //foodOrder.Quantity = 0;
-                            foodOrder.IsCanceled = true;
-                            foodOrder.CanceledAt = DateTime.Now;
-                            canteenManageContext.FoodOrders.Update(foodOrder);
+                            //foodOrder.IsCanceled = true;
+                            //foodOrder.CanceledAt = DateTime.Now;
+                            //canteenManageContext.FoodOrders.Update(foodOrder);
+                            await canteenManageContext.FoodOrders
+                                .Where(f => f.OrderID == foodOrderID
+                                && f.EmployeeId == sessionData.UserIdOrZero
+                                )
+                                .ExecuteUpdateAsync(
+                                x => x.SetProperty(f => f.IsCanceled, true)
+                                      .SetProperty(f => f.CanceledAt, DateTime.Now)
+
+                            );
                             await canteenManageContext.SaveChangesAsync();
                         }
                         await transaction.CommitAsync();

@@ -51,9 +51,10 @@ namespace CanteenManage.Controllers
 
                 cartViewDataModel.BreakFastFoodOrders = breakfastCart;
                 cartViewDataModel.LunchFoodOrders = lunchCart;
-                cartViewDataModel.SnaksFoodOrders = snaksCart;
+                cartViewDataModel.SnacksFoodOrders = snaksCart;
                 cartViewDataModel.OutOfStockOrders = outofDateList;
                 cartViewDataModel.CartItemInOrders = existingorders;
+                cartViewDataModel.MaxCartItemInOrders = await cartService.getMaxCartItemInOrderList(sessionDataModel.UserIdOrZero, cancellationToken);
             }
             catch (Exception ex)
             {

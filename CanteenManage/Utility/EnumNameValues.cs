@@ -10,7 +10,7 @@
         Lunch = 2,
         Snacks = 3,
         QuickFood = 4,
-
+        Dinner = 5,
     }
 
     public enum CartFoodOutDateEnum

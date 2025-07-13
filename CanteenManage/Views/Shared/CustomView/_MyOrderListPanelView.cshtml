@@ -123,19 +123,19 @@
 														</button>
 
 													}
-													else if (shouldSendRequest) //
+													@* else if (shouldSendRequest) //
 													{
 														<button type="submit" data-bs-orderqnt="@order.Quantity" data-bs-ordername="@order.FoodName" data-bs-foodorderid="@order.OrderID" data-bs-username="@username" data-bs-userempid="@userempId" class="btn btn-outline-success btn-sm btn_request_to_conform" data-bs-toggle="tooltip" data-bs-placement="top"
 																data-bs-custom-class="custom-tooltip"
 																data-bs-title="Send request for confirmation of order.">
 															<i class="fa fa-paper-plane" aria-hidden="true"></i>
 														</button>
-													}
-													<button type="button" class="btn btn-outline-info btn-sm p-1 pt-0 pb-0"
-															data-bs-foodorderid="@order.OrderID"  data-bs-codetext="@order.QrCodeText"
+													} *@
+													@* <button type="button" class="btn btn-outline-info btn-sm p-1 pt-0 pb-0"
+															data-bs-foodorderid="@order.OrderID" data-bs-codetext="@order.QrCodeText"
 															data-bs-toggle="modal" data-bs-target="#viewQrCodeModal">
 														<i class="bi bi-qr-code" style="font-size:17px;color:black"></i>
-													</button>
+													</button> *@
 												}
 												else
 												{

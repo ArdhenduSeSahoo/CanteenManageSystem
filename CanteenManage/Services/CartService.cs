@@ -326,32 +326,55 @@ namespace CanteenManage.Services
                     .ToListAsync(cancellationToken);
             return orderList;
         }
-        public async Task<List<CartItemInOrder>> getCartItemInOrderList(int? employeId, CancellationToken cancellationToken)
+        public async Task<List<CartItemInOrder>> getCartItemInOrderList(int? employeeId, CancellationToken cancellationToken)
         {
 
-            var existingcartOrder = await contextDB.EmployeeCarts
-                .GroupJoin(
-                    contextDB.FoodOrders,
-                    cart => cart.FoodId,
-                    order => order.FoodId,
-                    (cart, order) => new { cart, order }
-                )
-                .Where(x => x.cart.EmployeeId == employeId
-                && x.order.Any(ord => ord.EmployeeId == employeId
-                    && ord.IsCanceled == false
-                    && ord.IsCompleted == false
-                    && x.cart.OrderDate.Date == ord.OrderDateCustom.Date
-                    )
-                )
-                .Select(x => new CartItemInOrder
-                {
-                    ItemName = x.cart.Food.Name,
-                    OrderDate = x.cart.OrderDate,
-                })
-                .ToListAsync(cancellationToken);
+            var cart_foods1 = await contextDB.EmployeeCarts
+            .Include(x => x.Food)
+            .Where(ec => ec.EmployeeId == employeeId)
+            .Select(cf => new CartItemInOrder
+            {
+                ItemName = cf.Food.Name,
+                OrderDate = cf.OrderDate,
+                Quantity = cf.Food.FoodOrders.Where(fo => fo.IsCanceled == false
+                    && fo.IsCompleted == false
+                    && fo.EmployeeId == employeeId
+                    && fo.FoodId == cf.FoodId
+                    && fo.OrderDateCustom.Date == cf.OrderDate.Date).Sum(or => or.Quantity),
 
-            return existingcartOrder;
+            })
+            .ToListAsync(cancellationToken)
+            ;
+            List<CartItemInOrder> cart_items_in_order = new List<CartItemInOrder>();
+            cart_items_in_order = cart_foods1.Where(cf => cf.Quantity > 0).ToList();
+
+            return cart_items_in_order;
         }
+
+        public async Task<List<CartItemInOrder>> getMaxCartItemInOrderList(int? employeeId, CancellationToken cancellationToken)
+        {
+
+            var cart_foods1 = await contextDB.EmployeeCarts
+                .Include(x => x.Food)
+                .Where(ec => ec.EmployeeId == employeeId)
+                .Select(cf => new CartItemInOrder
+                {
+                    ItemName = cf.Food.Name,
+                    OrderDate = cf.OrderDate,
+                    Quantity = cf.Food.FoodOrders.Where(fo => fo.IsCanceled == false
+                        && fo.IsCompleted == false
+                        && fo.EmployeeId == employeeId
+                        && fo.FoodId == cf.FoodId
+                        && fo.OrderDateCustom.Date == cf.OrderDate.Date).Sum(or => or.Quantity) + cf.Quantity,
+                })
+                .ToListAsync(cancellationToken)
+                ;
+            List<CartItemInOrder> cart_items_in_order = new List<CartItemInOrder>();
+            cart_items_in_order = cart_foods1.Where(cf => cf.Quantity > CustomDataConstants.MaxCartItemCount).ToList();
+
+            return cart_items_in_order;
+        }
+
         //dummy return
         public async Task<int> CheckOutOfOrderInCart(SessionDataModel sessionData, CancellationToken cancellationToken)
         {
@@ -517,11 +540,14 @@ namespace CanteenManage.Services
                 var breakfastFoodItems = employeeCarts.Where(f => f.Food.FoodTypeId == (int)FoodTypeEnum.Breakfast && f.OutDateStatus == (int)CartFoodOutDateEnum.InOrder);
                 foreach (EmployeeCart item in breakfastFoodItems)
                 {
-                    OrderID_inc++;
-                    FoodOrder foodOrder = GetFoodOrderObj(item, sessionData.UserIdOrZero, ts, orderPlacedID, OrderID_inc);
+                    if (ValidateFoodForSelectedDate(FoodTypeEnum.Breakfast, item.FoodId, sessionData, cancellationToken).Result == true)
+                    {
 
-                    contextDB.FoodOrders.Add(foodOrder);
+                        OrderID_inc++;
+                        FoodOrder foodOrder = GetFoodOrderObj(item, sessionData.UserIdOrZero, ts, orderPlacedID, OrderID_inc);
 
+                        contextDB.FoodOrders.Add(foodOrder);
+                    }
                 }
                 contextDB.EmployeeCarts.RemoveRange(breakfastFoodItems);
                 ////////////////////lunch orders
@@ -530,11 +556,14 @@ namespace CanteenManage.Services
                 var LunchFoodItems = employeeCarts.Where(f => f.Food.FoodTypeId == (int)FoodTypeEnum.Lunch && f.OutDateStatus == (int)CartFoodOutDateEnum.InOrder);
                 foreach (EmployeeCart item in LunchFoodItems)
                 {
-                    OrderID_inc++;
-                    FoodOrder foodOrder = GetFoodOrderObj(item, sessionData.UserIdOrZero, ts, orderPlacedID, OrderID_inc);
+                    if (ValidateFoodForSelectedDate(FoodTypeEnum.Lunch, item.FoodId, sessionData, cancellationToken).Result == true)
+                    {
 
-                    contextDB.FoodOrders.Add(foodOrder);
+                        OrderID_inc++;
+                        FoodOrder foodOrder = GetFoodOrderObj(item, sessionData.UserIdOrZero, ts, orderPlacedID, OrderID_inc);
 
+                        contextDB.FoodOrders.Add(foodOrder);
+                    }
                 }
                 contextDB.EmployeeCarts.RemoveRange(LunchFoodItems);
                 ////// snacks orders
@@ -542,11 +571,13 @@ namespace CanteenManage.Services
                 var SnacksFoodItems = employeeCarts.Where(f => f.Food.FoodTypeId == (int)FoodTypeEnum.Snacks && f.OutDateStatus == (int)CartFoodOutDateEnum.InOrder);
                 foreach (EmployeeCart item in SnacksFoodItems)
                 {
-                    OrderID_inc++;
-                    FoodOrder foodOrder = GetFoodOrderObj(item, sessionData.UserIdOrZero, ts, orderPlacedID, OrderID_inc);
+                    if (ValidateFoodForSelectedDate(FoodTypeEnum.Snacks, item.FoodId, sessionData, cancellationToken).Result == true)
+                    {
+                        OrderID_inc++;
+                        FoodOrder foodOrder = GetFoodOrderObj(item, sessionData.UserIdOrZero, ts, orderPlacedID, OrderID_inc);
 
-                    contextDB.FoodOrders.Add(foodOrder);
-
+                        contextDB.FoodOrders.Add(foodOrder);
+                    }
                 }
                 contextDB.EmployeeCarts.RemoveRange(SnacksFoodItems);
             }
