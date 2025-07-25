@@ -1,15 +1,21 @@
-﻿@using CanteenManage.CanteenRepository.Models
-@using CanteenManage.Models.parcialViewModel
-@model LunchPageDataModel;
+﻿@using CanteenManage.Models.parcialViewModel
+@model DinnerPageDataModel;
+
 @*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
 }
 @section HeadSection {
 
 	<link rel="stylesheet" href="~/css/customStyles.css">
+	<style>
+		.datepicker_custom {
+			z-index: 1;
+			opacity: 0 !important;
+		}
+	</style>
 }
+
 <div class=" container-fluid" style="
 ">
 	<div class="card mb-1" style="border-radius:15px">
@@ -17,16 +23,11 @@
 			<div class="d-flex justify-content-between">
 				<div class="row">
 					<div class="col">
-						<h3>Lunch Items</h3>
+						<h3>Dinner Items</h3>
 					</div>
 				</div>
 			</div>
-			@* @(
-						await Html.PartialAsync("_ChoseDateVew", new ChoseDateViewDataModel()
-			{
-				daysOfWeekModels = Model.DayOfWeeks,
-			})
-						) *@
+
 			<div class="date-selector">
 				<label class="date-label">Choose Date:</label>
 				<div class="date-buttons">
@@ -42,18 +43,17 @@
 					}
 
 				</div>
-
 			</div>
-			<div class="row">
-				<div class="col">
-					<p>Total on  @(Model.DayOfWeeks.Where(d => d.IsSelected)?.FirstOrDefault()?.DateTime.ToString("dd-MMM")): <b><span class="food_total_quantity"> @(Model.totalCountForSelectedDay)</span></b></p>
+
+			<div class="d-flex ">
+				<div class="row">
+					<div class="col">
+						<p>Total on @(Model.DayOfWeeks.Where(d => d.IsSelected)?.FirstOrDefault()?.DateTime.ToString("dd-MMM")): <b><span class="food_total_quantity"> @(Model.totalCountForSelectedDay)</span></b></p>
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-
-
-
 
 	<div class="row row-cols-1 row-cols-md-5 g-2">
 		@foreach (FoodDetails food in Model.foods)
@@ -72,22 +72,24 @@
 	</div>
 </div>
 
+
+
 @section Scripts {
 	<script src="~/js/canteensystem_js.js"></script>
 	<script>
 
-		$(document).ready(function () {
+			$(document).ready(function () {
 
 			$(".btn_addItem").click( async function (e) {
-				//debugger;
-				addFoodItem(e,"FoodOrderingAPI/AddLunchFoodOrder");
-				//console.log(response.json);
+
+				addFoodItem(e,"FoodOrderingAPI/AddDinnerFoodOrder");
+
 			});
 			$(".btn_removeItem").click( async function (e) {
-				//debugger;
 				removeFoodItem(e,"FoodOrderingAPI/OrderRemove");
 
 			});
+
 		});
 	</script>
 }

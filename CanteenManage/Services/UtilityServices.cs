@@ -105,6 +105,10 @@ namespace CanteenManage.Services
             {
                 ts = new TimeSpan(CustomDataConstants.SnacksTimeHour, 00, 0);
             }
+            else if (foodTypeEnum == FoodTypeEnum.Dinner)
+            {
+                ts = new TimeSpan(CustomDataConstants.DinnerTimeHour, 00, 0);
+            }
             else if (foodTypeEnum == FoodTypeEnum.QuickFood)
             {
                 ts = new TimeSpan();
@@ -136,33 +140,32 @@ namespace CanteenManage.Services
                     }
                     return;
                 }
-                else if (selectedDateObj.Date < DateTime.Now.Date)
-                {
-                    var firstactivedate = getFirstActiveDate(GetDaysOfWeek(DisableHour));
-                    if (firstactivedate != null)
-                    {
-                        SetSessionData(session, firstactivedate.DateShort, firstactivedate.DateFull);
-                    }
-                    return;
-                }
-                else if (selectedDateObj.Date == DateTime.Now.Date)
-                {
-                    if (int.Parse(DateTime.Now.ToString("HH")) < DisableHour)
-                    {
-                        SetSessionData(session, selectedDay, selectedDate);
-                        return;
-
-                    }
-                    else
-                    {
-                        var firstactivedate = getFirstActiveDate(GetDaysOfWeek(DisableHour));
-                        if (firstactivedate != null)
-                        {
-                            SetSessionData(session, firstactivedate.DateShort, firstactivedate.DateFull);
-                        }
-                        return;
-                    }
-                }
+                //else if (selectedDateObj.Date < DateTime.Now.Date)
+                //{
+                //    var firstactivedate = getFirstActiveDate(GetDaysOfWeek(DisableHour));
+                //    if (firstactivedate != null)
+                //    {
+                //        SetSessionData(session, firstactivedate.DateShort, firstactivedate.DateFull);
+                //    }
+                //    return;
+                //}
+                //else if (selectedDateObj.Date == DateTime.Now.Date)
+                //{
+                //    if (int.Parse(DateTime.Now.ToString("HH")) < DisableHour)
+                //    {
+                //        SetSessionData(session, selectedDay, selectedDate);
+                //        return;
+                //    }
+                //    else
+                //    {
+                //        var firstactivedate = getFirstActiveDate(GetDaysOfWeek(DisableHour));
+                //        if (firstactivedate != null)
+                //        {
+                //            SetSessionData(session, firstactivedate.DateShort, firstactivedate.DateFull);
+                //        }
+                //        return;
+                //    }
+                //}
                 else
                 {
                     SetSessionData(session, selectedDay, selectedDate);

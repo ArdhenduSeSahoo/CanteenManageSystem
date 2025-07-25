@@ -56,6 +56,7 @@
                     if (selectedDate != null)
                     {
                         selectedDate.IsSelected = true;
+                        breakFastPageDataModel.showAddBtn = selectedDate.IsActiveDay;
                     }
                 }
                 else
@@ -66,6 +67,7 @@
                         firstActiveDay.IsSelected = true;
                         HttpContext.Session.SetString(SessionConstants.UserSelectedDay, firstActiveDay.DateShort);
                         HttpContext.Session.SetString(SessionConstants.UserSelectedDayFull, firstActiveDay.DateFull);
+                        breakFastPageDataModel.showAddBtn = firstActiveDay.IsActiveDay;
                     }
                     sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
                 }
@@ -80,7 +82,7 @@
                 //                                                    cancellationToken
                 //                                                    );
                 var foodDetailsAll = await foodListingService.GetAllFoodList(
-                                                                    FoodType,
+                                                                    FoodTypeEnum.Breakfast,
                                                                     cancellationToken,
                                                                     sessionDataModel.UserSelectedDateOrNow,
                                                                     sessionData: sessionDataModel

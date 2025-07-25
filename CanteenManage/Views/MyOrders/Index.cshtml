@@ -73,7 +73,7 @@
 	<div class="row flex-grow-1">
 		<div class="col-md-12">
 
-			@if ((Model.BreakFastFoodOrders.Count > 0 || Model.LunchFoodOrders.Count > 0 || Model.SnaksFoodOrders.Count > 0))//
+			@if ((Model.BreakFastFoodOrders.Count > 0 || Model.LunchFoodOrders.Count > 0 || Model.SnacksFoodOrders.Count > 0))//
 			{
 				<div class="row row-cols-1 row-cols-md-3">
 					@(
@@ -101,8 +101,17 @@
 									await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderListPanelView", new MyOrderListPanelViewModel()
 				{
 					PanelTitle = "Snacks",
-					FoodOrders = Model.SnaksFoodOrders.ToList(),
+					FoodOrders = Model.SnacksFoodOrders.ToList(),
 					FoodType = CanteenManage.Utility.FoodTypeEnum.Snacks,
+					ShowAllOrder = Model.ShowAllOrder ?? false
+				})
+									)
+					@(
+									await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderListPanelView", new MyOrderListPanelViewModel()
+				{
+					PanelTitle = "Dinner",
+					FoodOrders = Model.DinnerFoodOrders.ToList(),
+					FoodType = CanteenManage.Utility.FoodTypeEnum.Dinner,
 					ShowAllOrder = Model.ShowAllOrder ?? false
 				})
 									)
@@ -127,7 +136,7 @@
 	<div class="modal-dialog modal-dialog-centered">
 		<div class="modal-content">
 			<div class="modal-header border-0">
-				<h1 class="modal-title fs-5 text-danger" id="removeOrderDialogLabel">Delete Item</h1>
+				<h1 class="modal-title fs-5 text-danger" id="removeOrderDialogLabel">Cancel Item</h1>
 				<div></div>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
@@ -137,13 +146,13 @@
 				<input type="hidden" id="panelname" value="" />
 				<div class="row">
 					<div class="col">
-						<p>Sure want to delete item <span><strong class="" id="itemname">...</strong> </span>?</p>
+						<p>Sure want to cancel item <span><strong class="" id="itemname">...</strong> </span>?</p>
 					</div>
 				</div>
 			</div>
 			<div class="modal-footer border-0 pt-0">
 				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
-				<button type="button" class="btn btn-danger" id="removemodaldelete" data-bs-dismiss="modal"> <i class="fa fa-trash" aria-hidden="true"></i> Delete</button>
+				<button type="button" class="btn btn-danger" id="removemodaldelete" data-bs-dismiss="modal"> <i class="fa fa-trash" aria-hidden="true"></i>Cancel</button>
 			</div>
 		</div>
 	</div>
@@ -231,7 +240,7 @@
 	<div class="modal-dialog modal-dialog-centered">
 		<div class="modal-content">
 			<div class="modal-header border-0">
-				
+
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body pb-0 pt-0">
@@ -249,40 +258,13 @@
 </div>
 
 @section Scripts {
-	<script src="~/js/qrcode.min.js"></script>
+	<script src="~/js/jiobpbelcyrot_q_r_sdf_c_od_e.min.js"></script>
 	<script src="~/js/reviewModals_Min.js"></script>
-	
+
 	<script src="~/js/MyOrderPageScript.js"></script>
-	@* <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script> *@
+@* <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script> *@
 	<script>
 
-		$(function () {
-
-		var qrcode = new QRCode(document.getElementById("sldkqrsldkf"), {
-			width : 250,
-			height : 250
-		});
-
-			$('#viewQrCodeModal').on('show.bs.modal', function (event) {
-			// Code to execute after the modal is fully shown
-			const button = event.relatedTarget
-			// Extract info from data-bs-* attributes data-bs-rating
-			var qrcodetext = button.getAttribute('data-bs-codetext');
-			//
-			//$(this).find('input:first').focus();
-			qrcode.clear();
-			qrcode.makeCode(qrcodetext);
-			$(this).find('#sldkqrsldkf').attr("title",'');
-			});
-
-			$('#viewQrCodeModal').on('hidden.bs.modal', function () {
-			// Code to execute after the modal is fully hidden
-			//$(this).find('#sldkqrsldkf').html("");
-			//debugger;
-			qrcode.clear();
-			qrcode.makeCode("clear");
-			});
-		});
 
 
 	</script>

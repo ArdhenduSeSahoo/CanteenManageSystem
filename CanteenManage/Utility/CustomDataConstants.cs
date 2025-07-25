@@ -6,10 +6,12 @@
         public static int BreakfastTimeHour = 8;
         public static int LunchTimeHour = 11;
         public static int SnacksTimeHour = 16;
+        public static int DinnerTimeHour = 17;
 
         public static int BreakfastTimeHourEnd = 11;
         public static int LunchTimeHourEnd = 15;
         public static int SnacksTimeHourEnd = 19;
+        public static int DinnerTimeHourEnd = 20;
 
         public static string ProjectFolder = Path.Combine(Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments), "CMS_Files");
         public static string CustomViewPath = "CustomView";

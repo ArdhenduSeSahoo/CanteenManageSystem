@@ -12,6 +12,7 @@
         public List<CanteenFoodDetailsDTOModel> BreakFastFoodOrders { get; set; } = new List<CanteenFoodDetailsDTOModel>();
         public List<CanteenFoodDetailsDTOModel> LunchFoodOrders { get; set; } = new List<CanteenFoodDetailsDTOModel>();
         public List<CanteenFoodDetailsDTOModel> SnaksFoodOrders { get; set; } = new List<CanteenFoodDetailsDTOModel>();
+        public List<CanteenFoodDetailsDTOModel> DinnerFoodOrders { get; set; } = new List<CanteenFoodDetailsDTOModel>();
 
 
     }

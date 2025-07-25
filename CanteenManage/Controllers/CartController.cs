@@ -46,12 +46,17 @@ namespace CanteenManage.Controllers
                     sessionDataModel.UserIdOrZero,
                     cancellationToken
                     );
+                var dinnerCart = await cartService.getCartList((int)FoodTypeEnum.Dinner,
+                   sessionDataModel.UserIdOrZero,
+                   cancellationToken
+                   );
                 var outofDateList = await cartService.getCartOutDateList(sessionDataModel.UserIdOrZero, cancellationToken);
                 var existingorders = await cartService.getCartItemInOrderList(sessionDataModel.UserIdOrZero, cancellationToken);
 
                 cartViewDataModel.BreakFastFoodOrders = breakfastCart;
                 cartViewDataModel.LunchFoodOrders = lunchCart;
                 cartViewDataModel.SnacksFoodOrders = snaksCart;
+                cartViewDataModel.DinnerFoodOrders = dinnerCart;
                 cartViewDataModel.OutOfStockOrders = outofDateList;
                 cartViewDataModel.CartItemInOrders = existingorders;
                 cartViewDataModel.MaxCartItemInOrders = await cartService.getMaxCartItemInOrderList(sessionDataModel.UserIdOrZero, cancellationToken);

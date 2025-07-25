@@ -53,6 +53,8 @@ namespace CanteenManage.Models
             appConfigs.TokenAudience = TokenAudience;
             appConfigs.AppEnvironment = AppEnvironment;
             appConfigs.LogOutURL = LogOutURL;
+            appConfigs.PortalAuthValidaTorBaseURL = PortalAuthValidaTorBaseURL;
+            appConfigs.PortalAuthValidaTorEndpoint = PortalAuthValidaTorEndpoint;
             //for Production
             appConfigs.qpiowerbzlkvywe34bdsdvx0zx = new EncryptionDecryptions().EncryptString(ConnectionString);
             appConfigs.hgwf899fwMi66chz394ghz = new EncryptionDecryptions().EncryptString(SecretKey);

@@ -1,8 +1,6 @@
-﻿using CanteenManage.CanteenRepository.Models;
-
-namespace CanteenManage.Models
+﻿namespace CanteenManage.Models
 {
-    public class BreakFastPageDataModel : LayoutViewDataModel
+    public class DinnerPageDataModel : LayoutViewDataModel
     {
         public List<DaysOfWeekModel> DayOfWeeks { get; set; }
         public int totalCountForSelectedDay { get; set; }

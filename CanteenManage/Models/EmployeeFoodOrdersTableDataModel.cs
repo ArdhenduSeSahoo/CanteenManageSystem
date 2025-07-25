@@ -11,6 +11,7 @@ namespace CanteenManage.Models
         public int Quantity { get; set; }
         public decimal TotalPrice { get; set; }
         public DateTime OrderDate { get; set; }
+        public string OrderDateS { get; set; }
         public int EmployeeId { get; set; }
         public string EmployeeName { get; set; }
         public bool IsCompleted { get; set; }

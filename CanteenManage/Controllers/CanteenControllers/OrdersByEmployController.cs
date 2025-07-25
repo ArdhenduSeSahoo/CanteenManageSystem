@@ -1,10 +1,16 @@
 ﻿using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
+using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
+using Azure.Core;
 using CanteenManage.CanteenRepository.Models;
 using CanteenManage.Models;
+using CanteenManage.Models.DTO;
 using CanteenManage.Services;
 using CanteenManage.Utility;
+using DocumentFormat.OpenXml.InkML;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -24,17 +30,23 @@ namespace CanteenManage.Controllers.CanteenControllers
             this.logger = logger;
             //this.utilityServices = utilityServices;
             _orderConformingChannel = channel;
+
         }
         public async Task<IActionResult> OrderByEmployIdx(string FoodType, CancellationToken cancellationToken, string searchTerm = "")
         {
             FoodTypeEnum foodType = FoodTypeEnum.Breakfast;
             List<EmployeeFoodOrdersTableDataModel> foodOrders = new List<EmployeeFoodOrdersTableDataModel>();
+            OrderByEmployViewDataModel model = new OrderByEmployViewDataModel();
+            //string searchTerm = string.Empty;
+            model.screenTitle = "Orders By Employee";
+            model.FoodOrders = foodOrders;
 
             try
             {
                 if (string.IsNullOrEmpty(FoodType))
                 {
-                    FoodType = Convert.ToString((int)FoodTypeEnum.Breakfast) ?? "1";
+                    FoodType = Convert.ToString((int)FoodTypeEnum.Breakfast);
+                    //throw new ArgumentException("FoodType cannot be null or empty. Defaulting to Breakfast.");
                 }
                 if (!string.IsNullOrEmpty(FoodType))
                 {
@@ -57,6 +69,21 @@ namespace CanteenManage.Controllers.CanteenControllers
                         foodOrders = await foodListingService.GetFoodOrdersToday_Filter(foodType, cancellationToken, searchTerm);
                     }
                 }
+
+                var screenTile = foodType switch
+                {
+                    FoodTypeEnum.Breakfast => "Breakfast Orders",
+                    FoodTypeEnum.Lunch => "Lunch Orders",
+                    FoodTypeEnum.Snacks => "Snacks Orders",
+                    FoodTypeEnum.Dinner => "Dinner Orders",
+                    _ => "Orders",
+                };
+
+
+                model.screenTitle = screenTile;
+                model.FoodOrders = foodOrders;
+                model.FoodType = (int)foodType;
+                model.SearchValue = searchTerm;
             }
             catch (Exception ex)
             {
@@ -64,21 +91,6 @@ namespace CanteenManage.Controllers.CanteenControllers
                 logger.LogError(ex, "An error occurred while processing the request in OrdersByEmployController.");
             }
 
-            var screenTile = foodType switch
-            {
-                FoodTypeEnum.Breakfast => "Breakfast Orders",
-                FoodTypeEnum.Lunch => "Lunch Orders",
-                FoodTypeEnum.Snacks => "Snacks Orders",
-                _ => "Orders",
-            };
-
-            OrderByEmployViewDataModel model = new OrderByEmployViewDataModel
-            {
-                screenTitle = screenTile,
-                FoodOrders = foodOrders,
-                FoodType = (int)foodType,
-                SearchValue = searchTerm
-            };
 
             return View(model);
         }
@@ -119,9 +131,10 @@ namespace CanteenManage.Controllers.CanteenControllers
         {
             return View();
         }
-        public async Task<IResult> SingleOrderDetail(CancellationToken cancellationToken, string encodedDetails)
+        [HttpPost]
+        public async Task<IResult> SingleOrderDetailP([FromBody] SingleOrderDetainsDTO singleOrderDetaisDTO, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(encodedDetails))
+            if (string.IsNullOrEmpty(singleOrderDetaisDTO.orderdetails))
             {
                 return Results.Ok(new { error = "Order data is null." });
             }
@@ -130,15 +143,18 @@ namespace CanteenManage.Controllers.CanteenControllers
                 try
                 {
                     DateCalculationHelper dateCalculationHelper = new DateCalculationHelper();
-                    //$"ORD1000092-|-SD1265-|-{dateCalculationHelper.DateTimeToString(DateTime.Now)}"
-                    var decodedDetails = new EncryptionDecryptions().DecryptString(encodedDetails);
+
+                    //encodedDetails = "5dKDT+UWEAIhDlcFzpjAD2Kz12hYMCvru9tIb0meoO8rNgJ0NHOX9ShSnU88yXehsPu0ltpxWAMxFjM1VgyN/A==";
+
+                    var decodedDetails = new EncryptionDecryptions().DecryptString(singleOrderDetaisDTO.orderdetails);
+
                     var splittedDetails = decodedDetails.Split("-|-");
                     DateTime dateTimetoday = dateCalculationHelper.DateTimeFromString(splittedDetails[2]);
                     if (dateTimetoday.Date == DateTime.Now.Date)
                     {
                         var foodorder = await foodListingService.GetFoodOrdersToday_Single(
                             cancellationToken: cancellationToken,
-                            EmpID: splittedDetails[1],
+                            EmpID: Convert.ToInt32(splittedDetails[1]),
                             OrderID: splittedDetails[0]
                             );
                         if (foodorder != null)
@@ -151,6 +167,10 @@ namespace CanteenManage.Controllers.CanteenControllers
                             return Results.Ok(new { error = "Order data is not found." });
                         }
                     }
+                    else
+                    {
+                        return Results.Ok(new { error = "Order data is not found." });
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -161,10 +181,11 @@ namespace CanteenManage.Controllers.CanteenControllers
             return Results.Ok(new { error = "Something went wrong." });
         }
 
-        public async Task<IResult> SingleOrderConform(CancellationToken cancellationToken, string encodedDetails)
+        [HttpPost]
+        public async Task<IResult> SingleOrderConform(CancellationToken cancellationToken, [FromBody] SingleOrderDetainsDTO singleOrderDetainsDTO)
         {
             string errormessage = "";
-            if (string.IsNullOrEmpty(encodedDetails))
+            if (string.IsNullOrEmpty(singleOrderDetainsDTO.orderdetails))
             {
                 return Results.Ok(new { error = "Order data is null." });
             }
@@ -173,20 +194,24 @@ namespace CanteenManage.Controllers.CanteenControllers
                 try
                 {
                     DateCalculationHelper dateCalculationHelper = new DateCalculationHelper();
-                    var decodedDetails = new EncryptionDecryptions().DecryptString(encodedDetails);
+                    var decodedDetails = new EncryptionDecryptions().DecryptString(singleOrderDetainsDTO.orderdetails);
                     var splittedDetails = decodedDetails.Split("-|-");
                     DateTime dateTimetoday = dateCalculationHelper.DateTimeFromString(splittedDetails[2]);
                     if (dateTimetoday.Date == DateTime.Now.Date)
                     {
-                        //await _orderConformingChannel.Writer.WriteAsync(
-                        //       new OrderConformingChanelRequest
-                        //       {
-                        //           OrderId = splittedDetails[0],
-                        //           FoodType = null
-                        //       },
-                        //       cancellationToken
-                        //   );
+                        await _orderConformingChannel.Writer.WriteAsync(
+                               new OrderConformingChanelRequest
+                               {
+                                   OrderId = splittedDetails[0],
+                                   FoodType = null
+                               },
+                               cancellationToken
+                           );
                         return Results.Ok(new { error = "" });
+                    }
+                    else
+                    {
+                        return Results.Ok(new { error = "Order not found." });
                     }
                 }
                 catch (Exception ex)
@@ -200,4 +225,5 @@ namespace CanteenManage.Controllers.CanteenControllers
         }
 
     }
+
 }

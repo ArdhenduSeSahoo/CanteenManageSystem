@@ -37,6 +37,11 @@ namespace CanteenManage.Controllers
                 var breakfastFoods = await foodListingService.GetTodayFoodNames((int)FoodTypeEnum.Breakfast, cancellationToken);
                 var lunchFoods = await foodListingService.GetTodayFoodNames((int)FoodTypeEnum.Lunch, cancellationToken);
                 var snacksFoods = await foodListingService.GetTodayFoodNames((int)FoodTypeEnum.Snacks, cancellationToken);
+                var dinnerFoods = await foodListingService.GetTodayFoodNames((int)FoodTypeEnum.Dinner, cancellationToken);
+                var myorderBreakfast = await foodListingService.GetMyOrderTodayFoodNames((int)FoodTypeEnum.Breakfast, sessionDataModel.UserIdOrZero, cancellationToken);
+                var myorderLunch = await foodListingService.GetMyOrderTodayFoodNames((int)FoodTypeEnum.Lunch, sessionDataModel.UserIdOrZero, cancellationToken);
+                var myorderSnacks = await foodListingService.GetMyOrderTodayFoodNames((int)FoodTypeEnum.Snacks, sessionDataModel.UserIdOrZero, cancellationToken);
+                var myorderDinner = await foodListingService.GetMyOrderTodayFoodNames((int)FoodTypeEnum.Dinner, sessionDataModel.UserIdOrZero, cancellationToken);
 
 
                 employeeDashboardViewDataModel.UserName = sessionDataModel.UserName;
@@ -76,6 +81,13 @@ namespace CanteenManage.Controllers
                 employeeDashboardViewDataModel.BreakfastFoods = string.Join(", ", breakfastFoods);//
                 employeeDashboardViewDataModel.LunchFoods = string.Join(", ", lunchFoods);
                 employeeDashboardViewDataModel.SnacksFoods = string.Join(", ", snacksFoods);//snacksFoods
+                employeeDashboardViewDataModel.DinnerFoods = string.Join(", ", dinnerFoods);
+
+                employeeDashboardViewDataModel.MyOrderBreakfastFoods = string.Join(", ", myorderBreakfast);//
+                employeeDashboardViewDataModel.MyOrderLunchFoods = string.Join(", ", myorderLunch);
+                employeeDashboardViewDataModel.MyOrderSnacksFoods = string.Join(", ", myorderSnacks);
+                employeeDashboardViewDataModel.MyOrderDinnerFoods = string.Join(", ", myorderDinner);
+
             }
             catch (Exception ex)
             {

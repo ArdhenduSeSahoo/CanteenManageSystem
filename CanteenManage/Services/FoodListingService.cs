@@ -1,4 +1,5 @@
 ﻿
+using System.Security.Claims;
 using CanteenManage.CanteenRepository.Contexts;
 using CanteenManage.CanteenRepository.Models;
 using CanteenManage.Models;
@@ -12,6 +13,7 @@ namespace CanteenManage.Services
         private readonly CanteenManageDBContext contextCM;
 
         private readonly OrderDataCaching orderDataCaching;
+
         public FoodListingService(CanteenManageDBContext canteenManageContext, OrderDataCaching orderDataCaching)
         {
             this.contextCM = canteenManageContext;
@@ -76,7 +78,7 @@ namespace CanteenManage.Services
         }
 
 
-        public async Task<List<FoodDetails>> GetAllFoodList(int foodType, CancellationToken cancellationToken, DateTime userSelected_dateTime, SessionDataModel sessionData)
+        public async Task<List<FoodDetails>> GetAllFoodList(FoodTypeEnum foodType, CancellationToken cancellationToken, DateTime userSelected_dateTime, SessionDataModel sessionData)
         {
             var dayOfWeek = (int?)sessionData.UserSelectedDate?.DayOfWeek;
             if (dayOfWeek == null)
@@ -91,25 +93,29 @@ namespace CanteenManage.Services
                 weekOfMonth = 1;
             }
             var allFoodWithUserOrderDetails = new List<FoodDetails>();
-            if (userSelected_dateTime.Date.Day == DateTime.Now.Date.Day)
-            {
-                if (foodType == (int)FoodTypeEnum.Breakfast && DateTime.Now.Hour >= CustomDataConstants.BreakfastTimeHour)
-                {
-                    return allFoodWithUserOrderDetails;
-                }
-                else if (foodType == (int)FoodTypeEnum.Lunch && DateTime.Now.Hour >= CustomDataConstants.LunchTimeHour)
-                {
-                    return allFoodWithUserOrderDetails;
-                }
-                else if (foodType == (int)FoodTypeEnum.Snacks && DateTime.Now.Hour >= CustomDataConstants.SnacksTimeHour)
-                {
-                    return allFoodWithUserOrderDetails;
-                }
-            }
+            //if (userSelected_dateTime.Date.Day == DateTime.Now.Date.Day)
+            //{
+            //    if (foodType == FoodTypeEnum.Breakfast && DateTime.Now.Hour >= CustomDataConstants.BreakfastTimeHour)
+            //    {
+            //        return allFoodWithUserOrderDetails;
+            //    }
+            //    else if (foodType == FoodTypeEnum.Lunch && DateTime.Now.Hour >= CustomDataConstants.LunchTimeHour)
+            //    {
+            //        return allFoodWithUserOrderDetails;
+            //    }
+            //    else if (foodType == FoodTypeEnum.Snacks && DateTime.Now.Hour >= CustomDataConstants.SnacksTimeHour)
+            //    {
+            //        return allFoodWithUserOrderDetails;
+            //    }
+            //    else if (foodType == FoodTypeEnum.Dinner && DateTime.Now.Hour >= CustomDataConstants.DinnerTimeHour)
+            //    {
+            //        return allFoodWithUserOrderDetails;
+            //    }
+            //}
 
             allFoodWithUserOrderDetails = await contextCM.Foods
                 .AsNoTracking()
-                .Where(f => f.FoodTypeId == foodType)
+                .Where(f => f.FoodTypeId == (int)foodType)
                 .Where(f => f.IsAvailable)
                 .Where(f => f.FoodAvailabilityDays.Any(fa =>
                 (fa.DayOfWeek == dayOfWeek) &&
@@ -143,6 +149,8 @@ namespace CanteenManage.Services
         public async Task<List<FoodOrderDto>> GetFoodOrdersToday(int employeeId, FoodTypeEnum foodTypeEnum, CancellationToken cancellationToken)
         {
             List<FoodOrderDto> foodOrders = new List<FoodOrderDto>();
+            EncryptionDecryptions encryptionDecryptions = new EncryptionDecryptions();
+            DateCalculationHelper dateCalculationHelper = new DateCalculationHelper();
             //var foodOrders = await contextCM.FoodOrders
             //    .Include(fo => fo.FoodOrderFoodDetails.Where(fd => !fd.IsCanceled
             //    && fd.FoodTypeId == (int)foodTypeEnum && fd.EmployeeId == employeeId)
@@ -180,9 +188,15 @@ namespace CanteenManage.Services
                     TotalEmployeePrice = fo.TotalEmployeePrice,
                     Rating = fo.Rating,
                     Review = fo.Review,
-                    QrCodeText = fo.OrderID,//encryptionDecryptions.EncryptString(fo.OrderID),
+                    QrCodeText = encryptionDecryptions.EncryptString($"{fo.OrderID}-|-{employeeId}-|-{dateCalculationHelper.DateTimeToString(DateTime.Now)}"),
                 })
                 .ToListAsync(cancellationToken);
+            //encryptionDecryptions.EncryptString($"{fo.OrderID}-|-{fo.Employee.EmployeeID}-|-{dateCalculationHelper.DateTimeToString(DateTime.Now)}"
+            //foreach (var fo in foodOrders)
+            //{
+            //    //fo.QrCodeText = GetOrderQrData(fo.OrderID, employeeId);
+            //    fo.QrCodeText = encryptionDecryptions.EncryptString($"{fo.OrderID}-|-{employeeId}-|-{dateCalculationHelper.DateTimeToString(DateTime.Now)}");
+            //}
 
             return foodOrders;
         }
@@ -191,6 +205,7 @@ namespace CanteenManage.Services
         {
             EncryptionDecryptions encryptionDecryptions = new EncryptionDecryptions();
             DateCalculationHelper dateCalculationHelper = new DateCalculationHelper();
+
             var foodOrders = await contextCM.FoodOrders
                 //.Include(f => f.Food)
                 //.Include(f => f.Employee)
@@ -214,12 +229,28 @@ namespace CanteenManage.Services
                     TotalEmployeePrice = fo.TotalEmployeePrice,
                     Rating = fo.Rating,
                     Review = fo.Review,
-                    QrCodeText = encryptionDecryptions.EncryptString($"{fo.OrderID}-|-{fo.Employee.EmployeeID}-|-{dateCalculationHelper.DateTimeToString(DateTime.Now)}"),
+                    QrCodeText = encryptionDecryptions.EncryptString($"{fo.OrderID}-|-{employeeId}-|-{dateCalculationHelper.DateTimeToString(DateTime.Now)}"),
                 })
                 .ToListAsync(cancellationToken);
+            //foreach (var fo in foodOrders)
+            //{
+            //    //fo.QrCodeText = GetOrderQrData(fo.OrderID, employeeId);
+            //    fo.QrCodeText = encryptionDecryptions.EncryptString($"{fo.OrderID}-|-{employeeId}-|-{dateCalculationHelper.DateTimeToString(DateTime.Now)}");
+            //}
             return foodOrders;
         }
 
+        //public string GetOrderQrData(string OrderId, int? EmpId)
+        //{
+        //    DateCalculationHelper dateCalculationHelper = new DateCalculationHelper();
+        //    var claims = new List<Claim>
+        //                {
+        //                    new Claim("EmpId", EmpId.ToString()??""),
+        //                    new Claim("OrderID",OrderId),
+        //                    new Claim("OrderDate", dateCalculationHelper.DateTimeToString(DateTime.Now)) // Add user role
+        //                };
+        //    return loginService.GenerateJSONWebToken(claims, DateTime.Now.AddHours(4));
+        //}
         public async Task<List<EmployeeFoodOrdersTableDataModel>> GetFoodOrdersToday_Filter(FoodTypeEnum foodTypeEnum, CancellationToken cancellationToken, string SearchVal = "")
         {
             var foodOrders = orderDataCaching.OrderCacheDataDictionary.Where(fo =>
@@ -266,7 +297,7 @@ namespace CanteenManage.Services
             return foodOrders;
         }
 
-        public async Task<EmployeeFoodOrdersTableDataModel?> GetFoodOrdersToday_Single(CancellationToken cancellationToken, string EmpID, string OrderID)
+        public async Task<EmployeeFoodOrdersTableDataModel?> GetFoodOrdersToday_Single(CancellationToken cancellationToken, int EmpID, string OrderID)
         {
             var foodOrders = await contextCM.FoodOrders
             .AsNoTracking()
@@ -274,11 +305,9 @@ namespace CanteenManage.Services
             fo.OrderDateCustom.Date == DateTime.Now.Date
             //&& fo.Food.FoodTypeId == (int)foodTypeEnum
             && fo.IsCanceled == false
-            && fo.Employee.EmployeeID.ToLower() == EmpID.ToLower()
+            && fo.EmployeeId == EmpID
             &&
-            (
             fo.OrderID.ToLower() == OrderID.ToLower()
-            )
             )
             .Select(fo => new EmployeeFoodOrdersTableDataModel()
             {
@@ -288,6 +317,7 @@ namespace CanteenManage.Services
                 EmployeeCode = fo.Employee.EmployeeID,
                 FoodName = fo.Food.Name,
                 OrderDate = fo.OrderDateCustom,
+                OrderDateS = fo.OrderDateCustom.Date.ToString(),
                 Quantity = fo.Quantity,
                 TotalPrice = fo.TotalPrice,
                 FoodType = fo.Food.FoodTypeId,
@@ -548,6 +578,7 @@ namespace CanteenManage.Services
             var allFoodWithUserOrderDetails = new List<Food>();
 
             var FoodNameList = await contextCM.Foods
+                .AsNoTracking()
                .Where(f => f.FoodTypeId == foodType)
                .Where(f => f.IsAvailable)
                .Where(f => f.FoodAvailabilityDays.Any(fa =>
@@ -558,7 +589,23 @@ namespace CanteenManage.Services
                .ToListAsync(cancellationToken);
             return FoodNameList;
         }
+        public async Task<List<string?>> GetMyOrderTodayFoodNames(int foodType, int employeeId, CancellationToken cancellationToken)
+        {
+            var myFoodOrderNames = await contextCM.FoodOrders
+             //.Include(f => f.Food)
+             //.Include(f => f.Employee)
+             .AsNoTracking()
+             .Where(fo => fo.OrderDateCustom.Date == DateTime.Now.Date
+             && fo.EmployeeId == employeeId
+             && !fo.IsCanceled
+             && fo.Food.FoodTypeId == foodType
+             )
+             //.OrderBy(fo => fo.OrderDateCustom)
+             .Select(fo => fo.FoodName)
+             .ToListAsync(cancellationToken);
+            return myFoodOrderNames;
 
+        }
         public async Task<List<EmployeeFeedback>> GetAllEmployeeFeedbacks()
         {
             return await contextCM.EmployeeFeedbacks
@@ -617,7 +664,8 @@ namespace CanteenManage.Services
         public async Task<List<WeeklyFoodList>> GetWeekWiseFoodlist(int weekNumber, CancellationToken cancellationToken, string? searchTerm = null)
         {
             var ffff = await contextCM.FoodAvailabilityDays
-                .Include(fo => fo.Food)
+                //.Include(fo => fo.Food)
+                .AsNoTracking()
                 .Where(fo => fo.WeekOfMonth == weekNumber
                 && fo.Food.IsAvailable
                 )

@@ -78,6 +78,11 @@ namespace CanteenManage.Services
                         errormessage = "Snacks time is over.";
                         cannotplaceorder = true;
                     }
+                    else if (foodTypeEnum == FoodTypeEnum.Dinner && userSelected_DateTime.Hour >= CustomDataConstants.DinnerTimeHour)
+                    {
+                        errormessage = "Dinner time is over.";
+                        cannotplaceorder = true;
+                    }
                     if (cannotplaceorder)
                     {
                         return Results.Ok(new FoodOrderApiReturnMessage()
@@ -264,9 +269,18 @@ namespace CanteenManage.Services
                 {
                     return false;
                 }
+                else if (foodType == FoodTypeEnum.Dinner && int.Parse(DateTime.Now.ToString("HH")) >= CustomDataConstants.DinnerTimeHour)
+                {
+                    return false;
+                }
             }
-            var dayOfWeek = (int?)sessionData.UserSelectedDate?.DayOfWeek;
-            var weekOfMonth = GetWeekOfMonth(userSelected_DateTime);
+            return await ValidateFoodForSelectedDate(foodType, foodID, userSelected_DateTime, cancellationToken);
+        }
+
+        public async Task<bool> ValidateFoodForSelectedDate(FoodTypeEnum foodType, int foodID, DateTime SelectedDate, CancellationToken cancellationToken)
+        {
+            var dayOfWeek = (int?)SelectedDate.DayOfWeek;
+            var weekOfMonth = GetWeekOfMonth(SelectedDate);
             if (weekOfMonth == 5)
             {
                 weekOfMonth = 1;
@@ -283,9 +297,7 @@ namespace CanteenManage.Services
             {
                 return false;
             }
-            return false;
         }
-
         public int GetWeekOfMonth(DateTime date)
         {
             // Find the first day of the month
@@ -487,6 +499,17 @@ namespace CanteenManage.Services
                     )
                     .ToListAsync(cancellationToken);
                 }
+                else if (foodTypeEnum == (int)FoodTypeEnum.Dinner)
+                {
+                    foodOrderByUseridlist = await contextDB.EmployeeCarts
+                    .Where(fo =>
+                    fo.EmployeeId == sessionData.UserId
+                    &&
+                    fo.Food.FoodTypeId == (int)foodTypeEnum
+                    //fo.OutDateStatus == (int)CartFoodOutDateEnum.OutOfOrder
+                    )
+                    .ToListAsync(cancellationToken);
+                }
 
 
             }
@@ -540,7 +563,7 @@ namespace CanteenManage.Services
                 var breakfastFoodItems = employeeCarts.Where(f => f.Food.FoodTypeId == (int)FoodTypeEnum.Breakfast && f.OutDateStatus == (int)CartFoodOutDateEnum.InOrder);
                 foreach (EmployeeCart item in breakfastFoodItems)
                 {
-                    if (ValidateFoodForSelectedDate(FoodTypeEnum.Breakfast, item.FoodId, sessionData, cancellationToken).Result == true)
+                    if (ValidateFoodForSelectedDate(FoodTypeEnum.Breakfast, item.FoodId, item.OrderDate, cancellationToken).Result == true)
                     {
 
                         OrderID_inc++;
@@ -556,7 +579,7 @@ namespace CanteenManage.Services
                 var LunchFoodItems = employeeCarts.Where(f => f.Food.FoodTypeId == (int)FoodTypeEnum.Lunch && f.OutDateStatus == (int)CartFoodOutDateEnum.InOrder);
                 foreach (EmployeeCart item in LunchFoodItems)
                 {
-                    if (ValidateFoodForSelectedDate(FoodTypeEnum.Lunch, item.FoodId, sessionData, cancellationToken).Result == true)
+                    if (ValidateFoodForSelectedDate(FoodTypeEnum.Lunch, item.FoodId, item.OrderDate, cancellationToken).Result == true)
                     {
 
                         OrderID_inc++;
@@ -571,7 +594,7 @@ namespace CanteenManage.Services
                 var SnacksFoodItems = employeeCarts.Where(f => f.Food.FoodTypeId == (int)FoodTypeEnum.Snacks && f.OutDateStatus == (int)CartFoodOutDateEnum.InOrder);
                 foreach (EmployeeCart item in SnacksFoodItems)
                 {
-                    if (ValidateFoodForSelectedDate(FoodTypeEnum.Snacks, item.FoodId, sessionData, cancellationToken).Result == true)
+                    if (ValidateFoodForSelectedDate(FoodTypeEnum.Snacks, item.FoodId, item.OrderDate, cancellationToken).Result == true)
                     {
                         OrderID_inc++;
                         FoodOrder foodOrder = GetFoodOrderObj(item, sessionData.UserIdOrZero, ts, orderPlacedID, OrderID_inc);
@@ -580,6 +603,20 @@ namespace CanteenManage.Services
                     }
                 }
                 contextDB.EmployeeCarts.RemoveRange(SnacksFoodItems);
+                ////// dinner orders
+                ts = utilityServices.GetSpecificTimeSpan(FoodTypeEnum.Dinner);
+                var DinnerFoodItems = employeeCarts.Where(f => f.Food.FoodTypeId == (int)FoodTypeEnum.Dinner && f.OutDateStatus == (int)CartFoodOutDateEnum.InOrder);
+                foreach (EmployeeCart item in DinnerFoodItems)
+                {
+                    if (ValidateFoodForSelectedDate(FoodTypeEnum.Dinner, item.FoodId, item.OrderDate, cancellationToken).Result == true)
+                    {
+                        OrderID_inc++;
+                        FoodOrder foodOrder = GetFoodOrderObj(item, sessionData.UserIdOrZero, ts, orderPlacedID, OrderID_inc);
+
+                        contextDB.FoodOrders.Add(foodOrder);
+                    }
+                }
+                contextDB.EmployeeCarts.RemoveRange(DinnerFoodItems);
             }
             contextDB.EmployeeCarts.RemoveRange(employeeCarts);
 

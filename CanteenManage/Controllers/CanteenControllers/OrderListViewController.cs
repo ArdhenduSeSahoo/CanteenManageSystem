@@ -68,7 +68,7 @@ namespace CanteenManage.Controllers.CanteenControllers
             List<EmployeeFoodOrdersTableDataModel> foodOrders = new List<EmployeeFoodOrdersTableDataModel>();
             OrderListViewTodaysDataModel orderListViewTodaysDataModel = new OrderListViewTodaysDataModel();
             orderListViewTodaysDataModel.EmployeeFoodOrdersTableData = foodOrders;
-
+            orderListViewTodaysDataModel.FoodType = 1; // Default to Breakfast
             try
             {
                 if (string.IsNullOrEmpty(FoodType))
@@ -77,6 +77,9 @@ namespace CanteenManage.Controllers.CanteenControllers
                 }
                 if (!string.IsNullOrEmpty(FoodType))
                 {
+
+                    orderListViewTodaysDataModel.FoodType = Convert.ToInt32(FoodType) > 0 ? Convert.ToInt32(FoodType) : 1;
+
                     var foodtype_qp = Convert.ToInt32(FoodType);
                     foodType = (FoodTypeEnum)foodtype_qp;
                     //if (foodtype_qp < 1)

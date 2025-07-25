@@ -64,7 +64,7 @@ try
         //var con = appConfigs.getConnectionString();
         //AppConfigs appconff = appConfigs.getEncryptedObject();
         //var appConfigJson2 = System.Text.Json.JsonSerializer.Serialize(appconff);
-
+        //Console.WriteLine(appConfigJson2.ToString());
 
 
 

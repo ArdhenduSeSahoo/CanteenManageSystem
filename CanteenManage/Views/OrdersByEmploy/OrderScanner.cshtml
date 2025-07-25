@@ -43,21 +43,18 @@
 
 					<button class="btn btn-danger" id="stopqr">Stop</button>
 				</div>
-				@* 	<div class="alert alert-warning alert-dismissible fade show" role="alert">
-					<strong>Holy guacamole!</strong> You should check in on some of those fields below.
-					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-				</div> *@
 				<div class="card mt-2 d-none" id="ord_Details_Container">
 					<div class="card-body">
-						<div class="spinner-border text-info" role="status">
+						@* <div class="spinner-border text-info" role="status">
 							<span class="visually-hidden">Loading...</span>
-						</div>
+						</div> *@
 						<div>
 							<div class="d-flex">Name:<strong><span id="oname"></span></strong></div>
 							<div class="d-flex">EmpId:<span id="oempid"></span></div>
 							<div class="d-flex">Item:<strong><span id="oitem"></span></strong></div>
 							<div class="d-flex">OrderId:<span id="oorderid"></span></div>
 							<div class="d-flex">Quantity:<strong><span id="oquantity"></span></strong></div>
+							<div class="d-flex">Date:<span id="odate"></span></div>
 							<div class="d-flex">Status:<strong><span id="ostatus"></span></strong></div>
 							<button class="btn btn-primary" id="btn_conform">Conform</button>
 						</div>
@@ -113,7 +110,10 @@
 			html5QrcodeScanner.clear();
 			$("#qr-container").addClass("d-none");
 			$('#scanedid').val(decodedText);
-			subjectOrderDetails.next(decodedText);
+			 const orderdetl={
+			orderdetails:decodedText
+			};
+			subjectOrderDetails.next(orderdetl);
 			$("#ord_Details_Container").addClass("d-none");
 			}
 
@@ -136,7 +136,10 @@
 			});
 
 			// $('#scanedid').val("encodeorder");
-			// subjectOrderDetails.next("orderid35345");
+			// const roderdetl={
+			// orderdetails:''
+			// };
+			// subjectOrderDetails.next(roderdetl);
 			// $("#ord_Details_Container").addClass("d-none");
 			});
 
@@ -147,28 +150,43 @@
 			});
 
 			$('#btn_conform').click(function() {
-				subjectOrderConform.next($('#scanedid').val());
-					console.log($('#scanedid').val());
+			const orderdetl={
+			orderdetails:$('#scanedid').val()
+			};
+			subjectOrderConform.next(orderdetl);
+			//console.log($('#scanedid').val());
 			});
 			const subjectOrderDetailsPipe=subjectOrderDetails.pipe(
+			//map(val => {orderdetails:val}),
 			debounceTime(300), // Wait for 300ms of inactivity before emitting
 			//distinctUntilChanged(), // Only emit if the value has changed
 			);
-
+					const postData = {
+		  name: 'John Doe',
+		  email: 'john.doe@example.com'
+		};
 			const subjectOrderDetailsPipe2=subjectOrderDetailsPipe.pipe(
-				switchMap(data =>fromFetch(`/OrdersByEmploy/SingleOrderDetail?encodedDetails=${data}`).pipe(
+						switchMap(data =>{
+							console.log('Ardhndu');
+							console.log(data);
+							return fromFetch(`/OrdersByEmploy/SingleOrderDetailP`, {
+		  method: 'POST',
+		  headers: {
+			'Content-Type': 'application/json'
+		  },
+		  body: JSON.stringify(data) // Convert the data to a JSON string
+		}
+				).pipe(
 					switchMap(response => from(response.json())),
 					catchError(err => {
 						console.error(err);
 						return of("");
 					})
-				)
+				)}
 			)
 			);
 		  const subjectOrderdetailssubscrib=subjectOrderDetailsPipe2.subscribe((orderData) => {
 				// Process the order details here
-
-				console.log("Action Details:", orderData);
 
 				var errormessage=orderData.error??"";
 
@@ -181,28 +199,40 @@
 				$('#oquantity').html(orderData.detail.quantity);
 				if(orderData.detail.isCompleted==true)
 				{
-					$('#ostatus').html("Completed");
+					$('#ostatus').html(`<span class="badge bg-success rounded-pill px-3 py-2 shadow-sm d-inline-flex align-items-center">
+										<i class="bi bi-check-circle"></i></span>`);
 					$("#btn_conform").addClass("d-none");
 				}else{
-					$('#ostatus').html("Not completed");
+					$('#ostatus').html(`<span class="badge bg-warning text-dark rounded-pill px-3 py-2 shadow-sm d-inline-flex align-items-center">
+														<i class="bi bi-hourglass-split"></i>
+													</span>`);
 					$("#btn_conform").removeClass("d-none");
 				}
 
-				$('#oitem').html(orderData.detail.foodName);
+				$('#oitem').html(orderData.detail.foodName);//
+				$('#odate').html(orderData.detail.orderDateS);
 				$("#ord_Details_Container").removeClass("d-none");
 				}
 				else{
 					$("#ord_Details_Container").addClass("d-none");
 					showErrorMessage(errormessage);
 				}
+
 			});
 			////////////////////////////////////////////////////////////////
 			const subjectOrderConformPipe=subjectOrderConform.pipe(
 			debounceTime(300), // Wait for 300ms of inactivity before emitting
 			);
-
+			////=${data}
 			const subjectOrderConformPipe2=subjectOrderConformPipe.pipe(
-				switchMap(data =>fromFetch(`/OrdersByEmploy/SingleOrderConform?encodedDetails=${data}`).pipe(
+						switchMap(data =>fromFetch(`/OrdersByEmploy/SingleOrderConform`, {
+						  method: 'POST',
+						  headers: {
+							'Content-Type': 'application/json',
+						  },
+						  body: JSON.stringify(data)
+						}
+						).pipe(
 					switchMap(response => from(response.json())),
 					catchError(err => {
 						console.error(err);
@@ -212,9 +242,6 @@
 			)
 			);
 		  const subjectOrderConformsubscrib=subjectOrderConformPipe2.subscribe((orderDetails) => {
-				// Process the order details here
-				console.log("Action Details:", orderDetails);
-				// You can update the UI or perform any other actions with the order details
 
 				if(orderDetails.error==='')
 				{
@@ -225,7 +252,8 @@
 				$('#oorderid').html("");
 				$('#oquantity').html("");
 				$('#ostatus').html("");
-				$('#oitem').html('');
+				$('#oitem').html('');odate
+				$('#odate').html('');
 				}
 				else{
 					showErrorMessage(orderDetails.error);

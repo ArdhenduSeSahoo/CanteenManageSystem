@@ -4,9 +4,11 @@ using System.Text;
 using System.Threading.Tasks;
 using CanteenManage.CanteenRepository.Contexts;
 using CanteenManage.CanteenRepository.Models;
+using CanteenManage.Models;
 using CanteenManage.Utility;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using NuGet.Common;
 
 namespace CanteenManage.Services
 {
@@ -97,6 +99,38 @@ namespace CanteenManage.Services
             };
             var tokens = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(tokens);
+        }
+        public bool ValidateJSONWebToken(string token)
+        {
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(appConfigProvider.GetSecretKey() ?? CustomDataConstants.DefaultSecret));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            TokenValidationParameters validationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = appConfigProvider.GetTokenIssuer(),
+                ValidAudience = appConfigProvider.GetTokenAudience(),
+                ClockSkew = TimeSpan.Zero,
+                IssuerSigningKey = securityKey
+            };
+            try
+            {
+                JwtSecurityToken jwt;
+                var tokenHandler = new JwtSecurityTokenHandler();
+                tokenHandler.ValidateToken(token, validationParameters, out SecurityToken validatedToken);
+                jwt = (JwtSecurityToken)validatedToken;
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Log the reason why the token is not valid
+                return false;
+            }
+            return false;
         }
 
         public async Task LoginUpdateEmployee(string employee_e_id)

@@ -14,14 +14,14 @@
 	<form asp-action="SelectDaysOfWeek" method="post">
 		<input type="hidden" name="selecteddate" value="@(dayes.DateShort)" />
 		<input type="hidden" name="selecteddatefull" value="@(dayes.DateFull)" />
-		<button class="date-btn @(dayes.IsSelected ? "active" : "")" @(!dayes.IsActiveDay ? "disabled" : "")>
+		<button class="date-btn @(dayes.IsSelected ? "active" : "")" style="@(!dayes.IsActiveDay ? "color:gray" : "")">
 			@dayes.DateShort<br><small>@dayes.DaysOfWeekName</small>
 		</button>
 
 	</form>
 </div>
 @*
-<div class="d-inline-flex text-center ">
+<div class="d-inline-flex text-center ">@(!dayes.IsActiveDay ? "disabled" : "")
 	<h6 class="m-0">Choose Date:&nbsp;&nbsp;</h6>
 
 	<!-- Example single danger button -->

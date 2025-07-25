@@ -102,13 +102,16 @@ background-color:#f5fbff
 							<a class="nav-link nav_link text-center" asp-area="" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
 						</li>
 						<li class="nav-item customNavItem">
-							<a class="nav-link nav_link text-center" asp-area="" asp-controller="BreakFastItems" asp-action="Index">Break Fast</a>
+							<a class="nav-link nav_link text-center" asp-area="" asp-controller="BreakFastItems" asp-action="Index">Breakfast</a>
 						</li>
 						<li class="nav-item customNavItem ">
 							<a class="nav-link text-center nav_link" asp-area="" asp-controller="LunchItems" asp-action="Index">Lunch</a>
 						</li>
 						<li class="nav-item customNavItem">
 							<a class="nav-link text-center nav_link" asp-area="" asp-controller="SnacksItemList" asp-action="Index">Evening Snacks</a>
+						</li>
+						<li class="nav-item customNavItem">
+							<a class="nav-link text-center nav_link" asp-area="" asp-controller="Dinner" asp-action="Index">Dinner</a>
 						</li>
 						<li class="nav-item customNavItem">
 							<a class="nav-link text-center nav_link" asp-area="" asp-controller="Dashboard" asp-action="QuickFood">Quick Foods</a>
@@ -155,9 +158,9 @@ color: white;">
 
 							@if (!string.IsNullOrEmpty(username))
 							{
-								<span class="nav-link text-center nav_link ">
-									<i class="fas fa-user"></i> @firstName
-								</span>
+									<span class="nav-link text-center nav_link ">
+										<i class="fas fa-user"></i> @firstName
+									</span>
 							}
 
 						</li>

@@ -15,6 +15,17 @@
 			background-color: #7e7e7ebf !important;
 		}
 
+		.scanBtn {
+			color: #ff4249;
+			border-color: #ff4249;
+		}
+
+			.scanBtn:hover {
+				background-color: #ff4249;
+				color: white;
+				border-color: #ff4249;
+			}
+
 	</style>
 	<style>
 		/* Stack table rows on small screens */
@@ -123,8 +134,8 @@
 			<div class="container-fluid">
 				<div class="row">
 					<div class="col-12 p-0">
-						<h5 class=" mb-3 pb-2 border-bottom fw-semibold text-primary">
-							<i class="bi bi-person-lines-fill me-2"></i> Orders By Employee
+						<h5 class=" mb-3 pb-2 border-bottom fw-semibold" style="color:purple;">
+							<i class="bi bi-person-lines-fill me-2"></i> Today Orders
 						</h5>
 
 						<div class="d-flex gap-3 ml-2 flex-wrap">
@@ -142,13 +153,13 @@
 							   asp-controller="OrdersByEmploy" asp-action="OrderByEmployIdx" asp-route-FoodType="3">
 								<i class="bi bi-cup-straw me-2"></i> Snacks
 							</a>
-							<a class="btn btn-outline-primary d-flex align-items-center px-4 py-2 shadow-sm d-none"
+							<a class="btn btn-outline-primary d-flex align-items-center px-4 py-2 shadow-sm"
 							   asp-controller="OrdersByEmploy" asp-action="OrderByEmployIdx" asp-route-FoodType="5">
-								<i class="bi bi-moon-fill"></i> Dinner
+								<i class="bi bi-moon-fill me-2"></i> Dinner
 							</a>
-							<a class="btn btn-outline-info d-flex align-items-center px-4 py-2 shadow-sm d-none"
-							   asp-controller="OrdersByEmploy" asp-action="OrderScanner">
-								<i class="bi bi-qr-code"></i> Scan Order
+							<a class="btn btn-outline-info d-flex align-items-center px-4 py-2 shadow-sm scanBtn"
+							   asp-controller="OrdersByEmploy" asp-action="OrderScanner" style="">
+								<i class="bi bi-qr-code me-2"></i>   Scan Order
 							</a>
 
 							@* <a class="btn btn-outline-warning d-flex align-items-center px-4 py-2 shadow-sm text-dark"
@@ -204,7 +215,7 @@
 	</div>
 	<div class="card bg-white">
 		<div class="card-header">
-			<h4 class="card-title">@Model.screenTitle</h4>
+			<h6 class="card-title">@Model.screenTitle</h6>
 		</div>
 
 		<div class="card-body">
@@ -261,13 +272,6 @@
 		const {ajax}=rxjs.ajax;
 		let searchval="";
 		const searchInputSubject = new Subject();
-		// const searchInput = document.getElementById('searchinput');
-
-		// const searchInputObs = fromEvent(searchInput, 'input').pipe(
-		// 	map(event => event.target.value), // Extract the value from the event
-		// 	debounceTime(300), // Wait for 300ms of inactivity before emitting
-		// 	distinctUntilChanged(), // Only emit if the value has changed
-		// );
 
 		searchInputSubject.pipe(
 			debounceTime(300), // Wait for 300ms of inactivity before emitting
@@ -291,27 +295,15 @@
 			//console.log(foodtype+'--Search term:', searchTerm);
 		});
 		//////////////////////////////////////////////////////////////
-		//const conformBtn=$(".btn_order_complete");
 		const subjectConformBtn = new Subject();
 
-		// $(".btn_order_complete").click(function() {
-		// 	const button = event.currentTarget;
-		// 		const orderId = button.getAttribute('data-bs-FoodOrderId');
-		// 		const foodtypeId = button.getAttribute('data-bs-foodtype');
-		// 		//console.log(foodtypeId+"---"+orderId);
-		// 		const foodorderdtl = {
-		// 			foodorderid:orderId,foodtype:foodtypeId
-		// 		}
-		// 		console.log(foodorderdtl);
-		// 	//subjectConformBtn.next(foodorderdtl);
-		// });
 		$('.orderlistviewcontainer').on('click', '.btn_order_complete', function(event) {
 		  const button = event.currentTarget;
 				const orderId = button.getAttribute('data-bs-FoodOrderId');
 				const foodtypeId = button.getAttribute('data-bs-foodtype');
 				//console.log(foodtypeId+"---"+orderId);
 				const foodorderdtl = {
-					foodorderid:orderId,foodtype:foodtypeId
+					foodorderid:orderId,foodtype:foodtypeId,searchval:$('#searchinput').val()
 				}
 				//console.log(foodorderdtl);
 				subjectConformBtn.next(foodorderdtl);
@@ -322,21 +314,8 @@
 			distinctUntilChanged(), // Only emit if the value has changed
 		);
 
-		// const conformBtnObs=fromEvent(conformBtn, 'click').pipe(
-		// 	map(event => {
-		// 		console.log(event);
-
-		// 		return "Ardhendu";
-		// 	}),
-		// 	debounceTime(300), // Wait for 300ms of inactivity before emitting
-		// 	distinctUntilChanged(), // Only emit if the value has changed
-		// ).subscribe(searchTerm => {
-		// 	//$(".orderlistviewcontainer").html(searchTerm);
-		// 	console.log(foodtype+'--Search term:', searchTerm);
-		// });
-
 		const conformResultObs=subjectconformclickObs.pipe(
-			switchMap(data =>fromFetch(`/OrderListView/CompleteFoodOrder?foodorderid=${data.foodorderid}&foodtype=${data.foodtype}&searchTerm=${searchval}`).pipe(
+			switchMap(data =>fromFetch(`/OrderListView/CompleteFoodOrder?foodorderid=${data.foodorderid}&foodtype=${data.foodtype}&searchTerm=${data.searchval}`).pipe(
 					switchMap(response => from(response.text())),
 					catchError(err => {
 						console.error(err);
@@ -345,18 +324,13 @@
 				)
 			)
 		);
-		// Subscribe to the typeahead Observable
+
 		const conformbtnsubscription=conformResultObs.subscribe(searchTerm => {
 			$(".orderlistviewcontainer").html(searchTerm);
 			//console.log(foodtype+'--Search term:', searchTerm);
 		});
 		/////////////////////////////////////////////////////////////////
-		//const searchbtn=$("#searchbtn");
-		//const searchbtnobs=fromEvent(searchbtn, 'click').subscribe(event => console.log('Clicked'))
-
-					$('#searchinput').keyup(function() {
-		  // Code to execute when a key is released
-		  //console.log('keyup Input value changed:', $(this).val());
+		$('#searchinput').keyup(function() {
 		  searchInputSubject.next($(this).val());
 		});
 
@@ -364,140 +338,6 @@
 			searchInputSubject.next($('#searchinput').val());
 		});
 
-		});
-	</script>
-
-	<script>
-		// function searchData(){
-		// 	var foodOrders=@(JsonConvert.SerializeObject(Model.FoodOrders));
-		// }
-		// const foodtype=@(Model.FoodType);
-		// const { range, filter, map,fromEvent,debounceTime,distinctUntilChanged,switchMap,catchError } = rxjs;
-		// const {fromFetch}=rxjs.fetch;
-		$(document).ready(function() {
-		//   const searchInput = document.getElementById('searchinput');
-		// 	  const searchInputObs = fromEvent(searchInput, 'input').pipe(
-		// 	map(event => event.target.value), // Extract the value from the event
-		// 	debounceTime(300), // Wait for 300ms of inactivity before emitting
-		// 	distinctUntilChanged(), // Only emit if the value has changed
-
-		// );
-
-
-		// Subscribe to the typeahead Observable
-		// typeahead.subscribe(searchTerm => {
-		// 	//console.log(foodtype+'--Search term:', searchTerm);
-		// 	// In a real application, you would trigger an API call here
-		// });
-		// const connection = new signalR.HubConnectionBuilder()
-		// 	.withUrl("/OrderingHub")
-		// 	.build();
-
-
-		// connection.on("OrderCompleteNotification", function (orderJson) {
-		// 	//const msg = document.createElement("li");
-		// 	//msg.textContent = `${user}: ${message}`;
-		// 	//debugger;
-		// 	//document.getElementById("messagesList").appendChild(msg);
-
-		// 		const myArr =orderJson; //JSON.parse(orderJson);
-		// 		// if(myArr.length>0)
-		// 		// {
-		// 		// 	$('#cardUserRequestDiv').removeClass('d-none');
-		// 		// }
-		// 		// else{
-		// 		// 	$('#cardUserRequestDiv').addClass('d-none');
-		// 		// }
-
-		// $('#userordergrid').empty();
-		// myArr.forEach(function(item) {
-		// 		//console.log("Order ID: " + item.orderId);
-
-		// 		var clone_card=$("#defaultcardorderdet").clone();
-		// 		clone_card.removeClass('d-none');
-		// 		clone_card.find("#username").html(item.userName);
-		// 		//var onme=clone_card.find("#ordername");
-		// 		clone_card.find("#ordername").html(item.orderName);
-		// 		clone_card.find("#orderqnt").html(item.orderQnt);
-		// 		//var unam=clone_card.find("#userempid");
-		// 		clone_card.find("#orderid").html(item.orderId);
-		// 		clone_card.find("#userempid").html(item.userEmpId);
-		// 		var confbtn=clone_card.find(".btn_conform_order_sr");
-		// 		confbtn.attr("data-bs-orderid", item.orderId);
-		// 		$("#userordergrid").append(clone_card);
-		// 		//console.log("Order Name: " + item.OrderName);
-		// 		//console.log("User Emp ID: " + item.UserEmpId);
-		// 		//console.log("User Name: " + item.UserName);
-		// 		//console.log("Request Date Time: " + item.RequestDateTime);
-		// 	});
-		// });
-		// connection.on("OrderCompleteSuccess", function (orderJson) {
-		// 	console.log("Order completed with ID: " + orderJson);
-		// 	showInfoMessage(orderJson);
-		// });
-		// connection.on("OrderCompleteSuccess", function (orderJson) {
-
-		// 	showInfoMessage(orderJson);
-		// });
-		// connection.start()
-		// .then(function() {
-		// 	connection.invoke("AssignAsCanteenEmployee", "Hi");
-		// })
-		// .catch(function (err) {
-		//  console.error(err.toString());
-		// });
-
-
-		// $(document).on('click', '.btn_conform_order_sr', function(event) {
-		//   // Code to execute when the button is clicked
-		//   //console.log('Button clicked using .on() method!');
-		//   const button = event.currentTarget
-		// 	var orderId = button.getAttribute('data-bs-orderid');
-		// 	//console.log(orderId);
-		// 	try {
-		// 	connection.invoke("ConformingOrder", orderId)
-		// 	.catch(function (err) {
-		// 		//return console.error(err.toString());
-		// 		showErrorMessage("Some error happened. Please refresh page.");
-		// 	});
-		// 			} catch (err) {
-		// 	console.error(err);
-		// }
-		// });
-
-		// let searchTimer; // Variable to hold the debounce timer
-		// function performSearch(query) {
-		// 	console.log("Performing search for: " + query);
-		// 	//$('#searchForm').submit();
-		// }
-
-		// $(".searchinputs").keyup(function() {
-		// 	// Code to be executed when a key is released in #myInput
-		// 	var inputValue = $(this).val(); // Get the current value of the input
-		// 	console.log("Input value on keyup: " + inputValue);
-		// });
-		// $('#searchInput').on('keyup', function() {
-		// clearTimeout(searchTimer); // Clear any existing timer
-		// const searchTerm = $(this).val(); // Get the current input value
-		// console.log(searchTerm);
-		// // Set a new timer to execute the search function after a delay (e.g., 300ms)
-		// searchTimer = setTimeout(function() {
-		// 	performSearch(searchTerm);
-		// }, 300);
-		// });
-		});
-	</script>
-	<script type="text/javascript">
-		window.addEventListener('beforeunload', function (e) {
-			//alert("I am the 1s1t one…");
-			//e.preventDefault();
-			//e.returnValue = '';
-
-		});
-		window.addEventListener('unload', function (e) {
-			//alert("I am the 1s1t one…");
-			//e.preventDefault();
-			//e.returnValue = '';
 		});
 	</script>
 

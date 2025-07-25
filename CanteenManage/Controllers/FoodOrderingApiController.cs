@@ -27,7 +27,6 @@ namespace CanteenManage.Controllers
         }
         public async Task<IResult> AddBreakFastFoodOrder(string? foodid, CancellationToken cancellationToken)
         {
-
             try
             {
                 SessionDataModel sessionDataModel = _utilityServices.GetSessionDataModel(HttpContext.Session);
@@ -122,6 +121,43 @@ namespace CanteenManage.Controllers
                 {
                     var orderResult = await cartService.AddToCart(
                       foodTypeEnum: FoodTypeEnum.Snacks,
+                      sessionData: sessionDataModel,
+                        foodOrdersFormBodyModel: new FoodOrdersFormBodyModel() { FoodOrderId = foodIdInt.ToString() },
+                        cancellationToken: cancellationToken
+                      );
+                    return orderResult;
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error in AddBreakFastFoodOrder method: " + ex.Message);
+            }
+            return Results.Ok(new { error = "Some Error found." });
+        }
+
+        public async Task<IResult> AddDinnerFoodOrder(string? foodid, CancellationToken cancellationToken)
+        {
+            try
+            {
+                SessionDataModel sessionDataModel = _utilityServices.GetSessionDataModel(HttpContext.Session);
+                if (string.IsNullOrEmpty(foodid))
+                {
+                    return Results.Ok(new { error = "Food ID is required." });
+                }
+                if (sessionDataModel.UserSelectedDay == null)
+                {
+                    return Results.Ok(new { error = "User selected day is not set." });
+                }
+                int foodIdInt = int.Parse(foodid);
+                var isFoodAvailableForBook = await cartService.ValidateFoodForSelectedDate(FoodTypeEnum.Dinner, foodIdInt, sessionDataModel, cancellationToken: cancellationToken);
+                if (!isFoodAvailableForBook)
+                {
+                    return Results.Ok(new { error = "Food is not available for the selected date." });
+                }
+                else
+                {
+                    var orderResult = await cartService.AddToCart(
+                      foodTypeEnum: FoodTypeEnum.Dinner,
                       sessionData: sessionDataModel,
                         foodOrdersFormBodyModel: new FoodOrdersFormBodyModel() { FoodOrderId = foodIdInt.ToString() },
                         cancellationToken: cancellationToken

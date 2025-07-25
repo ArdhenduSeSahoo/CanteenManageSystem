@@ -51,6 +51,7 @@ namespace CanteenManage.Controllers.CanteenControllers
                     model.BreakFastFoodOrders = await foodListingService.GetOrdersByDateAsync(DateTime.Now, foodTypeEnum: FoodTypeEnum.Breakfast, cancellationToken, false);
                     model.LunchFoodOrders = await foodListingService.GetOrdersByDateAsync(DateTime.Now, foodTypeEnum: FoodTypeEnum.Lunch, cancellationToken, false);
                     model.SnaksFoodOrders = await foodListingService.GetOrdersByDateAsync(DateTime.Now, foodTypeEnum: FoodTypeEnum.Snacks, cancellationToken, false);
+                    model.DinnerFoodOrders = await foodListingService.GetOrdersByDateAsync(DateTime.Now, foodTypeEnum: FoodTypeEnum.Dinner, cancellationToken, false);
                     model.PanelTitle = "Today";
                 }
                 else if (OrderDateType == "2")
@@ -58,6 +59,7 @@ namespace CanteenManage.Controllers.CanteenControllers
                     model.BreakFastFoodOrders = await foodListingService.GetOrdersByDateAsync(DateTime.Now.AddDays(1), foodTypeEnum: FoodTypeEnum.Breakfast, cancellationToken, false);
                     model.LunchFoodOrders = await foodListingService.GetOrdersByDateAsync(DateTime.Now.AddDays(1), foodTypeEnum: FoodTypeEnum.Lunch, cancellationToken, false);
                     model.SnaksFoodOrders = await foodListingService.GetOrdersByDateAsync(DateTime.Now.AddDays(1), foodTypeEnum: FoodTypeEnum.Snacks, cancellationToken, false);
+                    model.DinnerFoodOrders = await foodListingService.GetOrdersByDateAsync(DateTime.Now.AddDays(1), foodTypeEnum: FoodTypeEnum.Dinner, cancellationToken, false);
                     model.PanelTitle = "Tomorrow";
                 }
                 else if (OrderDateType == "3")
@@ -65,6 +67,7 @@ namespace CanteenManage.Controllers.CanteenControllers
                     model.BreakFastFoodOrders = await foodListingService.GetOrdersByDateAsync(DateTime.Now, foodTypeEnum: FoodTypeEnum.Breakfast, cancellationToken, true);
                     model.LunchFoodOrders = await foodListingService.GetOrdersByDateAsync(DateTime.Now, foodTypeEnum: FoodTypeEnum.Lunch, cancellationToken, true);
                     model.SnaksFoodOrders = await foodListingService.GetOrdersByDateAsync(DateTime.Now, foodTypeEnum: FoodTypeEnum.Snacks, cancellationToken, true);
+                    model.DinnerFoodOrders = await foodListingService.GetOrdersByDateAsync(DateTime.Now, foodTypeEnum: FoodTypeEnum.Dinner, cancellationToken, true);
                     model.PanelTitle = "All";
                 }
             }

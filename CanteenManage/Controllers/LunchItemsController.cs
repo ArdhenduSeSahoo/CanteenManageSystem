@@ -50,6 +50,7 @@ namespace CanteenManage.Controllers
                     if (selectedDate != null)
                     {
                         selectedDate.IsSelected = true;
+                        lunchPageDataModel.showAddBtn = selectedDate.IsActiveDay;
                     }
                     HttpContext.Session.SetString(SessionConstants.UserSelectedDayOnSamePage, "0");
                 }
@@ -61,6 +62,7 @@ namespace CanteenManage.Controllers
                         firstActiveDay.IsSelected = true;
                         HttpContext.Session.SetString(SessionConstants.UserSelectedDay, firstActiveDay.DateShort);
                         HttpContext.Session.SetString(SessionConstants.UserSelectedDayFull, firstActiveDay.DateFull);
+                        lunchPageDataModel.showAddBtn = firstActiveDay.IsActiveDay;
                     }
                     sessionDataModel = utilityServices.GetSessionDataModel(HttpContext.Session);
                 }
@@ -76,7 +78,7 @@ namespace CanteenManage.Controllers
                 //                                                    cancellationToken
                 //                                                    );
                 var foodDetailsAll = await foodListingService.GetAllFoodList(
-                                                                    FoodID,
+                                                                    FoodTypeEnum.Lunch,
                                                                     cancellationToken,
                                                                     sessionDataModel.UserSelectedDateOrNow,
                                                                     sessionData: sessionDataModel
