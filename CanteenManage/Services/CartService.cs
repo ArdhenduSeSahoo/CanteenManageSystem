@@ -63,22 +63,23 @@ namespace CanteenManage.Services
                 {
                     bool cannotplaceorder = false;
                     string errormessage = "";
-                    if (foodTypeEnum == FoodTypeEnum.Breakfast && userSelected_DateTime.Hour >= CustomDataConstants.BreakfastTimeHour)
+                    int currentHour = Convert.ToInt32(userSelected_DateTime.ToString("HH"));
+                    if (foodTypeEnum == FoodTypeEnum.Breakfast && currentHour >= CustomDataConstants.BreakfastTimeHour)
                     {
                         errormessage = "Breakfast time is over.";
                         cannotplaceorder = true;
                     }
-                    else if (foodTypeEnum == FoodTypeEnum.Lunch && userSelected_DateTime.Hour >= CustomDataConstants.LunchTimeHour)
+                    else if (foodTypeEnum == FoodTypeEnum.Lunch && currentHour >= CustomDataConstants.LunchTimeHour)
                     {
                         errormessage = "Lunch time is over.";
                         cannotplaceorder = true;
                     }
-                    else if (foodTypeEnum == FoodTypeEnum.Snacks && userSelected_DateTime.Hour >= CustomDataConstants.SnacksTimeHour)
+                    else if (foodTypeEnum == FoodTypeEnum.Snacks && currentHour >= CustomDataConstants.SnacksTimeHour)
                     {
                         errormessage = "Snacks time is over.";
                         cannotplaceorder = true;
                     }
-                    else if (foodTypeEnum == FoodTypeEnum.Dinner && userSelected_DateTime.Hour >= CustomDataConstants.DinnerTimeHour)
+                    else if (foodTypeEnum == FoodTypeEnum.Dinner && currentHour >= CustomDataConstants.DinnerTimeHour)
                     {
                         errormessage = "Dinner time is over.";
                         cannotplaceorder = true;
@@ -372,6 +373,7 @@ namespace CanteenManage.Services
                 .Select(cf => new CartItemInOrder
                 {
                     ItemName = cf.Food.Name,
+                    Food = cf.Food,
                     OrderDate = cf.OrderDate,
                     Quantity = cf.Food.FoodOrders.Where(fo => fo.IsCanceled == false
                         && fo.IsCompleted == false
@@ -382,7 +384,10 @@ namespace CanteenManage.Services
                 .ToListAsync(cancellationToken)
                 ;
             List<CartItemInOrder> cart_items_in_order = new List<CartItemInOrder>();
-            cart_items_in_order = cart_foods1.Where(cf => cf.Quantity > CustomDataConstants.MaxCartItemCount).ToList();
+            cart_items_in_order = cart_foods1.Where(cf =>
+            (!cf.Food.Name.Contains("Roti") && cf.Quantity > CustomDataConstants.MaxCartItemCount)
+            || (cf.Food.Name.Contains("Roti") && cf.Quantity > 4)
+            ).ToList();
 
             return cart_items_in_order;
         }
@@ -402,6 +407,7 @@ namespace CanteenManage.Services
                 }
                 contextDB.EmployeeCarts.UpdateRange(foodOrderByUseridlist);
             }
+            foodOrderByUseridlist?.Clear();
             foodOrderByUseridlist = await getcartfoodlistAsync(FoodTypeEnum.Lunch, sessionData,
                    CustomDataConstants.LunchTimeHour, cancellationToken);
             if (foodOrderByUseridlist != null)
@@ -413,8 +419,21 @@ namespace CanteenManage.Services
                 }
                 contextDB.EmployeeCarts.UpdateRange(foodOrderByUseridlist);
             }
+            foodOrderByUseridlist?.Clear();
             foodOrderByUseridlist = await getcartfoodlistAsync(FoodTypeEnum.Snacks, sessionData,
                    CustomDataConstants.SnacksTimeHour, cancellationToken);
+            if (foodOrderByUseridlist != null)
+            {
+
+                foreach (var foodOrder in foodOrderByUseridlist)
+                {
+                    foodOrder.OutDateStatus = 1;
+                }
+                contextDB.EmployeeCarts.UpdateRange(foodOrderByUseridlist);
+            }
+            foodOrderByUseridlist?.Clear();
+            foodOrderByUseridlist = await getcartfoodlistAsync(FoodTypeEnum.Dinner, sessionData,
+                   CustomDataConstants.DinnerTimeHour, cancellationToken);
             if (foodOrderByUseridlist != null)
             {
 

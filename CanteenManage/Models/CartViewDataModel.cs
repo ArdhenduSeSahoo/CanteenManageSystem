@@ -19,6 +19,7 @@ namespace CanteenManage.Models
         public DateTime OrderDate { get; set; }
         public int OrderId { get; set; }
         public int Quantity { get; set; }
+        public Food? Food { get; set; }
         public List<FoodOrder?> FoodOrders { get; set; }
     }
 }

@@ -1,7 +1,7 @@
 ﻿@using CanteenManage.Utility
 @model CanteenManage.Models.MyOrderListPanelViewModel
 
-<div class="col @(Model.FoodOrders.Count()<=0?"d-none":"") ">
+<div class="col @(Model.FoodOrders.Count()<=0?"d-none":"") " style="padding-left:2px;padding-right:2px">
 	<div class="card customCard mt-2">
 		<div class="cardTitle fw-bold">
 			@Model.PanelTitle

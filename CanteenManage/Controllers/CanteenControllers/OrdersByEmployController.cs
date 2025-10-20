@@ -159,7 +159,6 @@ namespace CanteenManage.Controllers.CanteenControllers
                             );
                         if (foodorder != null)
                         {
-
                             return Results.Ok(new { detail = foodorder, error = "" });
                         }
                         else
@@ -207,6 +206,7 @@ namespace CanteenManage.Controllers.CanteenControllers
                                },
                                cancellationToken
                            );
+
                         return Results.Ok(new { error = "" });
                     }
                     else

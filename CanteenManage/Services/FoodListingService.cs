@@ -304,7 +304,8 @@ namespace CanteenManage.Services
             .Where(fo =>
             fo.OrderDateCustom.Date == DateTime.Now.Date
             //&& fo.Food.FoodTypeId == (int)foodTypeEnum
-            && fo.IsCanceled == false
+            &&
+            fo.IsCanceled == false
             && fo.EmployeeId == EmpID
             &&
             fo.OrderID.ToLower() == OrderID.ToLower()

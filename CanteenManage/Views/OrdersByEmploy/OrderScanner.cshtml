@@ -29,7 +29,7 @@
 				</div>
 
 			</div>
-			<div class="card-body">
+			<div class="card-body flex-row">
 				<div class="" style="min-width:350px">
 					<div class="position-relative d-none" id="qr-container">
 						<div id="qr-reader" class="rounded-2" style=""></div>
@@ -43,11 +43,18 @@
 
 					<button class="btn btn-danger" id="stopqr">Stop</button>
 				</div>
+				<div class="d-flex justify-content-center mt-2 d-none" id="detailsLoader">
+
+					<div class="spinner-border text-warning" role="status">
+						<span class="sr-only">Loading...</span>
+					</div>
+				</div>
 				<div class="card mt-2 d-none" id="ord_Details_Container">
 					<div class="card-body">
 						@* <div class="spinner-border text-info" role="status">
 							<span class="visually-hidden">Loading...</span>
 						</div> *@
+
 						<div>
 							<div class="d-flex">Name:<strong><span id="oname"></span></strong></div>
 							<div class="d-flex">EmpId:<span id="oempid"></span></div>
@@ -56,7 +63,10 @@
 							<div class="d-flex">Quantity:<strong><span id="oquantity"></span></strong></div>
 							<div class="d-flex">Date:<span id="odate"></span></div>
 							<div class="d-flex">Status:<strong><span id="ostatus"></span></strong></div>
-							<button class="btn btn-primary" id="btn_conform">Conform</button>
+							<button class="btn btn-primary" id="btn_conform">
+								<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+								<span class="button-text">Conform</span>
+							</button>
 						</div>
 					</div>
 				</div>
@@ -106,8 +116,9 @@
 			});
 			function onScanSuccess(decodedText, decodedResult) {
 
-			console.log(`Scan result: ${decodedText}`, decodedResult);
+			//console.log(`Scan result: ${decodedText}`, decodedResult);
 			html5QrcodeScanner.clear();
+			clearAllDetails();
 			$("#qr-container").addClass("d-none");
 			$('#scanedid').val(decodedText);
 			 const orderdetl={
@@ -124,6 +135,8 @@
 
 			$('#scanqr').click(function() {
 
+				clearAllDetails();
+			$('#ord_Details_Container').addClass("d-none");
 			checkCameraPermission().then(hasPermission => {
 			  if (hasPermission) {
 				// Proceed with camera-related functionality
@@ -136,8 +149,9 @@
 			});
 
 			// $('#scanedid').val("encodeorder");
+			//$('#scanedid').val("tlis+77y9vs5fcWSAOEqDrH6U9IeOQ6Lqxbc83ACsGj5pldj6WV2ckK1VpS5SRys");
 			// const roderdetl={
-			// orderdetails:''
+			// orderdetails:'tlis+77y9vs5fcWSAOEqDrH6U9IeOQ6Lqxbc83ACsGj5pldj6WV2ckK1VpS5SRys'
 			// };
 			// subjectOrderDetails.next(roderdetl);
 			// $("#ord_Details_Container").addClass("d-none");
@@ -145,6 +159,7 @@
 
 			$('#stopqr').click(function() {
 					html5QrcodeScanner.clear();
+					clearAllDetails();
 							$("#qr-container").addClass("d-none");
 							$("#ord_Details_Container").addClass("d-none");
 			});
@@ -157,18 +172,18 @@
 			//console.log($('#scanedid').val());
 			});
 			const subjectOrderDetailsPipe=subjectOrderDetails.pipe(
-			//map(val => {orderdetails:val}),
+			map(val => {
+				$('#detailsLoader').removeClass("d-none");
+				$('#ord_Details_Container').addClass("d-none");
+				return val;
+			}),
 			debounceTime(300), // Wait for 300ms of inactivity before emitting
 			//distinctUntilChanged(), // Only emit if the value has changed
 			);
-					const postData = {
-		  name: 'John Doe',
-		  email: 'john.doe@example.com'
-		};
+
 			const subjectOrderDetailsPipe2=subjectOrderDetailsPipe.pipe(
 						switchMap(data =>{
-							console.log('Ardhndu');
-							console.log(data);
+
 							return fromFetch(`/OrdersByEmploy/SingleOrderDetailP`, {
 		  method: 'POST',
 		  headers: {
@@ -189,8 +204,8 @@
 				// Process the order details here
 
 				var errormessage=orderData.error??"";
+				$('#detailsLoader').addClass("d-none");
 
-				$("#ord_Details_Container").addClass("d-none");
 				if(errormessage === "")
 				{
 				$('#oname').html(orderData.detail.employeeName);
@@ -212,6 +227,7 @@
 				$('#oitem').html(orderData.detail.foodName);//
 				$('#odate').html(orderData.detail.orderDateS);
 				$("#ord_Details_Container").removeClass("d-none");
+
 				}
 				else{
 					$("#ord_Details_Container").addClass("d-none");
@@ -225,6 +241,18 @@
 			);
 			////=${data}
 			const subjectOrderConformPipe2=subjectOrderConformPipe.pipe(
+				map(data=>{
+					var $button = $('#btn_conform');
+			var $spinner = $button.find('.spinner-border');
+			var $buttonText = $button.find('.button-text');
+
+			// Show spinner and hide text
+			$spinner.show();
+			//$buttonText.hide();
+			$button.prop('disabled', true); // Disable the button
+
+				return data;
+				}),
 						switchMap(data =>fromFetch(`/OrdersByEmploy/SingleOrderConform`, {
 						  method: 'POST',
 						  headers: {
@@ -243,22 +271,37 @@
 			);
 		  const subjectOrderConformsubscrib=subjectOrderConformPipe2.subscribe((orderDetails) => {
 
+				var $button = $('#btn_conform');
+				var $spinner = $button.find('.spinner-border');
+				var $buttonText = $button.find('.button-text');
+
+				// Show spinner and hide text
+				$spinner.hide();
+				//$buttonText.hide();
+				$button.prop('disabled', false); // Disable the button
+
 				if(orderDetails.error==='')
 				{
 				showInfoMessage("Item Conformed!!!!");
-				$("#ord_Details_Container").addClass("d-none");
-				$('#oname').html("");
-				$('#oempid').html("");
-				$('#oorderid').html("");
-				$('#oquantity').html("");
-				$('#ostatus').html("");
-				$('#oitem').html('');odate
-				$('#odate').html('');
+				// $("#ord_Details_Container").addClass("d-none");
+				$('#ostatus').html(`<span class="badge bg-success rounded-pill px-3 py-2 shadow-sm d-inline-flex align-items-center">
+										<i class="bi bi-check-circle"></i></span>`);
+
 				}
 				else{
 					showErrorMessage(orderDetails.error);
 				}
 			});
+		function clearAllDetails()
+		{
+			$('#oname').html("");
+			$('#oempid').html("");
+			$('#oorderid').html("");
+			$('#oquantity').html("");
+			$('#ostatus').html("");
+			$('#oitem').html('');odate
+			$('#odate').html('');
+		}
 		}
 		);
 

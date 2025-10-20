@@ -58,13 +58,18 @@
 								{
 									orderShouldDelete = true;
 								}
+								else if (Model.FoodType == CanteenManage.Utility.FoodTypeEnum.Dinner
+								&& int.Parse(DateTime.Now.ToString("HH")) < CustomDataConstants.DinnerTimeHour)
+								{
+									orderShouldDelete = true;
+								}
 
 							}
 							else if (order.OrderDateCustom.Date > DateTime.Now.Date)
 							{
 								orderShouldDelete = true;
 							}
-							var shouldSendRequest = false;
+							@* var shouldSendRequest = false;
 							if (!(order.IsCompleted) && !orderShouldDelete)
 							{
 								if (Model.FoodType == CanteenManage.Utility.FoodTypeEnum.Breakfast
@@ -82,7 +87,7 @@
 								{
 									shouldSendRequest = true;
 								}
-							}
+							} *@
 
 							<tr data-orderid="@order.OrderID">
 								<td>@order.OrderDateCustom.ToString("dd-MMM-")@order.OrderDateCustom.ToString("ddd")</td>

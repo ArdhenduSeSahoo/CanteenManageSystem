@@ -6,10 +6,10 @@
 }
 
 @section HeadSection {
-		<link rel="stylesheet" href="~/css/customStyles.css">
-		<style>
+	<link rel="stylesheet" href="~/css/customStyles.css">
+	<style>
 
-		</style>
+	</style>
 }
 
 <div class=" container-fluid h-100" style="">
@@ -31,29 +31,37 @@
 	<div class="row row-cols-1 row-cols-md-3">
 
 		@(
-						await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderHistoryListPanelView", new MyOrderListPanelViewModel()
-				{
-					PanelTitle = "Breakfast",
-					FoodOrders = Model.BreakFastFoodOrders,
-					FoodType = CanteenManage.Utility.FoodTypeEnum.Breakfast
-				})
-						)
+				await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderHistoryListPanelView", new MyOrderListPanelViewModel()
+		{
+			PanelTitle = "Breakfast",
+			FoodOrders = Model.BreakFastFoodOrders,
+			FoodType = CanteenManage.Utility.FoodTypeEnum.Breakfast
+		})
+				)
 		@(
-						await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderHistoryListPanelView", new MyOrderListPanelViewModel()
-				{
-					PanelTitle = "Lunch",
-					FoodOrders = Model.LunchFoodOrders,
-					FoodType = CanteenManage.Utility.FoodTypeEnum.Lunch
-				})
-						)
+				await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderHistoryListPanelView", new MyOrderListPanelViewModel()
+		{
+			PanelTitle = "Lunch",
+			FoodOrders = Model.LunchFoodOrders,
+			FoodType = CanteenManage.Utility.FoodTypeEnum.Lunch
+		})
+				)
 		@(
-						await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderHistoryListPanelView", new MyOrderListPanelViewModel()
-				{
-					PanelTitle = "Snacks",
-					FoodOrders = Model.SnaksFoodOrders,
-					FoodType = CanteenManage.Utility.FoodTypeEnum.Snacks
-				})
-						)
+				await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderHistoryListPanelView", new MyOrderListPanelViewModel()
+		{
+			PanelTitle = "Snacks",
+			FoodOrders = Model.SnaksFoodOrders,
+			FoodType = CanteenManage.Utility.FoodTypeEnum.Snacks
+		})
+				)
+		@(
+				await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_MyOrderHistoryListPanelView", new MyOrderListPanelViewModel()
+		{
+			PanelTitle = "Dinner",
+			FoodOrders = Model.DinnerFoodOrders,
+			FoodType = CanteenManage.Utility.FoodTypeEnum.Dinner
+		})
+				)
 
 	</div>
 
@@ -139,9 +147,9 @@
 </div>
 
 @section Scripts {
-		<script src="~/js/reviewModals.js"></script>
-		<script>
+	<script src="~/js/reviewModals.js"></script>
+	<script>
 
-		</script>
+	</script>
 }
 

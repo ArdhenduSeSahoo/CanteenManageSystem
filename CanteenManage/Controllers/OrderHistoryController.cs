@@ -6,19 +6,20 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CanteenManage.Services;
 using Microsoft.AspNetCore.Authorization;
+using CanteenManage.Models.DTO;
 
 namespace CanteenManage.Controllers
 {
     [Authorize(Roles = "Employee")]
     public class OrderHistoryController : Controller
     {
-        
+
         private readonly OrderingService orderingService;
         private readonly UtilityServices utilityServices;
         private readonly ILogger<OrderHistoryController> logger;
-        public OrderHistoryController(OrderingService ordering, UtilityServices utilityServices,ILogger<OrderHistoryController> logger)
+        public OrderHistoryController(OrderingService ordering, UtilityServices utilityServices, ILogger<OrderHistoryController> logger)
         {
-            
+
             this.orderingService = ordering;
             this.utilityServices = utilityServices;
             this.logger = logger;
@@ -27,20 +28,29 @@ namespace CanteenManage.Controllers
         {
 
             OrderHistoryPageDataModel myOrderViewDataModel = new OrderHistoryPageDataModel();
+            myOrderViewDataModel.BreakFastFoodOrders = new List<FoodOrderDto>();
+            myOrderViewDataModel.LunchFoodOrders = new List<FoodOrderDto>();
+            myOrderViewDataModel.SnaksFoodOrders = new List<FoodOrderDto>();
+            myOrderViewDataModel.DinnerFoodOrders = new List<FoodOrderDto>();
             try
             {
 
-                myOrderViewDataModel.SnaksFoodOrders = await orderingService.getOrderHistoryList(3,
+                myOrderViewDataModel.SnaksFoodOrders = await orderingService.getOrderHistoryList((int)FoodTypeEnum.Snacks,
                     utilityServices.getSessionUserId(HttpContext.Session)
                     );
                 ////////////////////////////////////////////////////////////
 
-                myOrderViewDataModel.LunchFoodOrders = await orderingService.getOrderHistoryList(2,
+                myOrderViewDataModel.LunchFoodOrders = await orderingService.getOrderHistoryList((int)FoodTypeEnum.Lunch,
                     utilityServices.getSessionUserId(HttpContext.Session)
                     );
                 ////////////////////////////////////////////////////////////
 
-                myOrderViewDataModel.BreakFastFoodOrders = await orderingService.getOrderHistoryList(1,
+                myOrderViewDataModel.BreakFastFoodOrders = await orderingService.getOrderHistoryList((int)FoodTypeEnum.Breakfast,
+                    utilityServices.getSessionUserId(HttpContext.Session)
+                    );
+                ////////////////////////////////////////////////////////////
+
+                myOrderViewDataModel.DinnerFoodOrders = await orderingService.getOrderHistoryList((int)FoodTypeEnum.Dinner,
                     utilityServices.getSessionUserId(HttpContext.Session)
                     );
             }
