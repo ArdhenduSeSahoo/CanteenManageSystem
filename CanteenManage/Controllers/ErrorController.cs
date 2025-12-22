@@ -37,7 +37,7 @@ namespace CanteenManage.Controllers
             {
                 errorViewData.RedirectURL = "/login/";
                 errorViewData.RedirectLinkName = "Go to Login";
-                errorViewData.Error = exception?.StackTrace ?? "";
+                errorViewData.Error = exception?.ToString();
             }
             else
             {

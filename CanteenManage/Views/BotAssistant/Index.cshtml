@@ -1,0 +1,258 @@
+﻿@model CanteenManage.Models.BotAssistantViewDataModel
+@{
+	ViewData["Title"] = "Bot Assistant";
+	var userLogo = Url.Content("~/images/user-logo.png");
+	var botLogo = Url.Content("~/images/bot-logo.png");
+}
+@section HeadSection {
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+	<link rel="stylesheet" href="~/css/botCss.css" />
+}
+<style>
+
+
+
+</style>
+
+<div class="full-screen-wrapper d-none">
+	<div class="full-screen-row">
+		<!-- Chat Section (Left) -->
+		<div class="chat-section">
+			<h2>Bot Assistant</h2>
+			<div id="chatWindow">
+				<!-- Chat messages will appear here -->
+			</div>
+			<form id="chatForm" class="d-flex">
+				<input type="text" id="userInput" class="form-control me-2" placeholder="Type your message..." autocomplete="off" />
+				<button type="submit" class="btn btn-primary">Send</button>
+			</form>
+		</div>
+		<!-- Details Section (Right, Larger) -->
+		<div class="details-section">
+			<h4>Details</h4>
+			<div id="detailsContent">
+				<p>Select a chat or send a message to see details.</p>
+			</div>
+		</div>
+	</div>
+</div>
+
+@section Scripts {
+	<script>
+		const chatWindow = document.getElementById('chatWindow');
+		const chatForm = document.getElementById('chatForm');
+		const userInput = document.getElementById('userInput');
+		const userLogo = '@userLogo';
+		const botLogo = '@botLogo';
+
+		chatForm.addEventListener('submit', function (e) {
+			e.preventDefault();
+			const message = userInput.value.trim();
+			if (message) {
+				appendMessage('You', message, userLogo);
+				userInput.value = '';
+				// Simulate bot response (replace with AJAX call to your backend)
+				setTimeout(() => {
+					appendMessage('Bot', 'This is a sample response.', botLogo);
+				}, 500);
+			}
+		});
+
+		function appendMessage(sender, message, logo) {
+			const now = new Date();
+			const timeString = now.toLocaleString();
+			const msgDiv = document.createElement('div');
+			msgDiv.className = "d-flex align-items-start mb-2";
+			msgDiv.innerHTML = `
+				<img src="${logo}" alt="${sender} logo" class="rounded-circle me-2" style="width:40px;height:40px;">
+				<div>
+					<div><strong>${sender}</strong> <small class="text-muted">${timeString}</small></div>
+					<div>${message}</div>
+				</div>
+			`;
+			chatWindow.appendChild(msgDiv);
+			chatWindow.scrollTop = chatWindow.scrollHeight;
+		}
+	</script>
+}
+
+
+
+<div class="container-fluid chat-container">
+	<div class="row h-100">
+		<!-- Left Side - Chat List -->
+		<div class="col-md-3 chat-list-section p-0">
+			<div class="chat-list-header">
+				<h5 class="mb-0"><i class="fas fa-comments me-2"></i>Conversations</h5>
+			</div>
+			<div class="chat-list-body" id="chatList">
+				<div class="chat-item active" data-chat-id="1">
+					<div class="d-flex justify-content-between align-items-start">
+						<div>
+							<h6 class="mb-1">General Chat</h6>
+							<small class="text-muted">Ask me anything...</small>
+						</div>
+						<small class="text-muted">Now</small>
+					</div>
+				</div>
+				<div class="chat-item" data-chat-id="2">
+					<div class="d-flex justify-content-between align-items-start">
+						<div>
+							<h6 class="mb-1">Technical Support</h6>
+							<small class="text-muted">How can I help?</small>
+						</div>
+						<small class="text-muted">2h ago</small>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Right Side - Chat Detail -->
+		<div class="col-md-9 chat-detail-section p-0">
+			<div class="chat-detail-header">
+				<h5 class="mb-0"><i class="fas fa-robot me-2"></i>AI Assistant</h5>
+				<small class="text-muted">Online</small>
+			</div>
+			<div class="chat-messages" id="chatMessages">
+				<div class="message bot">
+					<div class="message-content">
+						<p class="mb-0">Hello! I'm your AI assistant. How can I help you today?</p>
+					</div>
+				</div>
+			</div>
+			<div class="chat-input-section">
+				<div class="input-group">
+					<input type="text" class="form-control" id="messageInput" placeholder="Type your message...">
+					<button class="btn btn-primary" id="sendButton" type="button">
+						<i class="fas fa-paper-plane"></i> Send
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/7.8.1/rxjs.umd.min.js"></script>
+<script>
+	const { fromEvent, Subject, catchError, tap, switchMap, of } = rxjs;
+	const { ajax } = rxjs.ajax;
+
+	// Message subject for RxJS streams
+	const messageSubject = new Subject();
+
+	// Chat elements
+	const messageInput = document.getElementById('messageInput');
+	const sendButton = document.getElementById('sendButton');
+	const chatMessages = document.getElementById('chatMessages');
+	const chatList = document.getElementById('chatList');
+
+	// Add user message to chat
+	function addMessage(text, isUser = true) {
+		const messageDiv = document.createElement('div');
+		messageDiv.className = `message ${isUser ? 'user' : 'bot'}`;
+
+		const contentDiv = document.createElement('div');
+		contentDiv.className = 'message-content';
+		contentDiv.innerHTML = `<p class="mb-0">${text}</p>`;
+
+		messageDiv.appendChild(contentDiv);
+		chatMessages.appendChild(messageDiv);
+
+		// Scroll to bottom
+		chatMessages.scrollTop = chatMessages.scrollHeight;
+	}
+
+	// Show typing indicator
+	function showTyping() {
+		const typingDiv = document.createElement('div');
+		typingDiv.className = 'message bot';
+		typingDiv.id = 'typing-indicator';
+
+		const typingContent = document.createElement('div');
+		typingContent.className = 'typing-indicator show';
+		typingContent.innerHTML = '<span></span><span></span><span></span>';
+
+		typingDiv.appendChild(typingContent);
+		chatMessages.appendChild(typingDiv);
+		chatMessages.scrollTop = chatMessages.scrollHeight;
+	}
+
+	// Remove typing indicator
+	function hideTyping() {
+		const typingIndicator = document.getElementById('typing-indicator');
+		if (typingIndicator) {
+			typingIndicator.remove();
+		}
+	}
+
+	// RxJS stream for handling messages
+	messageSubject.pipe(
+		tap(() => showTyping()),
+		switchMap(message =>
+			ajax({
+				url: '/api/chat/message', // Replace with your API endpoint
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: { message: message }
+			}).pipe(
+				catchError(error => {
+					console.error('Error:', error);
+					return of({ response: { reply: 'Sorry, I encountered an error. Please try again.' } });
+				})
+			)
+		)
+	).subscribe({
+		next: (response) => {
+			hideTyping();
+			const botReply = response.response?.reply || 'Sorry, I could not process your request.';
+			addMessage(botReply, false);
+		},
+		error: (error) => {
+			hideTyping();
+			console.error('Stream error:', error);
+			addMessage('An error occurred. Please try again.', false);
+		}
+	});
+
+	// Send message function
+	function sendMessage() {
+		const message = messageInput.value.trim();
+		if (!message) return;
+
+		// Add user message to chat
+		addMessage(message, true);
+
+		// Clear input
+		messageInput.value = '';
+
+		// Send to RxJS stream
+		messageSubject.next(message);
+	}
+
+	// Event listeners
+	fromEvent(sendButton, 'click').subscribe(() => sendMessage());
+
+	fromEvent(messageInput, 'keypress').subscribe((event) => {
+		if (event.key === 'Enter') {
+			sendMessage();
+		}
+	});
+
+	// Chat list item click
+	fromEvent(chatList, 'click').subscribe((event) => {
+		const chatItem = event.target.closest('.chat-item');
+		if (chatItem) {
+			// Remove active class from all items
+			document.querySelectorAll('.chat-item').forEach(item => {
+				item.classList.remove('active');
+			});
+			// Add active class to clicked item
+			chatItem.classList.add('active');
+
+			// Here you could load chat history for selected conversation
+			console.log('Selected chat ID:', chatItem.dataset.chatId);
+		}
+	});
+</script>

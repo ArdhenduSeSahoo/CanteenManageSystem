@@ -101,6 +101,9 @@ background-color:#f5fbff
 						<li class="nav-item customNavItem">
 							<a class="nav-link nav_link text-center" asp-area="" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
 						</li>
+						@* <li class="nav-item customNavItem ">
+							<a class="nav-link nav_link text-center" asp-area="" asp-controller="BotAssistant" asp-action="Index">Bot Assistant</a>
+						</li> *@
 						<li class="nav-item customNavItem">
 							<a class="nav-link nav_link text-center" asp-area="" asp-controller="BreakFastItems" asp-action="Index">Breakfast</a>
 						</li>
@@ -158,9 +161,9 @@ color: white;">
 
 							@if (!string.IsNullOrEmpty(username))
 							{
-									<span class="nav-link text-center nav_link ">
-										<i class="fas fa-user"></i> @firstName
-									</span>
+								<span class="nav-link text-center nav_link ">
+									<i class="fas fa-user"></i> @firstName
+								</span>
 							}
 
 						</li>

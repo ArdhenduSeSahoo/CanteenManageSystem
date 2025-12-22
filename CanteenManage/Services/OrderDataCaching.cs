@@ -19,10 +19,10 @@ namespace CanteenManage.Services
         }
         public List<DaysOfWeekModel> GetDayOfWeeks()
         {
-            if (DateTime.Now.DayOfWeek != DayOfWeek.Sunday && this.DaysOfWeek.Count > 0)
-            {
-                return DaysOfWeek;
-            }
+            //if (DateTime.Now.DayOfWeek != DayOfWeek.Sunday && this.DaysOfWeek.Count > 0)
+            //{
+            //    return DaysOfWeek;
+            //}
             var daysOfWeek = new List<DaysOfWeekModel>();
 
             List<DateTime> TwoWeekdates = new List<DateTime>();

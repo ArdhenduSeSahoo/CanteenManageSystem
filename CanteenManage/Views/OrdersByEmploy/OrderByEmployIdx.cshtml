@@ -134,32 +134,41 @@
 			<div class="container-fluid">
 				<div class="row">
 					<div class="col-12 p-0">
-						<h5 class=" mb-3 pb-2 border-bottom fw-semibold" style="color:purple;">
-							<i class="bi bi-person-lines-fill me-2"></i> Today Orders
-						</h5>
+						<div class=" mb-3 pb-2 border-bottom fw-semibold" style="color:purple;">
+							<div class="d-flex justify-content-between">
+								<div><h4> <i class="bi bi-person-lines-fill me-2"></i> Today Orders</h4></div>
+								<div>
+									<a class="btn btn-outline-success d-flex align-items-center px-2 py-1 shadow-sm"
+									   asp-controller="OrdersByEmploy" asp-action="OrderByEmployIdx" asp-route-refreshCatch="1">
+										Refresh
+									</a>
+								</div>
+							</div>
 
-						<div class="d-flex gap-3 ml-2 flex-wrap">
-							<a class="btn btn-outline-primary d-flex align-items-center px-4 py-2 shadow-sm"
+						</div>
+
+						<div class="d-flex gap-2 ml-2 flex-wrap">
+							<a class="btn btn-outline-primary d-flex align-items-center px-2 py-1 shadow-sm"
 							   asp-controller="OrdersByEmploy" asp-action="OrderByEmployIdx" asp-route-FoodType="1">
 								<i class="bi bi-sunrise-fill me-2"></i> Breakfast
 							</a>
 
-							<a class="btn btn-outline-success d-flex align-items-center px-4 py-2 shadow-sm"
+							<a class="btn btn-outline-success d-flex align-items-center px-2 py-1 shadow-sm"
 							   asp-controller="OrdersByEmploy" asp-action="OrderByEmployIdx" asp-route-FoodType="2">
 								<i class="bi bi-brightness-high-fill me-2"></i> Lunch
 							</a>
 
-							<a class="btn btn-outline-warning d-flex align-items-center px-4 py-2 shadow-sm"
+							<a class="btn btn-outline-warning d-flex align-items-center px-2 py-1 shadow-sm"
 							   asp-controller="OrdersByEmploy" asp-action="OrderByEmployIdx" asp-route-FoodType="3">
 								<i class="bi bi-cup-straw me-2"></i> Snacks
 							</a>
-							<a class="btn btn-outline-primary d-flex align-items-center px-4 py-2 shadow-sm"
+							<a class="btn btn-outline-primary d-flex align-items-center px-2 py-1 shadow-sm"
 							   asp-controller="OrdersByEmploy" asp-action="OrderByEmployIdx" asp-route-FoodType="5">
 								<i class="bi bi-moon-fill me-2"></i> Dinner
 							</a>
-							<a class="btn btn-outline-info d-flex align-items-center px-4 py-2 shadow-sm scanBtn"
+							<a class="btn btn-outline-info d-flex align-items-center px-2 py-2 shadow-sm scanBtn"
 							   asp-controller="OrdersByEmploy" asp-action="OrderScanner" style="">
-								<i class="bi bi-qr-code me-2"></i>   Scan Order
+								<i class="bi bi-qr-code me-2"></i> Scan
 							</a>
 
 							@* <a class="btn btn-outline-warning d-flex align-items-center px-4 py-2 shadow-sm text-dark"
@@ -218,7 +227,7 @@
 			<h6 class="card-title">@Model.screenTitle</h6>
 		</div>
 
-		<div class="card-body">
+		<div class="card-body pt-2 pb-2">
 			<form method="get" id="searchForm" class="row g-3 align-items-center">
 				<input type="hidden" name="FoodType" value="@Model.FoodType" />
 
@@ -237,7 +246,11 @@
 			</button> *@
 		</div>
 		<div class="row orderlistviewcontainer">
-
+			<div class="d-flex justify-content-center mb-4 d-none">
+				<div class="spinner-border" role="status">
+					<span class="sr-only">Loading...</span>
+				</div>
+			</div>
 			@(
 						await Html.PartialAsync(CustomDataConstants.CustomViewPath + "\\_OrderListViewTodays", new OrderListViewTodaysDataModel()
 			{
@@ -278,6 +291,14 @@
 			distinctUntilChanged() // Only emit if the value has changed
 		);
 		const searchResultObs=searchInputSubject.pipe(
+			map(value=>{
+				console.log(value);
+				$(".orderlistviewcontainer").html(`<div class="d-flex justify-content-center mb-4 ">
+				<div class="spinner-border" role="status">
+					<span class="sr-only">Loading...</span>
+				</div>`);
+				return value.trim();
+			}),
 			switchMap(searchValue =>
 					{searchval=searchValue;
 						return	fromFetch(`/OrderListView?FoodType=${foodtype}&searchTerm=${searchValue}`).pipe(

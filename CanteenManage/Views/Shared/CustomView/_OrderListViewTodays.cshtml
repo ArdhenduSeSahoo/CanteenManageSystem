@@ -12,7 +12,7 @@
 				<th>Employee Name</th>
 				<th>Food Name</th>
 				<th>Quantity</th>
-				<th>Price</th>
+				@* <th>Price</th> *@
 				<th>Status</th>
 				<th>Action</th>
 			</tr>
@@ -27,7 +27,7 @@
 					<td data-label="Employ Name"><span style="font-weight:500">@order.EmployeeName</span></td>
 					<td data-label="Food Name"><span style="font-weight:500">@order.FoodName</span></td>
 					<td data-label="Quantity">@order.Quantity</td>
-					<td data-label="Price">@order.TotalPrice.ToString()</td>
+					@* <td data-label="Price">@order.TotalPrice.ToString()</td> *@
 					<td data-label="Status">
 						@if (!order.IsCompleted)
 						{

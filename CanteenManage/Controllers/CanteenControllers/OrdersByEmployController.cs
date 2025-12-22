@@ -32,7 +32,7 @@ namespace CanteenManage.Controllers.CanteenControllers
             _orderConformingChannel = channel;
 
         }
-        public async Task<IActionResult> OrderByEmployIdx(string FoodType, CancellationToken cancellationToken, string searchTerm = "")
+        public async Task<IActionResult> OrderByEmployIdx(string FoodType, CancellationToken cancellationToken, string searchTerm = "", string refreshCatch = "")
         {
             FoodTypeEnum foodType = FoodTypeEnum.Breakfast;
             List<EmployeeFoodOrdersTableDataModel> foodOrders = new List<EmployeeFoodOrdersTableDataModel>();
@@ -43,6 +43,15 @@ namespace CanteenManage.Controllers.CanteenControllers
 
             try
             {
+
+                if (!string.IsNullOrEmpty(refreshCatch) || string.IsNullOrEmpty(FoodType))
+                {
+                    //await foodListingService.GetFoodOrdersToday(FoodTypeEnum.Snacks, cancellationToken);
+                    //await foodListingService.GetFoodOrdersToday(FoodTypeEnum.Lunch, cancellationToken);
+                    //await foodListingService.GetFoodOrdersToday(FoodTypeEnum.Dinner, cancellationToken);
+                    await foodListingService.Create_Catch_FoodOrdersToday(cancellationToken);
+                    foodOrders = await foodListingService.GetFoodOrdersToday(FoodTypeEnum.Breakfast, cancellationToken);
+                }
                 if (string.IsNullOrEmpty(FoodType))
                 {
                     FoodType = Convert.ToString((int)FoodTypeEnum.Breakfast);
@@ -57,9 +66,11 @@ namespace CanteenManage.Controllers.CanteenControllers
                     //    //searchTerm = searchTerm.Trim().ToLower();
                     //    //foodOrders = await foodListingService.GetFoodOrdersOld_CU(cancellationToken, searchTerm);
                     //}
+
                     if (string.IsNullOrWhiteSpace(searchTerm))
                     {
-                        foodOrders = await foodListingService.GetFoodOrdersToday(foodType, cancellationToken);
+                        //foodOrders = await foodListingService.GetFoodOrdersToday(foodType, cancellationToken);
+                        foodOrders = await foodListingService.GetFoodOrdersToday_Filter(foodType, cancellationToken, searchTerm);
                     }
                     else
                     {

@@ -44,6 +44,7 @@ namespace CanteenManage.Controllers
             }
             ViewBag.IsDevEnv = appConfigProvider.IsDevelopmentEnv();
             return View();
+            //return RedirectToAction(actionName: "LoginUser", new { userId = "SD1265", userPassword = "1234" });
         }
 
         [AllowAnonymous]
@@ -148,7 +149,7 @@ namespace CanteenManage.Controllers
                 //return this.RedirectToAction(actionName: "Index", controllerName: "Error", new { jasowerukasj = JsonConvert.SerializeObject(ex) });
             }
 
-
+            //empid = "SD1265"; empname = "Ardhendu";
             if (string.IsNullOrEmpty(empid) || string.IsNullOrEmpty(empname))
             {
                 return RedirectToErrorScreen(new Exception("Employee ID or Name must be blank."));
@@ -373,6 +374,7 @@ namespace CanteenManage.Controllers
             await loginService.LoginUpdateEmployee(empId);
 
             return this.RedirectToAction(actionName: "Index", controllerName: "Dashboard");
+            //return this.RedirectToAction(actionName: "Index", controllerName: "BotAssistant");
         }
         /// <summary>
         /// econnecttoken is null here bcz it is set previously in loginUserAsync function

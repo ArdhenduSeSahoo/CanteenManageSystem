@@ -14,4 +14,8 @@ namespace CanteenManage.Models
         public string MyOrderDinnerFoods { get; set; } = string.Empty;
         public List<FoodDetails> Foods { get; set; } = new List<FoodDetails>();
     }
+    public class BotAssistantViewDataModel : LayoutViewDataModel
+    {
+
+    }
 }
