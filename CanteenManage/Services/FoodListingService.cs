@@ -556,9 +556,10 @@ namespace CanteenManage.Services
                     TotalEmployeeCount = fo.Select(fo => fo.EmployeeId).Distinct().Count(),
                     TotalPrice = fo.Sum(fo => fo.TotalPrice),
                     TotalEmployeePrice = fo.Sum(fo => fo.TotalEmployeePrice),
-                    TotalSubsidyPrice = fo.Sum(fo => fo.TotalSubsidyPrice) + (OnlyNonSubsidiary ? 0 : 100)
+                    TotalSubsidyPrice = fo.Sum(fo => fo.TotalSubsidyPrice)
                 })
                 .ToListAsync(cancellationToken);
+            //+ (OnlyNonSubsidiary ? 0 : 100)
             var total_data = new CanteenOrdersReportTableViewDataModel()
             {
                 OrderDate = DateTime.Now,
