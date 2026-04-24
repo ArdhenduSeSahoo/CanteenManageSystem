@@ -223,12 +223,12 @@ namespace CanteenManage.Controllers.CanteenControllers
                     var worksheet = workbook.Worksheets.Add("OrderList");
                     var currentRow = 1;
                     worksheet.Cell(currentRow, 1).Value = "OrderDate";
-                    worksheet.Cell(currentRow, 2).Value = "Order Quantity Count";
+                    worksheet.Cell(currentRow, 2).Value = "Order Quantity";
                     worksheet.Cell(currentRow, 3).Value = "Employee Count";
-                    worksheet.Cell(currentRow, 4).Value = "Order Count";
-                    worksheet.Cell(currentRow, 5).Value = "TotalPrice";
-                    worksheet.Cell(currentRow, 6).Value = "TotalEmployeePrice";
-                    worksheet.Cell(currentRow, 7).Value = "TotalSubsidyPrice";
+                    //worksheet.Cell(currentRow, 4).Value = "Order Count";
+                    worksheet.Cell(currentRow, 4).Value = "Total Price";
+                    worksheet.Cell(currentRow, 5).Value = "Total Employee Price";
+                    worksheet.Cell(currentRow, 6).Value = "Total Subsidy Price";
 
 
                     for (int i = 0; i < canteenOrderReportViewDataModels.Count; i++)
@@ -246,10 +246,10 @@ namespace CanteenManage.Controllers.CanteenControllers
 
                             worksheet.Cell(currentRow, 2).Value = canteenOrderReportViewDataModels[i].TotalQuantity;
                             worksheet.Cell(currentRow, 3).Value = canteenOrderReportViewDataModels[i].TotalEmployeeCount;
-                            worksheet.Cell(currentRow, 4).Value = canteenOrderReportViewDataModels[i].TotalOrderCount;
-                            worksheet.Cell(currentRow, 5).Value = canteenOrderReportViewDataModels[i].TotalPrice;
-                            worksheet.Cell(currentRow, 6).Value = canteenOrderReportViewDataModels[i].TotalEmployeePrice;
-                            worksheet.Cell(currentRow, 7).Value = canteenOrderReportViewDataModels[i].TotalSubsidyPrice;
+                            //worksheet.Cell(currentRow, 4).Value = canteenOrderReportViewDataModels[i].TotalOrderCount;
+                            worksheet.Cell(currentRow, 4).Value = canteenOrderReportViewDataModels[i].TotalPrice;
+                            worksheet.Cell(currentRow, 5).Value = canteenOrderReportViewDataModels[i].TotalEmployeePrice;
+                            worksheet.Cell(currentRow, 6).Value = canteenOrderReportViewDataModels[i].TotalSubsidyPrice;
 
                         }
                     }
